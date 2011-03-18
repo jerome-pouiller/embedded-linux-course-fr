@@ -1,0 +1,69 @@
+% This document is available under the Creative Commons Attribution-ShareAlike
+% License; additional terms may apply. See
+%   * http://creativecommons.org/licenses/by-sa/3.0/
+%   * http://creativecommons.org/licenses/by-sa/3.0/legalcode
+%
+% Copyright 2010 Jérôme Pouiller <jezz@sysmic.org>
+%
+
+\input{style}
+
+\tikzstyle{main}     = [node distance=1cm, transform shape, inner sep=0pt, outer sep=0pt, rounded corners=2mm, text centered, minimum height=0.9cm]
+\tikzstyle{cred}     = [fill=red!20!white,     draw=red!50!black,     rounded corners=2mm]
+\tikzstyle{cblue}    = [fill=blue!20!white,    draw=blue!50!black,    rounded corners=2mm]
+\tikzstyle{cgreen}   = [fill=green!20!white,   draw=green!50!black,   rounded corners=2mm]
+\tikzstyle{corange}  = [fill=orange!20!white,  draw=orange!50!black,  rounded corners=2mm]
+\tikzstyle{cyellow}  = [fill=yellow!20!white,  draw=yellow!50!black,  rounded corners=2mm]
+\tikzstyle{ccyan}    = [fill=cyan!20!white,    draw=cyan!50!black,    rounded corners=2mm]
+\tikzstyle{cbrown}   = [fill=brown!20!white,   draw=brown!50!black,   rounded corners=2mm]
+\tikzstyle{cpurple}  = [fill=purple!20!white,  draw=purple!50!black,  rounded corners=2mm]
+\tikzstyle{size1}=[main, minimum width=1.9cm, text width=1.8cm]
+\tikzstyle{size2}=[main, minimum width=3.9cm, text width=3.8cm]
+\tikzstyle{size3}=[main, minimum width=5.9cm, text width=5.8cm]
+\tikzstyle{size4}=[main, minimum width=7.9cm, text width=7.8cm]
+
+
+% Apparait sur chaque slide:
+\logo{\pgfimage[height=5mm]{logo-apollo}}
+
+\title{Formation à Linux Embarqué}
+\hypersetup{pdftitle={Formation à Linux Embarqué}}
+% \subtitle{Sous-titre}
+\author[J. Pouiller]{Jérôme Pouiller \email{j.pouiller@sysmic.org}}
+\hypersetup{pdfauthor={Jérôme Pouiller}}
+\institute[Apollo]{\pgfimage[height=1.5cm]{logo-apollo}}
+% Plus complet:
+% \institute[Sysmic]{
+%   \inst{1} \hspace*{1cm}\includegraphics[height=1.5cm]{logo}
+%   \and
+%   \inst{2} \includegraphics[height=1.5cm]{logo-apollo}
+% }
+\date[Mar. 2011]{15-18 Mars 2011}
+% Pour le PDF seulement:
+% \subject{Temps Réel}
+% \keywords{temps réel, thread, xenomai, OS, Linux}}
+  
+\begin{document}
+
+  \begin{frame}[plain]
+    \maketitle
+  \end{frame}
+  \note{Parler de moi, de mon CV, boulot, freelance, sysmic, expertise, Polytech Paris}
+
+  %\begin{frame}{Sommaire}
+  %  \tableofcontents
+  %\end{frame}
+  
+   \input{admin}
+   \input{make}
+   \input{kernel}
+   \input{debug}
+   \input{rt}
+  %\input{community}
+
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

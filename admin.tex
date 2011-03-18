@@ -1,0 +1,1078 @@
+% This document is available under the Creative Commons Attribution-ShareAlike
+% License; additional terms may apply. See
+%   * http://creativecommons.org/licenses/by-sa/3.0/
+%   * http://creativecommons.org/licenses/by-sa/3.0/legalcode
+%
+% Copyright 2010 Jérôme Pouiller <jezz@sysmic.org>
+%
+
+\part{Administrer}
+
+\begin{frame}
+  \partpage
+\end{frame}
+
+\begin{frame}
+  \tableofcontents[currentpart]
+\end{frame}
+
+\section{Notre environement}
+
+\subsection{Linux}
+
+\begin{frame}{Qu'est-ce que Linux?}
+  \begin{itemize}
+  \item  Linux ne désigne  que le  noyau
+    \note[item]{nous  verrons ce  qu'est le noyau}
+  \item  Linux est  souvent  associé aux  outils  GNU d'où  le nom  de
+    GNU/Linux
+  \item  Systèmes  avec  les  outils  GNU  mais  un  noyau  différent:
+    GNU/Hurd, Solaris, etc...
+  \item Systèmes Linux sans GNU: Android\note[item]{Bionic}
+  \item Le nombre de systèmes  Linux installés est difficile à évaluer
+    (en partie car des système Linux embarqués)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Composants de Linux}
+  GNU/Linux est finalement un aggloméra:
+  \\[2ex]
+  \begin{center}
+    \begin{tikzpicture}
+      \filldraw[cbrown]
+       (-0.05,0.95) -- +(9,0) -- +(9,1) -- +(8,1) -- +(8,2) -- +(7,2) -- +(7,3) 
+       -- +(6,3) -- +(6,4) -- +(2,4) -- +(2,3) -- +(1,3) -- +(1,1) -- +(+0,1) -- cycle;
+% node {Posix};
+     \filldraw[ccyan]
+       (7,5) -- +(1,0) -- +(1,-1) -- +(1.9,-1) -- +(1.9,0.9) -- +(0,0.9) -- cycle +(1,.5) node {App};
+     \filldraw[ccyan]
+       (1,5) rectangle +(1.9,0.9) +(1,.5) node {App};
+     \filldraw[ccyan]
+       (6,4) rectangle +(1.9,0.9) +(1,.5) node {App};
+     \filldraw[cyellow]
+       (4,4) rectangle +(1.9,0.9) +(1,.5) node {GNU App};
+     \filldraw[cyellow]
+       (2,4) rectangle +(1.9,0.9) +(1,.5) node {Bash};
+     \filldraw[ccyan]
+       (1.9,4) -- +(-1,0) -- +(-1,-2) -- +(-1.9,-2) -- +(-1.9,0.9) -- +(0,0.9) -- cycle +(-1,.5) node {App};
+     %\filldraw[cyellow]
+     %  (0,4) rectangle +(1.9,0.9) +(1,.5) node {App};
+     \filldraw[cblue]
+       (7,3) -- +(1,0) -- +(1,-1) -- +(1.9,-1) -- +(1.9,0.9) -- +(0,0.9) -- cycle +(1,.5) node {Lib};
+     \filldraw[corange]
+       (3,3) rectangle +(3.9,0.9) +(2,.5) node {GNU lib};
+     \filldraw[corange]
+       (1,2) -- +(6.9,0) -- +(6.9,0.9) -- +(1.9,0.9) -- +(1.9,1.9) -- +(0,1.9) -- cycle +(3.5,.5) node {GNU libc};
+     \filldraw[cred]
+       (0,1) rectangle +(8.9,0.9) +(4.5,.5) node {Noyau Linux};
+     \filldraw[cgreen]
+       (0,0) rectangle +(8.9,0.9) +(4.5,.5) node {Matériel};
+    \end{tikzpicture}
+  \end{center}
+\end{frame}
+
+\begin{frame}{La Norme Posix}
+  \begin{itemize}
+  \item \emph{Portable Operating System Interface [for Unix]}
+  \item Uniformise les OS
+  \item Première version publiée en 1988
+  \item Souvent implémenté en partie
+  \item ...  et parfois  s'en inspire simplement 
+    \note[item]{Parler de uC-OS II, \texttt{printf}, etc...}
+  \item Posix $\nrightarrow$ Linux
+  \item Linux $\nrightarrow$ Posix
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Le Projet GNU}
+  \begin{itemize}
+  \item Créé en 1983 par Richard Stallman
+  \item Pose  les bases politiques  de GNU/Linux
+    \note[item]{Expliquer ce qu'est la GPL}
+    \begin{itemize}
+    \item GPL publiée en 1989
+    \item GPLv2 en 1991 
+    \item GPLv3 en 2006
+    \end{itemize}
+  \item \cmd{gcc} apparait en 1985
+    \note[item]{Expliquer ce qu'est gcc} 
+  \item \cmd{bash} et les  Coreutils apparaissent en 1988 (inspirés de
+    \cmd{sh} 1971/1977)
+    \note[item]{Expliquer coreutils}
+    \note[item]{Expliquer   bash} 
+  \item Nombre d'architectures supportées incalculable
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Le noyau Linux}
+  \begin{itemize}
+  \item Créé  en 1991 par  Linus Torvalds \note[item]{Parler  de Linus
+      l'universitaire}
+  \item Système communautaire \note[item]{Parler du lien avec la GPL}
+  \item 15 millions de lignes de code dans 30000 fichiers (+15\%/an)
+  \item Environ 1200 développeurs dans 600 entreprises (+35\%/an)
+  \item Environ 5000 contributeurs depuis la première version de Linux
+  \item  Environ  650  mainteneurs  (c'est-à-dire  responsbales  d'une
+    partie du noyau)
+  \item 24 architecures (= jeux d'instructions)
+  \item Des centaines de plateformes
+  \item Environ 1000 drivers
+  \item Une centaine de versions publiées
+  \item Environ 10000 contributions sur chaque version
+  \item Enormément de ``forks'' et de version non-officielles
+  \item Domaine d'application très large, du DSP au super-calculateurs
+    en passant pas les grille de calcul
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Qu'est-ce qu'une distribution?}
+  \begin{itemize}
+  \item Debian, Ubuntu, Meego,  Red Hat, Suse, ... \note[item] {Parler
+      de Meego, dériv sur Intel, Nokia, Renault, etc... Dire que c'est
+      en plein essort}
+  \item Compilations de programmes disponibles pour GNU/Linux
+  \item Ensemble de normes et de procédure
+  \item Permet de garantir le fonctionnement des programmes distribué
+  \item Notre distribution ``Hôte'': Ubuntu % à vérifier
+  \item Notre distribution ``Cible'': Aucune
+  \end{itemize}
+\end{frame}
+
+\subsection{L'embarqué}
+
+\begin{frame}{Qu'est-ce que l'embarqué?}
+  D'après Wikipedia:
+  \begin{quote}
+    \justify  Un système embarqué  peut être  défini comme  un système
+    électronique et  informatique autonome, qui est dédié  à une tâche
+    bien  précise.   Ses   ressources  disponibles  sont  généralement
+    limitées.   Cette  limitation  est  généralement  d'ordre  spatial
+    (taille limitée) et énergétique (consommation restreinte).
+    \\[2ex]
+    Les systèmes  embarqués font très souvent  appel à l'informatique,
+    et notamment aux systèmes temps réel.
+    \\[2ex]
+    Le terme de système embarqué désigne aussi bien le matériel que le
+    logiciel utilisé.
+  \end{quote}
+\end{frame}
+
+\begin{frame}{Cible et Hôte}
+  \begin{itemize}
+  \item  Nous parlerons  de système  cible  (target, la  board) et  de
+    système hôte (host, votre machine)
+  \item Le  host va nous permettre de  programmer, debugger, contrôler
+    le système cible durant la période de développement
+  \item Le système cible sera ensuite autonome.
+  \item Nous utilisons un Linux sur les deux système. Ca n'est pas une
+    obligation (même, si cela facilite certains automatisme).
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{La cible: Calao USB-A9260}
+  \begin{center}
+    \pgfimage[height=5cm]{USB-AT91-1}\hspace{1cm}\pgfimage[height=5cm]
+    {USB-AT91-2}
+  \end{center}
+\end{frame}
+
+\begin{frame}{La cible: Calao USB-A9260}
+  Architecture très classique dans le milieu de Linux embarqué:
+  \begin{itemize}
+  \item Microcontrolleur Atmel AT91SAM9260
+  \item Core ARM926EJ-S 180MHz
+  \item 256Mo de flash
+  \item 64Mo de RAM
+  \item 64Ko d'EEPROM
+  \end{itemize}
+  Choisie car compacte et très bien supportée par Linux
+\end{frame}
+
+\section{Le shell}
+
+\subsection{Bases}
+
+\begin{frame}[fragile=singleslide]{Quelques notions de shell}{Bases}
+  \begin{itemize}
+  \item Sous Linux,  on peut faire beaucoup de chose  avec la ligne de
+    commande
+  \item Très souvent, ce sera le seul langage de script disponible sur
+    la cible
+  \item Lancer une commande
+\begin{lstlisting}
+$ ls
+\end{lstlisting} %$
+  \item Séparation des arguments par des espaces
+\begin{lstlisting}
+$ mkdir dir1 dir2
+      \end{lstlisting} %$
+    \item Souvent  les arguments optionnels commence par  '-' pour les
+      option courte et '-\--'  pour les options longues (attention aux
+      exceptions)
+\begin{lstlisting}
+$ ls -l -a 
+$ ls -la 
+$ ls --sort=time
+\end{lstlisting} %$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Quelques notions de shell}{Redirections}
+  On utilise beaucoup les  redirections des entrées/sorties sous Linux
+  (\verb+< | >+) :
+  \begin{itemize}
+  \item Commande standard
+\begin{lstlisting}
+$ echo foo
+\end{lstlisting}
+  \item Sortie standard vers un fichier
+\begin{lstlisting}
+$ echo foo > file1
+\end{lstlisting}
+  \item Un fichier vers l'entrée standard
+\begin{lstlisting}
+$ cat -n < file1
+\end{lstlisting} %$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Quelques notions de shell}{Redirections}
+  \begin{itemize}
+  \item Sortie standard d'une commande vers l'entrée d'une autre
+\begin{lstlisting}
+$ echo bar foo | wc
+$ ls | wc -l
+\end{lstlisting}
+  \item Couplage des redirections
+\begin{lstlisting}
+$ cat -n < file1 | wc > file3
+\end{lstlisting} %$
+  \item L'espace n'est pas obligatoire et les redirections ne sont pas
+    forcement à la fin de la ligne
+\begin{lstlisting}
+$ >file2 cat<file1 -n
+\end{lstlisting} %$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Quelques notions de shell}{Les chemin}
+  Il est possible d'utiliser des chemins:
+  \begin{itemize}
+  \item absolus
+\begin{lstlisting}
+$ mkdir /tmp/tete
+\end{lstlisting}
+  \item relatifs
+\begin{lstlisting}
+$ mkdir ../../tmp/titi
+\end{lstlisting}
+  \end{itemize}
+  \cmd{mkdir foo} signifie \cmd{mkdir ./foo}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Quelques notions de shell}
+  \begin{itemize}
+  \item   Documentation:  \cmd{man}  (\cmd{man   -l}  pour   une  page
+    ``locale'')
+  \item Votre shell peut vous simplifier la vie:
+    \begin{itemize}
+    \item Globbing
+\begin{lstlisting}
+$ rm *.o
+\end{lstlisting}
+    \item Complétion 
+\begin{lstlisting}
+$ cd /h<TAB>/j<TAB>/c<TAB>
+\end{lstlisting}
+    \item Alias
+\begin{lstlisting}
+$ alias ll="ls -l --color=auto"
+$ alias cp="cp -i"              
+$ alias mv="mv -i"              
+$ alias rm="rm --one-file-system"
+\end{lstlisting} %$
+      \note[item]{Leur faire  chercher dans la  doc la signification  de ces
+        commandes}       
+      \note[item]{Leur faire changer de shell et installer ma conf}
+    \item Man de la commande courante
+\begin{lstlisting}
+$ rm -<M-h>
+\end{lstlisting} %$
+    \end{itemize}
+    \note[item]{Exo: créer  un fichier contenant la  liste des fichier
+    de votre home. Comment afficher les fichier trié par date?}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Ecrire un script shell}
+  Les  fonctionnalité d'un  script  shell sont  abolument identique  à
+  celles de la ligne de commande.
+  \begin{itemize}
+  \item Ouvrir  un nouveau fichier. On suffixe  généralement les shell
+    par \verb+.sh+
+\begin{lstlisting}
+$ vim scipt.sh
+\end{lstlisting} %$
+  \item Indiquer  le shell utilisé  sur la première ligne,  préfixé de
+    \verb+#!+
+\begin{lstlisting}
+#!/bin/sh
+\end{lstlisting} %$
+  \item La suite s'ecrit comme sur la ligne de commande
+\begin{lstlisting}
+echo foo bar
+\end{lstlisting} %$
+  \item Il est nécéssaire de donner les droits en exécution au script
+\begin{lstlisting}
+$ bash script.sh
+$ chmod +x script.sh
+$ ./script.sh
+\end{lstlisting} %$
+    \note[item]{Ecrivez  un  script  shell  qui compte  le  nombre  de
+      fichier d'un répertoire en paramètre. Compter le nombre de ligne
+      contenant 'x' dans un fichier  (man grep). Afficher le plus gros
+      fichier du répertoire}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Convention}
+  Par convention,  nous préfixons dans ces slides  les commandes shell
+  par :
+  \begin{itemize}
+  \item  \verb+$+  pour les  commandes  à  éxecuter par  l'utilisateur
+    normal
+  \item \verb+%+ pour les commande à executer par root
+  \item \verb+>+ pour les commandes non-shell
+  \end{itemize}
+  Nous  préfixons parfois  les commandes  shell par  le système  ou la
+  commande doit être executée
+\end{frame}
+
+\section{Communiquer avec la cible}
+
+\subsection{En RS232}
+
+\begin{frame}{Se connecter par RS232}
+  \begin{itemize}
+  \item RS232  est très utilisé.  Vous trouverez peu de  systèmes sans
+    RS232
+  \item D'un point de vue électrique:  Gnd, Rx, Tx (+ RTS et CTS, mais
+    inutile)
+  \item Il  est relativement simple  de communiquer en RS232  avec une
+    pin  de sortie du  processeur, mais  de nos  jours, on  utilise de
+    controlleur RS232 qui simplifie énormément le travail
+  \item On pourra trouver des  bus similaires et convertible en RS232:
+    RS422, RS485
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Se connecter par RS232}
+  \begin{itemize}
+  \item Il faut un cable nul modem (= cable croisé)
+  \item  Il faut  que  le Linux  sur  la target  soit configurer  pour
+    logguer par RS232
+    \begin{itemize}
+    \item Possible en ajoutant \texttt{console=ttyS0,115200n8} dans la
+      ligne  de commande du  noyau (sur  PC, il  suffit de  passer par
+      \emph{grub}) \note[item]{Faire une  démonstration, mais il n'y a
+        pas de port série...}
+    \item Possible de le mettre dans la configuration du noyau
+    \end{itemize}
+  \item Il faut sur le Linux  un programme pour se logguer sur le port
+    RS232 (comme sur PC): \cmd{login} \note[item]{Expliquer rapidement
+      item}
+  \item Il faut configurer le port RS232: bitrate, protocole...
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Communiqer par RS232}{Avec les outils de haut niveau}
+  \begin{itemize}
+  \item L'outil de haut niveau: \cmd{minicom}
+\begin{lstlisting}[language=sh]
+host% adduser user tty
+host% apt-get install minicom
+host$ minicom -D /dev/ttyUSB1
+host$ minicom
+\end{lstlisting} %$
+    \note[item]{Expliquer l'option -D}
+    \note[item]{Se déloguer/loguer}
+  \item La configuration se fait par \verb/<RET><Ctrl+A><O>/
+\begin{lstlisting}[language=]
+   Serial Device      : /dev/ttyUSB1
+     ...
+   Bps/Par/Bits       : 115200 8N1
+Hardware Flow Control : No
+Software Flow Control : No
+\end{lstlisting}
+    \note[item]{Sauvez, quitter, relancer}
+  \end{itemize}
+  \note[item]{Parler de putty qui fonctionne sous Linux et Windows}
+  \note[item]{Parler de cu}
+  \note[item]{TP: Just do it}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Communiquer par RS232}{Avec les outils de bas niveau}
+  Outils de bas niveau: \cmd{stty}, \cmd{cat}, \cmd{echo}
+  \begin{itemize}
+  \item Permet de scripter (Tests automatiques, etc...)
+  \item Dans le cas ou vous devriez coder votre propre client
+  \end{itemize}
+  Fonctionnement:
+  \begin{itemize}
+  \item Configuration:
+\begin{lstlisting}
+host$ stty -F/dev/ttyUSB1 115200
+\end{lstlisting} %$
+  \item Lecture
+\begin{lstlisting}
+host$ cat /dev/ttyUSB1 > file
+\end{lstlisting} %$
+  \item Ecriture
+\begin{lstlisting}
+host$ echo root > /dev/ttyUSB1
+host$ cat file > /dev/ttyUSB1
+\end{lstlisting} %$
+  \end{itemize}
+  \note[item]{Verifier les options de stty}
+  \note[item]{TP: Just do it}
+\end{frame}
+
+\begin{frame}{Pourquoi n'y a-t-il pas de porte série sur notre cible?}
+  \begin{itemize}
+  \item Vous savez qu'il existe des convertisseur USB/RS232
+  \item  Sur notre  cible, un  convertisseur USB/RS232  intégrée  à la
+    board
+  \item   Le  port  USB   que  vous   voyez  n'est   pas  vu   par  le
+    micro-controlleur.
+  \item Il est  relié à une puce qui  effectue la conversion USB/RS232
+    et   relie  la   connection   série  à   la   sortie  console   du
+    micro-controlleur.
+  \item Cela permet:
+    \begin{itemize}
+    \item d'économiser une alimentation (le PC alimente)
+    \item  de  gagner la  place  d'un port  série  et  d'un port  Jtag
+      \note[item]{nous verrons plus tard ce qu'est un port jtag}
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\subsection{Par ethernet}
+
+\begin{frame}[fragile=singleslide]{Communiquer par réseau ethernet}
+  Plus difficile. Il faut:
+  \begin{itemize}
+  \item Une interface réseau (plus complexe qu'un controleur RS232)
+  \item Une pile IP (plus complexe qu'une communication RS232, donc ne
+    permet de se connecter que plus tardivement dans le boot)
+  \item Une configuration IP
+  \item Un programme  pour recevoir la demande de connexion
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Communiquer par réseau ethernet}
+  Protocoles les plus utilisés:
+  \begin{itemize}
+  \item Telnet
+    \begin{itemize}
+    \item \cmd{telnetd} et \cmd{telnet}
+\begin{lstlisting}
+host$ telnet -l root target
+target%
+\end{lstlisting} %$
+    \item   Pas   sécurisé,   attention   a   votre   mot   de   passe
+      \note[item]{faire une  démonstration avec telnetd  et tcpdump -i
+        lo -A  port telnet (il  faut regarder le dernier  caractère de
+        chaque paquet envoyé)}
+    \item \verb/<CTRL+]>/ permet d'accéder à l'interface de commande
+    \end{itemize}
+  \item Ssh
+    \begin{itemize}
+    \item \cmd{sshd} et \cmd{ssh}
+\begin{lstlisting}
+host$ ssh root@target
+target%
+\end{lstlisting} %$
+    \item Sécurisé
+    \item Pleins de bonus de sécurisé
+    \item   Il   est   possible   de  forcer   la   déconnexion   avec
+      \verb/<RET><~><.>/   et   de   suspendre  une   connexion   avec
+      \verb/<RET><~><CTRL+Z>/
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\subsection{Transférer des fichiers}
+
+\begin{frame}[fragile=singleslide]{Transférer des fichiers}
+  Par réseau
+  \begin{itemize}
+  \item rcp/scp
+\begin{lstlisting}[language=sh]
+host$ scp -r ~/dir root@target:dir-target
+target$ scp -r user@host:dir-host .
+\end{lstlisting} %$
+  \item tftp
+\begin{lstlisting}[language=sh]
+target$ tftp -g -r file host
+target$ tftp -p -l file host
+host$ tftp -g -r file target
+host$ tftp -p -l file target
+\end{lstlisting} %$
+  \item wget
+\begin{lstlisting}[language=sh]
+host$ wget http://host/file
+host$ wget ftp://host/file
+\end{lstlisting} %$
+  \note[item]{TP: Just do it, surtout wget}
+  \item Beaucoup d'autres méthodes plus ou moins standards
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Transférer des fichiers}
+  Par liaison série
+  \begin{itemize}
+  \item Plus lent, moins maléable, mais peut vous sauvez
+  \item Protocoles \verb+{Z,Y,Z}MODEM+ ou \verb+Kermit+
+\begin{lstlisting}[language=sh]
+host% apt-get install lrzsz 
+target$ sz file
+target$ rz
+\end{lstlisting} %$
+    \note[item]{Fonctionne dans konsole ou dans minicom avec Ctrl-A S}
+    \note[item]{Raconter le fonctionnement des BBS}
+  \end{itemize}
+\end{frame}
+
+\subsection{Utilisation de clefs numériques}
+
+\begin{frame}[fragile=singleslide]{Utiliser des clef ssh}
+  \begin{itemize}
+  \item Possibilité de créer des clefs pour \cmd{ssh}
+\begin{lstlisting}[language=sh]
+host$ ssh-keygen -t dsa
+\end{lstlisting} %$
+  \item Toujours mettre un mot de passe sur votre clef
+  \item Recopiez votre clef dans \verb+~/.ssh/authorized_keys+
+\begin{lstlisting}[language=sh]
+host$ ssh-copy-id root@target
+\end{lstlisting} %$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Utiliser des clef ssh}
+  \begin{itemize}
+  \item Utiliser ssh-agent
+\begin{lstlisting}[language=sh]
+host$ ssh-agent
+host$ SSH_AUTH_SOCK=/tmp/agent.3391; export SSH_AUTH_SOCK;
+host$ SSH_AGENT_PID=3392; export SSH_AGENT_PID;
+host$ echo Agent pid 3392;
+\end{lstlisting} %$
+  \item Enregistrer votre passphrase auprès de l'agent
+\begin{lstlisting}[language=sh]
+host$ ssh-add
+\end{lstlisting} %$
+  \item Forwarder votre agent
+\begin{lstlisting}[language=sh]
+host$ ssh -A root@target
+target% 
+\end{lstlisting} %$
+    \note[item]{TP: Mettre  l'agent pour tout le  monde. FIXME: depend
+      des distribs}
+  \end{itemize}
+\end{frame}
+
+
+\section{Compiler et executer}
+
+\begin{frame}[fragile=singleslide]{Notre premier programme}{\file{hello.c}}
+  \embedfile{hello/hello.c}
+  \lstinputlisting[language=c,lastline=15]{hello/hello.c}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Notre premier programme}{\file{hello.c}}
+  \lstinputlisting[language=c,firstline=16]{hello/hello.c}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Notre premier programme}{\file{hello.h}}
+  \embedfile{hello/hello.h}
+  \lstinputlisting[language=c]{hello/hello.h}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Compilation}
+  \note[item]{See Also
+    http://www.codesourcery.com/sgpp/lite/arm/portal/package7813/public/arm-none-eabi/arm-2010.09-51-arm-none-eabi-i686-pc-linux-gnu.tar.bz2}
+  \note[item]{\texttt{ln -s /home/user/arm-linux-uclibc-calao
+      /home/jezz/cour-eLinux/FromCalao/usb-a9260-buildroot/build\_arm/staging\_dir}}
+  \note[item]{Leur donner ma toolchain toute propre}
+  Compilation normale:
+\begin{lstlisting}
+host$ mkdir build-x86
+host$ gcc hello.c -I -o build-x86/hello
+host$ build-x86/hello 1
+Hello World
+\end{lstlisting} %$
+  Compilation pour la cible:
+\begin{lstlisting}
+host$ mkdir build-arm
+host$ /opt/arm-sysmic-linux-uclibc/usr/bin/arm-linux-gcc hello.c -o build-arm/hello
+target% ./hello 1
+Hello World
+\end{lstlisting} %$
+  On  installe  très souvent  les  chaines  de cross-compilation  dans
+  \path{/opt}.
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Identifier le résultat}
+  Un bon moyen de reconnaitre  les binaires est d'utiliser la commande
+  \cmd{file}:
+\begin{lstlisting}
+host$ file */hello
+arm/hello:        ELF 32-bit LSB executable, ARM, version 1 (SYSV), dynamically linked (uses shared libs), not stripped
+arm-static/hello: ELF 32-bit LSB executable, ARM, version 1 (SYSV), statically linked, not stripped
+x86/hello:        ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.15, not stripped
+x86-static/hello: ELF 64-bit LSB executable, x86-64, version 1 (GNU/Linux), statically linked, for GNU/Linux 2.6.15, not stripped
+\end{lstlisting} %$
+\end{frame}
+
+\begin{frame}{Compiler et executer}
+  \begin{itemize}
+  \item La force de Linux, c'est sa polyvalence
+  \item Programmer  pour un Linux  embarqué n'est pas  très différents
+    que sur un Linux PC.
+  \item Principales différences à garder à l'esprit:
+    \begin{itemize}
+    \item Différence de vitesse de CPU et de quantité de mémoire
+    \item Différence de periphérique. Conséquences:
+      \begin{itemize}
+      \item Drivers différents
+      \item   Bibliotèques   différentes   (exemple:  Qt   dépend   de
+        l'acceleration graphique)
+      \end{itemize}
+    \item   Les  différence   d'architecture   CPU  peuvent   empecher
+      l'utilisation de certains outils de debug (ex: Perf, Valgrind, ...)
+    \end{itemize}
+  \item  Compiler   un  programme  pour  une   autre  cible  s'appelle
+    cross-compiler
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Règle d'or}
+  \begin{center}
+    \huge{Jamais d'espaces dans les chemins de compilation}
+  \end{center}
+\end{frame}
+
+\section{Compiler un programme tiers}
+
+\subsection{Les Makefile}
+
+\begin{frame}[fragile=singleslide]{Compiler avec un Makefile classique}
+  \begin{itemize}
+  \item Pas très normalisé
+  \item Utilisé pour les petits projets ou les projets non standard
+  \item Ressemble souvent à:
+\begin{lstlisting}
+host$ make CC=arm-linux-gcc LD=arm-linux-ld 
+\end{lstlisting} %$
+  \item Il peut être nécessaire d'avoir la chaine de cross-compilation
+    dans son \verb+PATH+.
+\begin{lstlisting}
+host$ PATH+=/opt/arm-unknown-linux-uclibcgnueabi/usr/bin
+\end{lstlisting} %$
+  \item Ne pas hésiter à lire le \file{Makefile}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Compiler avec un Makefile classique}
+  Exemple avec \cmd{memstat}:
+  \begin{itemize}
+  \item Récupération des sources
+\begin{lstlisting}
+host$ wget http://ftp.de.debian.org/debian/pool/main/m/memstat/memstat_0.9.tar.gz
+\end{lstlisting}
+  \item Décompression des sources
+\begin{lstlisting}
+host$ tar xvzf memstat_0.9.tar.gz
+\end{lstlisting}
+  \item Compilation
+\begin{lstlisting}
+host$ cd memstat-0.9
+host$ make CC=arm-linux-gcc LD=arm-linux-ld memstat
+\end{lstlisting} %$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Compiler avec Makefile classique}
+  Il est aussi souvent possible de compiler ces programmes sans passer
+  par Makefile  ou de réécrire  le Makefile pour une  utilisation plus
+  récurente.\\[2ex]
+  Exemple avec \cmd{memstat}:
+\begin{lstlisting}
+host$ make clean
+host$ arm-linux-gcc memstat.c -o memstat
+\end{lstlisting} %$
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Compiler avec autotools}
+  \begin{itemize}
+  \item C'est le cas le plus courant
+  \item Pour une compilation classique:
+\begin{lstlisting}
+host$ ./configure
+host$ make
+host% make install
+\end{lstlisting} %$
+  \item Compilation \emph{out-of-source}. il est nécessaire d'appeller
+    le \file{configure} à partir du répertoire de build.
+\begin{lstlisting}
+host$ mkdir build
+host$ cd build
+host$ ../configure
+host$ make
+host% make install
+\end{lstlisting} %$
+  \end{itemize}
+\end{frame}
+
+\subsection{Les Autotools}
+
+\begin{frame}[fragile=singleslide]{Compiler avec autotools}
+  \begin{itemize}
+  \item    Installation   résultat    dans    un   répertoire    tiers
+    (particulièrement utile pour l'utilisation en milieu embarqué)
+\begin{lstlisting}
+host$ cd build
+host$ ../configure --prefix=$(pwd)/install
+host$ make
+host$ make install
+\end{lstlisting} %$
+  \item  Cross-compilation.
+\begin{lstlisting}
+host$ PATH+=/opt/arm-sysmic-linux-uclibc/usr/bin
+host$ mkdir build
+host$ ../configure --host=arm-linux --build=i386 --prefix=$(pwd)/../install
+host$ make
+host$ make install
+\end{lstlisting} %$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Compiler avec autotools}
+  Obtenir de l'aide:
+\begin{lstlisting}
+host$ ./configure --help
+\end{lstlisting} %$
+
+  Parmis les fichiers générés:
+  \begin{itemize}
+  \item \file{config.log}  contient la sortie  des opération effectuée
+    lors de l'appel de \cmd{./configure}.  En particulier, il contient
+    la ligne de commande utilisée. Il est ainsi possible de facilement
+    dupliquer la configuration.
+\begin{lstlisting}
+host$ head config.log
+\end{lstlisting} %$
+  \item     \cmd{config.status}     permet     de    regénérer     les
+    Makefile.  \cmd{config.status} est  automatiquement appellé  si un
+    Makefile.am est modifié.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Compiler un  programme tiers}{Un programme géré par autotools}
+  Exemple avec \cmd{lzma}:
+  \begin{itemize}
+  \item Récupération et décompression des sources
+\begin{lstlisting}
+host$ wget http://tukaani.org/lzma/lzma-4.32.7.tar.gz  
+host$ tar xvzf lzma-4.32.7.tar.gz
+host$ cd lzma-4.32.7
+\end{lstlisting} %$
+  \item Configuration
+\begin{lstlisting}
+host$ mkdir build && cd build
+host$ PATH+=/opt/arm-...-uclibc/usr/bin
+host$ ../configure --host=arm-linux --build=i386 --prefix=$(pwd)/install
+\end{lstlisting} %$
+  \item Compilation
+\begin{lstlisting}
+host$ make
+\end{lstlisting} %$
+  \item Installation
+\begin{lstlisting}
+host$ make install
+\end{lstlisting} %$
+  \end{itemize}
+\end{frame}
+
+\subsection{Kmake}
+
+\begin{frame}[fragile=singleslide]{Compiler un programme tiers}{Kconfig}
+  \begin{itemize}
+  \item Système de compilation du noyau
+  \item Très bien adapté à la cross-compilation
+  \item   Pour   configurer   les  options:
+    \begin{itemize}    
+    \item En ncurses
+\begin{lstlisting}
+host% apt-get install libncurses5-dev
+host$ make ARCH=arm CROSS_COMPILE=arm-linux- menuconfig
+\end{lstlisting} %$
+    \item En Qt3
+\begin{lstlisting}
+host% apt-get install libqt3-mt-dev
+host$ make ARCH=arm CROSS_COMPILE=arm-linux- xconfig
+\end{lstlisting} %$
+    \end{itemize}
+  \item Ne pas oublier d'installer les headers des bibliothèques
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Compiler un programme tiers}{Kconfig}
+  \begin{itemize}
+  \item Pour cross-compiler
+\begin{lstlisting}
+host$ make ARCH=arm CROSS_COMPILE=arm-linux-
+\end{lstlisting} %$
+  \item Pour compiler \emph{out-of-source}
+\begin{lstlisting}
+host$ mkdir build
+host$ make ARCH=arm CROSS_COMPILE=arm-linux- O=build
+\end{lstlisting} %$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Compiler un programme tiers}{Kconfig}
+  Principaux points importants:
+  \begin{itemize}
+  \item Adapté au environnements embarqué
+  \item Adapté aux environnements avec beaucoup de configuration
+  \item Initié par le Kernel Linux
+  \item  Pas un  système de  compilation réel. Composé de :
+    \begin{itemize}
+    \item Kconfig, Système de gestion de configuration
+    \item  Kmake, règles  Makefile  bien étudiées.  Chaque projet  les
+      adapte à ces besoins
+    \end{itemize}
+  \item Application de la règle: "Pas générique mais simple à hacker"
+  \item Dépend principalement de \cmd{gmake}
+  \item Mode verbose: \verb+VERBOSE=1+
+  \item Permet d'effectuer des recherche
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Compiler un programme tiers}{Kconfig}
+  Test avec busybox:
+  \begin{itemize}
+  \item Préparation
+\begin{lstlisting}
+host$ wget http://busybox.net/downloads/busybox-1.18.3.tar.bz2
+host$ tar xvjf busybox-1.18.3.tar.bz2
+\end{lstlisting} %$
+  \item Récupération d'une configuration par défaut
+\begin{lstlisting}
+host$ make help
+host$ make ARCH=arm CROSS_COMPILE=arm-linux- O=build defconfig
+\end{lstlisting} %$
+  \item Personnalisation de la configuration
+\begin{lstlisting}
+host% apt-get install libncurses5-dev
+host$ make ARCH=arm CROSS_COMPILE=arm-linux- O=build menuconfig
+# Supprimer inetd et le support NFS
+\end{lstlisting} %$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Compiler un programme tiers}{Kconfig}
+  Test avec busybox:
+  \begin{itemize}
+  \item Compilation
+\begin{lstlisting}
+host$ make ARCH=arm CROSS_COMPILE=arm-linux- 
+\end{lstlisting} %$
+  \item Installation
+\begin{lstlisting}
+host$ make ARCH=arm CROSS_COMPILE=arm-linux- install
+\end{lstlisting} %$
+  \end{itemize}
+\end{frame}
+
+\subsection{En cas de problème}
+
+\begin{frame}{Compiler un programme tiers}{Et si ca ne marche pas?}
+  \begin{itemize}
+  \item Cas ou  des programmes doivent être compilé  puis executer sur
+    lors de la compilation
+  \item Classiquement, des cas de bootstraping
+  \item Cas  notable de Python\footnote{compile avec  des patchs, mais
+      pas évident}
+  \item Deux solutions:
+    \begin{itemize}
+    \item Résoudre le probleme et envoyer un patch
+    \item Compiler sur la target. 
+      \begin{itemize}
+      \item Vous avez alors besoin d'un gcc natif sur la target
+      \item Un émulateur type qemu peut vous aider
+      \end{itemize}
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\section{Ecrire un projet pour Linux embarqué}
+
+\subsection{Avec les Autotools}
+
+\begin{frame}[fragile=singleslide]{Historique des Autotools}
+  \note[item]{Faire l'historique de configure/Makefile/autotools}
+  \begin{enumerate}
+  \item Makefile
+  \item Makefile + hacks pour effectuer de la configuration
+  \item Makefile.in + configure
+  \item Makefile.in + configure.ac
+  \item Makefile.am + configure.ac
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Créer un projet avec autotools}
+  Fonctionnement des autotools:
+  \begin{itemize}
+  \item Préparation 
+\begin{lstlisting}
+% apt-get install automake autoconf
+\end{lstlisting}
+  \item  Création  d'un  template  pour \cmd{autoconf}  contenant  les
+    macros utiles pour notre projet
+\begin{lstlisting}
+$ autoscan
+$ mv configure.scan configure.ac
+$ rm autoscan.log
+$ vim configure.ac
+\end{lstlisting}
+  \item Personnalisation du résultat
+\begin{lstlisting}
+...
+AC_INIT([hello], [1.0], [bug@sysmic.org])
+AM_INIT_AUTOMAKE
+...
+\end{lstlisting}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Créer un projet avec autotools}
+  \begin{itemize}
+  \item Déclaration de notre programme et de nos sources pour \cmd{automake}
+\begin{lstlisting}
+$ vim Makefile.am
+\end{lstlisting} %$
+\begin{lstlisting}
+bin_PROGRAMS = hello
+hello_SOURCES = hello.c hello.h
+\end{lstlisting}
+  \item Les \cmd{autotools}  imposent l'existence de certains fichiers
+    de documentation
+\begin{lstlisting}
+$ touch NEWS README AUTHORS ChangeLog
+\end{lstlisting} %$
+  \item      Génération      du      \file{configure}      et      des
+    \file{Makefile.in}. C'est cette version qui devrait être livée aux
+    packageurs.
+\begin{lstlisting}
+$ autoreconf -iv
+\end{lstlisting} %$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Créer un projet avec autotools}
+  \begin{itemize}
+  \item Compilation
+\begin{lstlisting}
+$ ./configure --help
+$ mkdir build
+$ cd build
+$ ../configure --host=arm-linux --build=i386 --prefix=$(pwd)/../install
+$ make
+$ make install
+\end{lstlisting} %$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Créer un projet avec autotools}
+  La cible \verb+distcheck+ :
+  \begin{enumerate}
+  \item Recopie les fichiers référencé dans Autotools
+  \item Retire les droits en écriture sur les sources
+  \item Lance une compilation \emph{out-of-source}
+  \item Installe le projet
+  \item Lance la suite de test
+  \item Lance un distclean
+  \item Vérifie que tous les fichiers créés sont effectivement supprimés
+  \item Crée une tarball correctement nommée contenant les sources
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Créer un projet avec autotools}
+  Si \cmd{automake}  est appellé avec  \verb+-gnits+, \verb+distcheck+
+  effectue des vérification supplémentaires sur la documentation,
+  etc... 
+  \\[2ex]
+  La fonctionnalité \verb+distcheck+ est  le point fort souvent énoncé
+  des autotools.
+\begin{lstlisting}
+$ make distcheck
+$ tar tvzf hello-1.0.tar.gz
+\end{lstlisting} %$
+\end{frame}
+
+\subsection{Sans les Autotools}
+
+\begin{frame}[fragile=singleslide]{Créer un projet sans autotools}
+  Utiliser les règles implicites facilite votre travail
+  \lstinputlisting{hello/Makefile.1}
+  Testons:
+\begin{lstlisting}
+host$ make CC=arm-linux-gcc CFLAGS=-Wall
+\end{lstlisting} %$
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Créer un projet sans autotools}
+  \cmd{VPATH} vous permet de géré la compilation \emph{out-of-source}
+  \lstinputlisting{hello/Makefile.2}
+  Testons:
+\begin{lstlisting}
+host$ cd build
+host$ make -f ../Makefile CC=arm-linux-gcc
+\end{lstlisting} %$  
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Créer un projet sans autotools}
+  \cmd{gcc} peut  générer les dépendances de vos  fichiers.  On génère
+  ainsi des morceaux de Makefile que l'on inclut.
+  \lstinputlisting{hello/Makefile.3}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Créer un projet sans autotools}
+  Les Makefile permettent  d'utiliser des fonctions d'auto-générations
+  qui  peuvent  nous  aider  à  rendre notre  système  plus  générique
+  \lstinputlisting{hello/Makefile.4}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Créer un projet sans autotools}
+  Nous pouvons  ajouter des alias  pour nous aider dans  les commandes
+  complexes 
+  \lstinputlisting[firstline=16]{hello/Makefile.5}
+  \note[item]{Ajouter des \#ifdef CONFIG pour faire dans Kconfig}
+\end{frame}
+
+
+\begin{frame}[fragile=singleslide]{Créer un projet sans autotools}
+  En puissant ce fonctionnement un peu plus loin, on obtient le Kmake.\\[2ex]
+
+  Néanmoins,  le résultat  n'est  pas portable  entre les  différentes
+  implémentation de \cmd{make}.
+\end{frame}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "main-present"
+%%% End: 

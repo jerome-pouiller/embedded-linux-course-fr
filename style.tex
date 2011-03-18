@@ -1,0 +1,88 @@
+% Copyright 2009 by Jérôme Pouiller
+%
+% This file may be distributed and/or modified under term of the Creative
+% Common Licence
+
+\usepackage{babel}
+%\usepackage[utf8]{inputenc}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{times}
+
+%\documentclass[compress, red]{beamer}
+\usetheme{Warsaw}
+\usecolortheme{lily}
+\usecolortheme[RGB={0,56,126}]{structure}
+%\usecolortheme[RGB={181,0,0}]{structure}
+% Joli theme pour les headers et les footers
+\useoutertheme[subsection=false]{smoothbars}
+% Utilisation de rectangle dans les itemize
+\useinnertheme{rectangles}
+% Pas de symboles pour la navigation
+\setbeamertemplate{navigation symbols}{}
+
+\usepackage{tikz}
+\usepackage{pgfplots} 
+
+\usepackage{listings}                                           
+\usepackage{color}            % Pour les lien en couleur dans le pdf
+\definecolor{hellgelb}{rgb}{1,1,0.8}                                
+\definecolor{colKeys}{rgb}{0,0,1}                                   
+\definecolor{colIdentifier}{rgb}{0,0,0}                             
+\definecolor{colComments}{rgb}{1,0,0}                               
+\definecolor{colString}{rgb}{0,0.5,0}
+\definecolor{colBasic}{rgb}{0,0,0.5}
+\lstset{%                     % Basic style
+% %  texcl=true,
+   extendedchars=false,
+%    inputencoding=utf8,
+%   numbers=left,%
+%   stepnumber=10,%
+%   numberstyle=\scriptsize,%
+% %  basicstyle=\ttfamily\scriptsize,%  see also \small \footnotesize
+% %  commentstyle=\ttfamily\footnotesize\itshape,%
+% %                             % Les couleurs :
+  basicstyle=\ttfamily\normalsize\color{colBasic},%
+  commentstyle=\normalsize\itshape\color{colComments},%
+  identifierstyle=\color{colIdentifier},%
+  keywordstyle=\bf\ttfamily\color{colKeys},%
+  stringstyle=\color{colString},%
+  backgroundcolor=\color{hellgelb},%
+%
+%   mathescape=true,%
+% %  tabsize=4,%
+% %  columns=flexible,%
+% %  fontadjust=false,%
+%   frame=lines,%
+%   showspaces=false,%
+%   showstringspaces=false,%
+% %
+%   emptylines=3,%
+   breaklines=true,%
+   breakautoindent=true,%     % Inutile avec breaklines=false
+}
+
+% \usecolortheme{albatross}
+
+% taille des slide par défaut: 
+%\usepackage{preview}
+%\PreviewEnvironment{tikzpicture}
+%\PreviewEnvironment{center}
+%\PreviewEnvironment{frame}
+
+\usepackage{embedfile} 
+\ifpdf
+\else
+\newcommand{\embedfile}[1]{}
+\fi
+
+\usepackage[newcommand]{ragged2e}
+
+\newcommand{\file}[1]{\texttt{#1}}
+\newcommand{\cmd}[1]{\texttt{#1}}
+\newcommand{\email}[1]{\href{mailto:#1}{\nolinkurl{<#1>}}}
+
+%\newenvironment{slide}[1]
+%{\begin{frame}[fragile=singleslide,environment=slide]
+%  \frametitle{#1}}
+%{\end{frame}}

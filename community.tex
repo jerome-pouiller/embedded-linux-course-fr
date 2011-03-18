@@ -1,0 +1,214 @@
+% This document is available under the Creative Commons Attribution-ShareAlike
+% License; additional terms may apply. See
+%   * http://creativecommons.org/licenses/by-sa/3.0/
+%   * http://creativecommons.org/licenses/by-sa/3.0/legalcode
+%
+% Copyright 2010 Jérôme Pouiller <jezz@sysmic.org>
+%
+
+\section{Gérer la communauté}
+\subsection{Obtenir de l'aide}
+\subsection{Envoyer un patch}
+\subsection{Le Coding Style}
+\subsection{La relecture}
+\subsection{Les patchs}
+\subsection{Git}
+
+
+\end{document}
+
+% Public visé: Ludovic Saint Bauzel, Thibaud
+
+% Qu'est ce que Linux?
+% [repeter ce qu'il y a dans body.tex]
+
+
+% Ou telecharger le noyau:
+%   * http://kernel.org (Demo)
+%   * ketchup (Demo)
+%   * apt-get install linux-source
+%   * git clone (Demo)
+%   \$ git clone git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux-2.6.git linux-2.6
+
+% Quelles sont les qualité requise pour communiquer avec le mainstream:
+%   * English fluent
+%   * Techniquement bon en programmation systeme
+%   * Connaitre les us et coutume du monde Linux
+
+% Qui ecrit le noyau
+%   * XX\% de salarié
+%   * Des grosse boites:
+%     - Yahoo
+%     - Google, nvidia, etc..
+%   * Quelqus université
+%   * cf Who write kernel de Greg KH 
+
+% Comment s'y retrouver dans le noyau:
+%   * linux-stable
+%   * linux-linus
+%   * linux-next
+%     -> Particulier, fonctionne avec git rebase
+%     -> Il faut faire un branch -D et recrer la branche
+%   *** TP
+%   git checkout v2.6.24
+%   git checkout next
+%   git checkout master
+%   * Suivre une autres branche
+%   *** TP
+%   On va suivre rt-prempt ou lirc
+%   *** TP
+%     git init
+%     git commit
+%     git clone
+%     git commit
+%     git fetch
+
+
+% Ou metez vous votre driver?
+%   * A l'exterieur
+%   * Bien pour maintenir un driver a l'exterieur: Nvidia, ATI
+%   * Demande beaucoup de maintenance
+%   *** TP
+%   module_init()
+%   obj-m = dsfadsfsfd
+%   KConfig (?)
+%   * A l'interieur
+%   * Uniquement si vous compter merger avec le mainstream, sinon, aucun interet
+%   *** TP
+%   git branch
+%   cp ... my_patches
+
+% Que faire lorsqu'un client vous demande du support pour une vieille version:
+%   * Lui demander de mettre a jour son noyau
+%   * Backporter les modif:
+%   *** TP
+%   git stash
+%   git cherry-pick
+
+% Le système de Makefile/Kconfig
+%  % FIXME
+
+% Ou trouver de la documentation
+% Du plus precis au moins précis
+%  * Le code:
+%     * avec git
+%     * avec lxo.linux.no (demo)
+%   * Les gens
+%     * Par email (auteur ou sous-maintener)
+%     * Sur les ML
+%    *** TP
+%    cat MAINTENER
+%    git blame 
+%   * Les pages de man
+%     * Rarement installée, utilisez make install-manpages
+%     *** TP make install-manpages
+%   * Les livres, principalement:
+%     * Linux Kernel
+%     * Linux Device Drivers
+%   * Documentation/
+%     * Documentation d'architecture, parfois obsolete
+%     *** TP: grep/find
+%   * Quelques site/wiki
+%     * Linux Device Driver Project (Demo)
+%     * *.wiki.kernel.org
+%   * Vous trouverez moult projets abandonné, obsolete sur internet
+%     -> N'oubliez pas, le noyau 2.6 a XXans, tout ce qui fait reference a des version anteireure n'est plus a jour
+% Et sinon, il y a:
+%   * Les experts technique, vous-meme
+%      - Il y a un certains nombre de connaissances qui s'apprenne un peu sur le tas et qui ne sont pas tres formatlisées
+%   * Les entreprises specialistes: Sysmic, Pengutronix, FreeElectron, etc..
+
+% Organisation du projet Linux:
+%   - Meritocratie
+%     Linus Torvalds
+%  Les sub-system mainteners: Ingo delmovar, Andrew Morton, Greg KH, David Miller, Allan Cox, Stephen Rothwell
+%    Driver mainteners
+%     Authors
+%      Vous
+
+% Moyen de communication:
+%   Par mail, directement `a la personne concernée (nous verrons plus tards comment la trouver)
+%   Par mailing list
+%     * La lkml (lkml@kernel.org)rassemble les disctuion generale
+%     * D'autre liste existe pour les sous-systems: ppc@kernel.org, ... (je reviendrais sur la maniere de les trouver)
+
+% Scenario pour donner son avis/ participer au debat:
+%   Envoyer un mail, c'est tout
+
+% Scenario d'envoi d'un patch
+%   * Vous serez tout de suite reviewé (relu attentivement) par l'auteur du fichier que vous patchez et le driver maintener (qui est assez souvent la même personne). Vous puvez aussi recevoir la relecture d'un participant exterieur que votre sujet interesse. 
+%   * C'est un vrai travail: Dans le kernel, le travail de relecture est aussi important que le travail d'ecriture
+%   * Ils vous diront:
+%      * les bugs
+%      * les mauvaises pratique
+%      * les cas ou il existe une meilleure fonction dans l'api du noyau
+%      * Si vous faites fausse route
+%        * Classiquement, si il existe deja un drivers existant assez proche
+%         -> Si vous n'etes pas surm demandez avant de vous lancez dans 3 mois de developpement
+%      * Ils tenterons de tester votre patch seulement si ils ont le matériel
+%   * Le sous-mainteneur jetera surement un coup d'oeil plus ou moins attentifs suivant la confiance qu'il accorde aux precedant reviewer, la taille de votre patch et le type de modification que vous apportez (une modification sur le scheduler sera relue beaucoup de fois avant d'etre acceptée)
+
+% Scenario pour un gros patch: un driver
+%   * Idem
+%   * Vous enverez votre patch en plusieurs morceau
+%   Nous verrons comment decoupez vos patchs
+%   *** TP:
+%   decouper son patch
+%   * Votre patch sera plac'e en staging pendant quelques versions
+%     * Permet de le tester techniquement
+%     * permet de vous tester humainement: On vous demandera de le maintenir et de repondre aux demande
+%     * Si vous ne repondez pas: drop-down
+
+% Situation a eviter:
+%   * Ms Hyper-V
+%   * Android
+%   * Nouveau
+
+% Cycle de release:
+%   * Fenetre de merge
+%   * Release stable maintenue par Greg KH:
+
+% Coding style
+% Toujours passer a checkpatch.pl avant de poster (Demo)
+
+% Envoyer un mail:
+%   * Jamais de html (meme en multi-part)
+%   * Jamais de Top-Posting
+%   Christoph Hellwig asked that originators of offending mail receive in return an "instructional video" on email etiquette.
+%   * Quotez correctement
+%   * Pas plus de 80 colonnes
+%   * Pas de outlook
+
+
+% Qualité
+%  * Le noyau se repose énormement sur la review de code pour assurer la qualité du projet
+%  * Il existe néanmoins, quelques projets:
+%    -> test.kernel.org aui utilise le projet autotest.kernel.org
+%  * Il y a un bugzilla.kernel.org
+%    -> Il sert principalement d'interface avec le utilisateur exterieur. Tout se passe sur la LKML
+%  * Beaucoup d'erreur check
+%    * Certains permanent
+%    * D'autre sous cindition de compilation
+%  * lcov
+%  * Citons aussi des projets de recherches tels que Coccinelle
+%  * + des outils de bug/mesures:
+%     * kdb/kgdb
+%     * ftrace
+%  *** TP
+%  git bisect
+
+% TP: 
+%   un petit driver
+%   on cree une branche
+%   on rebase vers rt-prepempt
+%   on cree le patch 
+%   on applique checkpatch.pl
+%   on preparer un mail
+%   on l'envoie sur jezz@sysmic.fr avec send-email
+%   ----------------------------   avec son mailer
+
+% Pourquoi ces entreprise contribuent
+%   * % Fixme
+
+
+
