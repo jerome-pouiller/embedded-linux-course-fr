@@ -205,7 +205,7 @@ $ ls
   \item Séparation des arguments par des espaces
 \begin{lstlisting}
 $ mkdir dir1 dir2
-      \end{lstlisting} %$
+\end{lstlisting} %$
     \item Souvent  les arguments optionnels commence par  '-' pour les
       option courte et '-\--'  pour les options longues (attention aux
       exceptions)
@@ -277,13 +277,13 @@ $ mkdir ../../tmp/titi
   \item Votre shell peut vous simplifier la vie:
     \begin{itemize}
     \item Globbing
-\begin{lstlisting}
+      \begin{lstlisting}
 $ rm *.o
-\end{lstlisting}
+      \end{lstlisting}
     \item Complétion 
-\begin{lstlisting}
+      \begin{lstlisting}
 $ cd /h<TAB>/j<TAB>/c<TAB>
-\end{lstlisting}
+      \end{lstlisting}
     \item Alias
 \begin{lstlisting}
 $ alias ll="ls -l --color=auto"
@@ -1035,7 +1035,10 @@ host$ make CC=arm-linux-gcc CFLAGS=-Wall
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Créer un projet sans autotools}
-  \cmd{VPATH} vous permet de géré la compilation \emph{out-of-source}
+  \cmd{VPATH} vous permet de géré la compilation \emph{out-of-source}.
+  Remarques que pour que VPATH fonctionne correctement, vous devez avoir
+  correctement utilisé le quoting pour les directive d'inclusion (\verb+<+ pour
+  les entête systèmes et \verb+"+ pour les entêtes du projet)
   \lstinputlisting{hello/Makefile.2}
   Testons:
 \begin{lstlisting}
@@ -1046,13 +1049,16 @@ host$ make -f ../Makefile CC=arm-linux-gcc
 
 \begin{frame}[fragile=singleslide]{Créer un projet sans autotools}
   \cmd{gcc} peut  générer les dépendances de vos  fichiers.  On génère
-  ainsi des morceaux de Makefile que l'on inclut.
+  ainsi des morceaux de Makefile que l'on inclut. Il ne faut pas oublier
+  d'ajouter la dépendance entre \cmd{hello.d} et les dépendances de
+  \cmd{hello.c}
   \lstinputlisting{hello/Makefile.3}
+  \note{ Voir http://www.makelinux.net/make3/make3-CHP-2-SECT-7.html}
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Créer un projet sans autotools}
   Les Makefile permettent  d'utiliser des fonctions d'auto-générations
-  qui  peuvent  nous  aider  à  rendre notre  système  plus  générique
+  qui  peuvent  nous  aider  à  rendre notre  système  plus  générique.
   \lstinputlisting{hello/Makefile.4}
 \end{frame}
 

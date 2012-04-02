@@ -422,7 +422,9 @@ host% ln -s uImage-2.6.33.7 /srv/tftp/uImage
     \note[item]{Il faut  commenter la ligne  1108 et changer  la ligne
       1700}
   \end{itemize}
+  \note{Parler de l'installation des modules et de l'option INSTALL\_MOD\_PATH}
 \end{frame}
+
 
 \subsection{Création de l'init}
 
@@ -1364,9 +1366,12 @@ host$ cd buildroot-2010.11
   \item  Utilisation  d'une configuraiton  pré-établie  comme base  de
     configuration
     \begin{lstlisting}
-host$ make at91sam9260pf_defconfig
+host$ make usb-a9260_defconfig
 host$ make menuconfig
-host$ make
+host$ make linux26-menuconfig
+host$ make uclibc-menuconfig
+host$ make busybox-menuconfig
+host$ make all
     \end{lstlisting}
   \item Documentation: \url{http://buildroot.uclibc.org/buildroot.html}
   \end{itemize}
