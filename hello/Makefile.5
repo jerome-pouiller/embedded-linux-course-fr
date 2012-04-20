@@ -1,11 +1,7 @@
-
 all: hello
-
-VPATH = .
 
 HELLO_SRC = hello.c
 hello: $(HELLO_SRC:%.c=%.o)
-
 -include $(HELLO_SRC:%.c=%.d)
 
 %.d: %.c

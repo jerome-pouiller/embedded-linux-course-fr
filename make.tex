@@ -87,7 +87,7 @@
     \item Syslinux (et son dérivé Isolinux)
     \item U-Boot (utilisé ici)
     \item Redboot
-    \item BareBoot (successeur de U-Boot)
+    \item BareBox (successeur de U-Boot)
   \end{itemize}
 \end{frame}
 
@@ -126,20 +126,20 @@ uboot> help
   \item Permet d'etre implémenté avec très peu de ressource
   \item Mise en place:
     \begin{lstlisting}
-host% apt-get install atftp atftpd
+host% apt-get install tftp-hpa tftpd-hpa
 host% cp hello/build-arm/hello /srv/tftp
     \end{lstlisting}
   \item Test en local
     \begin{itemize}
     \item Par le shell interactif
       \begin{lstlisting}
-host$ atftp 127.0.0.1
+host$ tftp 127.0.0.1
 > get hello
-> exit
+> quit
       \end{lstlisting}
     \item Par la ligne de commande
       \begin{lstlisting}
-host$ atftp 127.0.0.1 -g -r hello
+host$ tftp 127.0.0.1 -c "get hello"
       \end{lstlisting} % $
     \end{itemize}
     \note[item]{Il est possible de parler de inetd et /etc/default/atftpd}
@@ -151,13 +151,15 @@ host$ atftp 127.0.0.1 -g -r hello
 % host$ scp root@target:/.../uImage /var/lib/tftpboot
 % host$ atftp 127.0.0.1 -g -l /var/lib/tftpboot/uImage # Test
 %       \end{lstlisting}
-  \item En  cas d'utilisation intensive (déploiement  sur des milliers
-    de  systèmes),  vous   pouvez  utiliser  \cmd{atftpd}  de  manière
-    autonome (voir \file{/etc/default/atftpd})
+  % \item En  cas d'utilisation intensive (déploiement  sur des milliers
+  %   de  systèmes),  vous   pouvez  utiliser  \cmd{atftpd}  de  manière
+  %   autonome (voir \file{/etc/default/atftpd})
+  % \item  Il  est  possible  de  modifier le  répertoire  partagé  dans
+  %   \file{/etc/inetd.conf} ou dans \file{/etc/default/atftpd} (suivant
+  %   le mode d'éxecution)
+  %   \note[item]{Parler de inetd}
   \item  Il  est  possible  de  modifier le  répertoire  partagé  dans
-    \file{/etc/inetd.conf} ou dans \file{/etc/default/atftpd} (suivant
-    le mode d'éxecution)
-    \note[item]{Parler de inetd}
+    \file{/etc/default/tftpd-hpa}
   \end{itemize}
 \end{frame}  
 
@@ -222,7 +224,7 @@ host% vim /etc/exports
     \note[item]{Autrefois le paquet s'apellait nfs-user-serveur}
   \item Configuration du partage
     \begin{lstlisting}
-/home/user/nfs-root 0.0.0.0/0.0.0.0(ro)
+/home/user/nfs-root 0.0.0.0/0.0.0.0(ro,no_root_squash)
     \end{lstlisting}
   \end{itemize}
 \end{frame}
@@ -231,7 +233,7 @@ host% vim /etc/exports
   \begin{itemize}
     \item Test sur l'hôte
       \begin{lstlisting}
-host$ service nfs-kernel-server restart
+host% service nfs-kernel-server restart
 host$ mkdir nfs-mount
 host% mount -t nfs 127.0.0.1:/home/user/nfs-root nfs-mount
       \end{lstlisting} % $
@@ -336,21 +338,6 @@ host$ make O=build ARCH=arm CROSS_COMPILE=arm-linux- usb-a9260_defconfig
   \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile=singleslide]{Options à connaitre}
-  \begin{itemize}
-  \item Kernel Compression (Gzip/LZO)
-  \item Support for paging of anonymous memory (swap)
-  \item Kernel .config support
-  \item Kernel log buffer size
-  \item Group CPU scheduler
-  \item Initial RAM filesystem and RAM disk
-  \item Optimize for size
-  \item Configure standard kernel features (for small systems)
-  \item EXecute In Place
-  \end{itemize}
-  \note[item]{TODO P3 faire une liste exaustive}
-\end{frame}
-
 \begin{frame}[fragile=singleslide]{Compilation du noyau}
   \begin{itemize}
   \item Verifier les options du type de processeur
@@ -370,34 +357,6 @@ host$ make XXImage
     bootloader
   \end{itemize}
 \end{frame}  
-
-\begin{frame}[fragile=singleslide]{Compilation du noyau}
-  Fichiers produits (ou productibles) par la compilation:
-  \begin{itemize}
-  \item  \verb+vmlinux+:  L'image  ELF  du  noyau.   Lisible  par  les
-    debugueurs, certains flasheurs, certain bootloaders
-  \item  \verb+vmlinuz+: parfois  équivalent  du \verb+bzImage+,  mais
-    normalement, il  s'agit de\verb+vmlinux+ compressé  et strippé des
-    informations inutiles  au démarrage. Inutilisable  dans l'état, il
-    est nécéssaire de lui adjoindre un bootloader pour le décompresser
-    et l'éxecuter.
-  \item  \verb+Image+:  \verb+vmlinux+   strippé  et  préfixé  par  un
-    mini-bootloader   permettant    de   sauter   sur    la   fonction
-    \verb+start_kernel+ de \verb+vmlinux+.
-  \item  \verb+bzImage+  et   \verb+zImage+:  \verb+vmlinuz+  avec  le
-    bootloader \cmd{bz2} ou \cmd{gz}.
-  \item  \verb+xipImage+  :  Idem  \verb+Image+ mais  destiné  à  être
-    éxecuté  directement  sur un  \emph{eeprom}  sans  être copier  en
-    mémoire au préalable.
-  \item  \verb+uImage+:  \verb+Image+ avec  une  entête spéciale  pour
-    \emph{u-boot}.
-  \end{itemize}
-  Il est possible  de générer des image au  format SRecord en utiliant
-  \cmd{objcopy}
-  \begin{lstlisting}
-host$ objcopy -O srec vmlinux vmlinux.srec
-   \end{lstlisting}
-\end{frame}
 
 \begin{frame}[fragile=singleslide]{Compiler le noyau}
   Dans notre cas, nous utilisons U-Boot (standard)
@@ -423,6 +382,36 @@ host% ln -s uImage-2.6.33.7 /srv/tftp/uImage
       1700}
   \end{itemize}
   \note{Parler de l'installation des modules et de l'option INSTALL\_MOD\_PATH}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Compilation du noyau}
+  Fichiers produits (ou productibles) par la compilation:
+  \begin{itemize}
+  \item  \verb+vmlinux+:  L'image  ELF  du  noyau.   Lisible  par  les
+    debugueurs, certains flasheurs, certain bootloaders
+  \item  \verb+vmlinuz+: parfois  équivalent  du \verb+bzImage+,  mais
+    normalement, il  s'agit de\verb+vmlinux+ compressé  et strippé des
+    informations inutiles  au démarrage. Inutilisable  dans l'état, il
+    est nécéssaire de lui adjoindre un bootloader pour le décompresser
+    et l'éxecuter.
+  \item  \verb+Image+:  \verb+vmlinux+   strippé  et  préfixé  par  un
+    mini-bootloader   permettant    de   sauter   sur    la   fonction
+    \verb+start_kernel+ de \verb+vmlinux+.
+  \item  \verb+bzImage+  et   \verb+zImage+:  \verb+vmlinuz+  avec  le
+    bootloader \cmd{bz2} ou \cmd{gz}.
+  \item  \verb+xipImage+  :  Idem  \verb+Image+ mais  destiné  à  être
+    éxecuté  directement  sur un  \emph{eeprom}  sans  être copier  en
+    mémoire au préalable.
+  \item  \verb+uImage+:  \verb+Image+ avec  une  entête spéciale  pour
+    \emph{u-boot}.
+  \end{itemize}
+%   Il est possible  de générer des image au  format SRecord en utiliant
+%   \cmd{objcopy}
+%   \begin{lstlisting}
+% host$ objcopy -O srec vmlinux vmlinux.srec
+%    \end{lstlisting}
+  \note[item]{Reprendre le  slide de freeelectron très  bien foutu sur
+    le sujet}
 \end{frame}
 
 
@@ -582,7 +571,7 @@ host$ make O=build CROSS_COMPILE=arm-linux- menuconfig
     \note[item]{TODO: mettre en plusieurs colonnes}
   \item    Au   minimum,    cochons    \cmd{ash},   \cmd{init},    les
     \emph{Coreutils},    \cmd{dmesg},   \cmd{ifconfig},   \cmd{mount},
-    \cmd{tftp}, \cmd{tar}, \cmd{reboot}, \cmd{vi}
+    \cmd{tftp}, \cmd{tar}, \cmd{reboot}, \cmd{vi}, \cmd{flashcp}
     \note[item]{TODO: mettre en plusieurs colonnes}
   \item         Et         aussi:        \verb+CONFIG_PLATFORM_LINUX+,
     \verb+CONFIG_FEATURE_EDITING+,        \verb+CONFIG_FEATURE_DEVPTS+,
@@ -604,7 +593,7 @@ host$ make O=build CROSS_COMPILE=arm-linux- install
     \cmd{busybox}
   \item  Sans  Busybox,  toutes  ces  binaires  seraient  séparées  et
     dispersées sur une dizaine de sources
-  \item Nous pouvons maintenant démarrer avec \verb+init=/bin/sh+
+  \item Nous pouvons maintenant démarrer avec \verb+init=/sbin/sh+
     \note[item] {Démarrer avec  console=ttyS0,115200 afin d'éviter les
       problème avec le jobs: Non ca ne marche pas}
   \item \verb+init=/bin/init+ pose encore quelques problèmes.
@@ -829,6 +818,8 @@ target% ping www.google.com
     \file{nsswitch.conf}.   Il  serait   possible  de   chosir  parmis
     différente  back-ends  pour  gérer  les  authentifications  et  le
     réseau.
+  \item  Le reste  de la  configuration réseau  s'effectue normalement
+    dans \file{/etc/network}
   \end{itemize}
 \end{frame}
 
@@ -841,6 +832,7 @@ target% ping www.google.com
     \begin{lstlisting}
 host$ echo 'root:x:0:0:root:/root:/bin/sh' > etc/passwd
 host$ echo 'root:x:0:' > etc/group
+host$ echo "::sysinit:login" >> etc/inittab 
     \end{lstlisting}
   \item  \verb'root::0:0:root:/root:/bin/sh'  créerait un  utilisateur
     sans mot de passe
@@ -919,7 +911,7 @@ host$ ssh root@target
   \item 3 étapes: 
     \begin{itemize}
     \item On compile \cmd{arm-unknown-gcc}
-    \item On configure le noyau
+    \item On configure le noyau pour installer les \emph{headers}
     \item On  compile la  \cmd{libc} avec \cmd{arm-unknown-gcc}  et le
       noyau préconfiguré, on compile le noyau
     \item On compile \cmd{arm-linux-libc-gcc}
@@ -940,8 +932,8 @@ host$ ssh root@target
     diverses  architectures.  Utilisée  depuis récement  sur  diverses
     distributions ``desktop'')
   \item newlib (utilisée par Cygwin) 
-  \item uclibc (très utilisées dans l'embarqué)
-  \item  dietlibc  (encore  plus   petite  que  ulibc  destinée  à  la
+  \item µclibc (très utilisée dans l'embarqué)
+  \item  dietlibc  (encore  plus   petite  que  µlibc  destinée  à  la
     compilation statique)
   \item bionic (Android)
   \end{itemize}
@@ -953,14 +945,14 @@ host$ ssh root@target
   \item Système automatisant toute la procédure et intégrant les patch
     connu pour rendre compatible certains systèmes
   \item Principalement maintenu par Yann Morin (cocoricco)
-  \item Il n'existe pas de paquet, nous devons donc le compiler nous même:
+  \item Il n'existe  pas de paquet, nous devons  donc le compiler nous
+    même:
     \begin{lstlisting}
-host% apt-get install linux-kernel-headers linux-headers texinfo flax yacc ...
-host$ wget http://ymorin.is-a-geek.org/download/crosstool-ng/crosstool-ng-1.10.0.tar.bz2
-host$ tar xvzf crosstool-ng-1.10.0.tar.bz2
-host$ cd crosstool-ng-1.10.0
-host$ ./configure
-host$ make 
+host% apt-get install automake libtool texinfo flex bison gawk ...
+host$ wget http://crosstool-ng.org/download/crosstool-ng/crosstool-ng-1.13.4.tar.bz2
+host$ tar xvzf crosstool-ng-1.13.4.tar.bz2
+host$ cd crosstool-ng-1.13.4
+host$ ./configure && make
 host% make install
     \end{lstlisting}
   \end{itemize}
@@ -970,7 +962,7 @@ host% make install
   \begin{itemize}
   \item Préparation du répertoire de build
     \begin{lstlisting}
-$ mkdir ct-build
+$ mkdir ct-build ct-dl
 $ cd ct-build
 $ ct-ng help
     \end{lstlisting}
@@ -995,14 +987,16 @@ $ ct-ng menuconfig
        \end{lstlisting}
      \item Dans la configuration
        \begin{lstlisting}
-Prefix directory: /opt
-Number of parallel jobs: 3
-# Page de man de gcc + documentation du CPU :
-... Emit assembly for CPU: arm926ej-s ...
-... Tune for CPU: arm926ej-s ...
+... Prefix directory: /opt/${CT_TARGET}
+... Remove documentation 
+... Build Static Toolchain
 # Documentation du CPU + man gcc + wikipedia (http://en.wikipedia.org/wiki/ARM_architecture)
-... Architecture level: armv5te ...
-... Tuple vendor string : sysmic ...
+... Architecture level: armv5te
+# Page de man de gcc + documentation du CPU :
+... Emit assembly for CPU: arm926ej-s
+... Tuple's vendor string : sysmic
+... Threading implementation to use: (nptl) 
+... Add support for locales
        \end{lstlisting}
   \end{itemize}
 \end{frame}
@@ -1015,14 +1009,14 @@ $ chmod 777 /opt
 $ ct-ng build
 $ ct-ng tarball
        \end{lstlisting}
-     \item Testons en statitique
+     \item Testons en statique
        \begin{lstlisting}[basicstyle=\ttfamily\scriptsize\color{colBasic}]
-host$ /opt/arm-unknown-linux-uclibcgnueabi/bin/arm-unknown-linux-uclibcgnueabi-gcc -static -Wall -I. hello.c -o hello-mygcc-static
+host$ /opt/arm-sysmic-linux-uclibcgnueabi/bin/arm-sysmic-linux-uclibcgnueabi-gcc -static -Wall hello.c -o hello-mygcc-static
 target$ ./hello-mygcc-static
        \end{lstlisting}
      \item Testons en dynamique
        \begin{lstlisting}[basicstyle=\ttfamily\scriptsize\color{colBasic}]
-host$ /opt/arm-unknown-linux-uclibcgnueabi/bin/arm-unknown-linux-uclibcgnueabi-gcc -Wall -I. hello.c -o hello-mygcc
+host$ /opt/arm-sysmic-linux-uclibcgnueabi/bin/arm-sysmic-linux-uclibcgnueabi-gcc -Wall hello.c -o hello-mygcc
 target$ ./hello-mygcc
 	\end{lstlisting}
   \end{itemize}
@@ -1048,65 +1042,65 @@ host$ for i in arm-unknown-linux-uclibcgnueabi-*; do
 \end{frame}
 
 
-\section{Initramfs}
+% \section{Initramfs}
 
-\begin{frame}[fragile=singleslide]{Initramfs}
-  \begin{itemize}
-  \item Qu'est-ce qu'un initramfs?
-  \item Un petit filesystème chargé en mémoire par le bootloader
-  \item Successeur de initrd (plus complexe d'utilisation)
-  \item Permet déffectuer des actions avant le lancement d'init
-  \item Il devrait rester petit et ne s'utiliser que pour continuer le
-    boot
-  \item  Si  vous  intégrez  busybox  dans  votre  initramfs,  il  est
-    préconisé  de  le compiler  en  statique  en  ne gardant  que  les
-    composant utiles
-  \item  Cas classique:  charger les  modules permettent  d'acceder au
-    filesystème:
-    \begin{itemize}
-    \item M-Sys Disc-On-Chip
-    \item Configuration RAID
-    \item Configuration réseau pour booter en NFS
-    \end{itemize}
-  \item Dans notre cas, il n'est pas utile car nous n'avons pas besoin
-    de charger de driver particuliers avant le démarrage
-  \end{itemize}
-\end{frame}  
+% \begin{frame}[fragile=singleslide]{Initramfs}
+%   \begin{itemize}
+%   \item Qu'est-ce qu'un initramfs?
+%   \item Un petit filesystème chargé en mémoire par le bootloader
+%   \item Successeur de initrd (plus complexe d'utilisation)
+%   \item Permet déffectuer des actions avant le lancement d'init
+%   \item Il devrait rester petit et ne s'utiliser que pour continuer le
+%     boot
+%   \item  Si  vous  intégrez  busybox  dans  votre  initramfs,  il  est
+%     préconisé  de  le compiler  en  statique  en  ne gardant  que  les
+%     composant utiles
+%   \item  Cas classique:  charger les  modules permettent  d'acceder au
+%     filesystème:
+%     \begin{itemize}
+%     \item M-Sys Disc-On-Chip
+%     \item Configuration RAID
+%     \item Configuration réseau pour booter en NFS
+%     \end{itemize}
+%   \item Dans notre cas, il n'est pas utile car nous n'avons pas besoin
+%     de charger de driver particuliers avant le démarrage
+%   \end{itemize}
+% \end{frame}  
 
-\begin{frame}[fragile=singleslide]{Initramfs}
-  \begin{itemize} 
-  \item Création d'un rootfs vraiment minimal:
-    \begin{lstlisting}
-host$ mkdir initramfs
-host$ cd initramfs
-host$ mkdir dev
-host$ mknod dev/console c 5 1
-host% cp .../hello-arm-static init
-host$ find . |  cpio -o | gzip > initramfs.gz
-    \end{lstlisting}
-  \item Comme l'image noyau, l'image initramfs doit être au format u-boot.
-    \begin{lstlisting} 
-host$ mkimage -A arm -T ramdisk -d initramfs.gz initramfs.gz.img
-host$ cp initramfs.gz.img /srv/tftp
-uboot> tftp 4000000 initramfs.gz.img
-    \end{lstlisting}
-  \end{itemize}
-\end{frame}
+% \begin{frame}[fragile=singleslide]{Initramfs}
+%   \begin{itemize} 
+%   \item Création d'un rootfs vraiment minimal:
+%     \begin{lstlisting}
+% host$ mkdir initramfs
+% host$ cd initramfs
+% host$ mkdir dev
+% host$ mknod dev/console c 5 1
+% host% cp .../hello-arm-static init
+% host$ find . |  cpio -o | gzip > initramfs.gz
+%     \end{lstlisting}
+%   \item Comme l'image noyau, l'image initramfs doit être au format u-boot.
+%     \begin{lstlisting} 
+% host$ mkimage -A arm -T ramdisk -d initramfs.gz initramfs.gz.img
+% host$ cp initramfs.gz.img /srv/tftp
+% uboot> tftp 21000000 initramfs.gz.img
+%     \end{lstlisting}
+%   \end{itemize}
+% \end{frame}
 
-\begin{frame}[fragile=singleslide]{Initramfs}
-  \begin{itemize} 
-  \item  On  indique  l'adresse   du  ramfs  en  second  paramètre  de
-    \cmd{bootm}. Evidement, le noyau doit être configuré pour utiliser
-    le ramfs.
-    \begin{lstlisting} 
-uboot> setenv autostart no
-uboot> tftp 22000000 initramfs.gz.img 
-uboot> tftp 21000000 uImage 
-uboot> bootm 21000000 22000000 
-    \end{lstlisting}
-  \end{itemize}
-  \note[item]{TODO P1 A verifier, tester, completer}
-\end{frame}
+% \begin{frame}[fragile=singleslide]{Initramfs}
+%   \begin{itemize} 
+%   \item  On  indique  l'adresse   du  ramfs  en  second  paramètre  de
+%     \cmd{bootm}. Evidement, le noyau doit être configuré pour utiliser
+%     le ramfs.
+%     \begin{lstlisting} 
+% uboot> setenv autostart no
+% uboot> tftp 22000000 initramfs.gz.img 
+% uboot> tftp 21000000 uImage 
+% uboot> bootm 21000000 22000000 
+%     \end{lstlisting}
+%   \end{itemize}
+%   \note[item]{TODO P1 A verifier, tester, completer}
+% \end{frame}
 
 \section{Flasher le rootfs}
 
@@ -1115,9 +1109,11 @@ uboot> bootm 21000000 22000000
   répertoire  de source,  l'image de  destination, l'endianness  et le
   padding:
   \begin{lstlisting} 
+target% cat /proc/mtd
+host% apt-get install mtd-utils
 host$ mkfs.jffs2 -l -p -r nfs-root -o rootfs.jffs2
   \end{lstlisting}
-  Afin de  rendre notre  image plus perfomante,  tunons la  taille des
+  Afin de rendre notre image  plus performante, ajustons la taille des
   pages,  supprimons  les  cleanmarkers  (on pourrait  aussi  utiliser
   \verb+-c 0+) et changeons le propriétaires des fichier en root:
   \begin{lstlisting} 
@@ -1136,6 +1132,18 @@ host$ mkfs.jffs2 -l -p -q -n -s 2048 -e 128 -r nfs-root -o rootfs.jffs2
 target% flash_eraseall /dev/mtd1
 target% cd /tmp
     \end{lstlisting}
+  \item    Il   existe   des    fichiers   devices    \verb+mtd*+   et
+    \verb+mtdblock*+:
+    \begin{itemize} 
+    \item Les fichiers block ne sont la que pour la compatibilité avec
+      certains outils.  Ils ne gèrent  pas les \emph{badblock}  et les
+      \emph{clean markers}.
+    \item  Il  est préférable  de  passer  le  plus possible  par  les
+      fichiers \verb+mtd*+
+    \item  Les  flashs  doivent   être  écrite  en  prenant  certaines
+      precautions (padding  sur les pages, etc...).  Il est préférable
+      de systématiquement écrire en utilisant les outils spécialisés
+    \end{itemize} 
   \end{itemize}
 \end{frame}
 
@@ -1147,12 +1155,17 @@ target% cd /tmp
     possible).
     \begin{lstlisting} 
 target% tftp -g -r rootfs.jffs2
-target% flashcp rootfs.jffs2 /dev/mtd1
+target% nandwrite -p /dev/mtd1 rootfs.jffs2
     \end{lstlisting}
-  \item Test. Les devices \verb+mtd*+ et \verb+mtdblock*+ doivent être présents.
+    ou bien
+    \begin{lstlisting} 
+host$ serve_image 0.0.0.0 1234 rootfs.jffs2 128
+target% recv_image host 1234 /dev/mtd1
+    \end{lstlisting} 
+  \item  Test
     \begin{lstlisting}
-target% mkdir /tmp/jffs2
-target% mount -t jffs2 /dev/mtdblock1 /tmp/jffs2
+target% mkdir /tmp/mtd1
+target% mount -t jffs2 /dev/mtdblock1 /tmp/mtd1
     \end{lstlisting} 
   \end{itemize}
 \end{frame}
@@ -1183,10 +1196,10 @@ uboot> nand write 21000000 1000000 5A0000
   \begin{itemize} 
   \item Sous Linux
     \begin{lstlisting}
-target% flash_eraseall /dev/mtd0
+target% flash_erase /dev/mtd0 0x400000 0
 target% cd /tmp
 target% tftp -g -r uImage
-target% flashcp uImage /dev/mtd0
+target% nandwrite -s 0x400000 -p /dev/mtd0 uImage 
     \end{lstlisting}
   \item Sous U-boot
     \begin{lstlisting} 
@@ -1206,8 +1219,8 @@ if [ $1 == FLASH ]
   flash_eraseall /dev/mtd0
   flash_eraseall /dev/mtd1
   cd /tmp
-  flashcp uImage /dev/mtd0
-  flashcp rootfs.jffs2 /dev/mtd1
+  nandwrite -p /dev/mtd0 uImage
+  nandwrite -p /dev/mtd1 rootfs.jffs2
 fi
   \end{lstlisting}
 \end{frame}
@@ -1220,7 +1233,7 @@ fi
     copions notre image sur la flash virtuelle
     \begin{lstlisting}
 host% modprobe mtdram total_size=65536 erase_size=256
-host% flashcp rootfs.jffs2 /dev/mtd0
+host% nandwrite -p /dev/mtd0 rootfs.jffs2
     \end{lstlisting}
   \item  Alternativement, il  est  possible de  directement mapper  un
     fichier sur une flash avec \file{block2mtd}
@@ -1377,16 +1390,19 @@ host$ make all
   \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile=singleslide]{Automatisation}{OpenEmbedded}
+\begin{frame}[fragile=singleslide]{Automatisation}{OpenEmbedded et Yocto}
   \begin{itemize}
   \item But: créer une distribution type Debian
   \item Gère un système de paquets
   \item Assez lourd à la configuration
-  \item Tres lourd de créer une nouvelle cible
+  \item Tres lourd de créer un nouveau type de cible
+  \item ... mais relativement simple de gérér des dizaines de cibles
   \item Beaucoup de paquets sont deja préparés (~1800)
     \begin{itemize}
-    \item .. Principalement, toute la suite Gtk Opie
+    \item ... Principalement, toute la suite Gtk Opie
     \end{itemize}
+  \item Yocto remplace peu à peu OpenEmbedded dans les nouveau projet
+  \item Il est poussé pour la Linux Foundation
 %  \item remplacé par Buildroot et Scratchbox 
 %   \note[item]{Tout ici: \url{http://www.at91.com/linux4sam/bin/view/Linux4SAM/OpenEmbeddedAngstromBuild}}
 %   \note[item]{Résultat ici: \url{ftp://www.at91.com/pub/demo/linux4sam_2.0/linux4sam-angstrom-at91sam9260ek.zip}}
@@ -1402,7 +1418,7 @@ host$ make all
 % bitbake console-at91sam9-image
 % bitbake x11-at91sam9-image
 %   \end{lstlisting}
-    \note[item]{TODO P4: Faire fonctionne OpenEmbedded}
+    \note[item]{TODO P4: Faire fonctionne OpenEmbedded et Yocto}
   \end{itemize}
 \end{frame}
 

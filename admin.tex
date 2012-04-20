@@ -185,7 +185,10 @@
   \item 64Mo de RAM
   \item 64Ko d'EEPROM
   \end{itemize}
-  Choisie car compacte et très bien supportée par Linux
+  Choisie  car  compacte,  bien   documentée,  ouverte  et  très  bien
+  supportée par Linux
+  \note[item]{Mettre la ref exacte, parle de la JTAG, de FTDI, du BSP,
+    montrer les documentation ATMEL et les plan de cablage}
 \end{frame}
 
 \section{Le shell}
@@ -301,6 +304,8 @@ $ rm -<M-h>
     \end{itemize}
     \note[item]{Exo: créer  un fichier contenant la  liste des fichier
     de votre home. Comment afficher les fichier trié par date?}
+  \note[item]{Parler de grep, des expression régulière et la différence avec le globbing}
+\note[item]{Exercice: Quel fichier inclure pour utiliser dlopen?}
   \end{itemize}
 \end{frame}
 
@@ -379,8 +384,9 @@ $ ./script.sh
     \item Possible de le mettre dans la configuration du noyau
     \end{itemize}
   \item Il faut sur le Linux  un programme pour se logguer sur le port
-    RS232 (comme sur PC): \cmd{login} \note[item]{Expliquer rapidement
-      item}
+    RS232 (comme sur PC): \cmd{login} ou \cmd{getty}
+    \note[item]{Expliquer rapidement}
+    \note[item]{Faire booter la cible et faire executer quelques commandes}
   \item Il faut configurer le port RS232: bitrate, protocole...
   \end{itemize}
 \end{frame}
@@ -409,6 +415,9 @@ Software Flow Control : No
   \note[item]{Parler de putty qui fonctionne sous Linux et Windows}
   \note[item]{Parler de cu}
   \note[item]{TP: Just do it}
+  \note[item]{Lancer stty pour voir la configuration}
+  \note[item]{Faire lancer quelques commandes}
+  \note[item]{Expliquer fg/bg/jobs}
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Communiquer par RS232}{Avec les outils de bas niveau}
@@ -467,6 +476,7 @@ host$ cat file > /dev/ttyUSB1
   \item Une configuration IP
   \item Un programme  pour recevoir la demande de connexion
   \end{itemize}
+\note[item]{Ne pas oublier de leur faire changer les mac si necessaire}
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Communiquer par réseau ethernet}
@@ -480,9 +490,11 @@ host$ telnet -l root target
 target%
 \end{lstlisting} %$
     \item   Pas   sécurisé,   attention   a   votre   mot   de   passe
-      \note[item]{faire une  démonstration avec telnetd  et tcpdump -i
-        lo -A  port telnet (il  faut regarder le dernier  caractère de
-        chaque paquet envoyé)}
+      \note[item]{faire    une   démonstration    avec    telnetd   et
+        \texttt{tcpdump  -i lo -A  port telnet}  (il faut  regarder le
+        dernier caractère de chaque paquet envoyé)}
+      \note[item]{Pas de  telnetd/sshd sur la cible, du  coup, il faut
+        le faire en local}
     \item \verb/<CTRL+]>/ permet d'accéder à l'interface de commande
     \end{itemize}
   \item Ssh
@@ -523,7 +535,7 @@ host$ tftp -p -l file target
 host$ wget http://host/file
 host$ wget ftp://host/file
 \end{lstlisting} %$
-  \note[item]{TP: Just do it, surtout wget}
+  \note[item]{TP: Just do it, surtout wget (implique apache)}
   \item Beaucoup d'autres méthodes plus ou moins standards
   \end{itemize}
 \end{frame}
@@ -531,7 +543,7 @@ host$ wget ftp://host/file
 \begin{frame}[fragile=singleslide]{Transférer des fichiers}
   Par liaison série
   \begin{itemize}
-  \item Plus lent, moins maléable, mais peut vous sauvez
+  \item Plus lent, moins maléable, mais peut vous sauver
   \item Protocoles \verb+{Z,Y,Z}MODEM+ ou \verb+Kermit+
 \begin{lstlisting}[language=sh]
 host% apt-get install lrzsz 
@@ -540,6 +552,7 @@ target$ rz
 \end{lstlisting} %$
     \note[item]{Fonctionne dans konsole ou dans minicom avec Ctrl-A S}
     \note[item]{Raconter le fonctionnement des BBS}
+    \note[item]{TP}
   \end{itemize}
 \end{frame}
 
@@ -605,10 +618,12 @@ target%
   \note[item]{\texttt{ln -s /home/user/arm-linux-uclibc-calao
       /home/jezz/cour-eLinux/FromCalao/usb-a9260-buildroot/build\_arm/staging\_dir}}
   \note[item]{Leur donner ma toolchain toute propre}
+  \note[item]{TP: Installer la tool chain}
+  \note[item]{Expliqer la compilation statique}
   Compilation normale:
 \begin{lstlisting}
 host$ mkdir build-x86
-host$ gcc hello.c -I -o build-x86/hello
+host$ gcc hello.c -o build-x86/hello
 host$ build-x86/hello 1
 Hello World
 \end{lstlisting} %$
@@ -650,7 +665,8 @@ x86-static/hello: ELF 64-bit LSB executable, x86-64, version 1 (GNU/Linux), stat
         l'acceleration graphique)
       \end{itemize}
     \item   Les  différence   d'architecture   CPU  peuvent   empecher
-      l'utilisation de certains outils de debug (ex: Perf, Valgrind, ...)
+      l'utilisation de  certains outils de debug  (ex: Perf, Valgrind,
+      SystemTap...)
     \end{itemize}
   \item  Compiler   un  programme  pour  une   autre  cible  s'appelle
     cross-compiler
@@ -672,14 +688,14 @@ x86-static/hello: ELF 64-bit LSB executable, x86-64, version 1 (GNU/Linux), stat
   \item Pas très normalisé
   \item Utilisé pour les petits projets ou les projets non standard
   \item Ressemble souvent à:
-\begin{lstlisting}
+    \begin{lstlisting}
 host$ make CC=arm-linux-gcc LD=arm-linux-ld 
-\end{lstlisting} %$
+    \end{lstlisting} %$
   \item Il peut être nécessaire d'avoir la chaine de cross-compilation
     dans son \verb+PATH+.
-\begin{lstlisting}
+    \begin{lstlisting}
 host$ PATH+=/opt/arm-unknown-linux-uclibcgnueabi/usr/bin
-\end{lstlisting} %$
+    \end{lstlisting} %$
   \item Ne pas hésiter à lire le \file{Makefile}
   \end{itemize}
 \end{frame}
@@ -688,9 +704,9 @@ host$ PATH+=/opt/arm-unknown-linux-uclibcgnueabi/usr/bin
   Exemple avec \cmd{memstat}:
   \begin{itemize}
   \item Récupération des sources
-\begin{lstlisting}
+    \begin{lstlisting}
 host$ wget http://ftp.de.debian.org/debian/pool/main/m/memstat/memstat_0.9.tar.gz
-\end{lstlisting}
+    \end{lstlisting}
   \item Décompression des sources
 \begin{lstlisting}
 host$ tar xvzf memstat_0.9.tar.gz
@@ -700,13 +716,15 @@ host$ tar xvzf memstat_0.9.tar.gz
 host$ cd memstat-0.9
 host$ make CC=arm-linux-gcc LD=arm-linux-ld memstat
 \end{lstlisting} %$
+    \note[item]{TP}
   \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Compiler avec Makefile classique}
   Il est aussi souvent possible de compiler ces programmes sans passer
   par Makefile  ou de réécrire  le Makefile pour une  utilisation plus
-  récurente.\\[2ex]
+  récurente.
+  \\[2ex]
   Exemple avec \cmd{memstat}:
 \begin{lstlisting}
 host$ make clean
@@ -811,7 +829,7 @@ host$ make install
   \begin{itemize}
   \item Système de compilation du noyau
   \item Très bien adapté à la cross-compilation
-  \item   Pour   configurer   les  options:
+  \item Pour configurer les options:
     \begin{itemize}    
     \item En ncurses
 \begin{lstlisting}
@@ -856,7 +874,7 @@ host$ make ARCH=arm CROSS_COMPILE=arm-linux- O=build
     \end{itemize}
   \item Application de la règle: "Pas générique mais simple à hacker"
   \item Dépend principalement de \cmd{gmake}
-  \item Mode verbose: \verb+VERBOSE=1+
+  \item Mode verbose: \verb+V=1+
   \item Permet d'effectuer des recherche
   \end{itemize}
 \end{frame}
@@ -940,6 +958,24 @@ host$ make ARCH=arm CROSS_COMPILE=arm-linux- install
 \begin{lstlisting}
 % apt-get install automake autoconf
 \end{lstlisting}
+  \item Déclaration de notre programme et de nos sources pour \cmd{automake}
+\begin{lstlisting}
+$ vim Makefile.am
+\end{lstlisting} %$
+\begin{lstlisting}
+bin_PROGRAMS = hello
+hello_SOURCES = hello.c hello.h
+\end{lstlisting}
+  \item Les \cmd{autotools}  imposent l'existence de certains fichiers
+    de documentation
+\begin{lstlisting}
+$ touch NEWS README AUTHORS ChangeLog
+\end{lstlisting} %$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Créer un projet avec autotools}
+  \begin{itemize}
   \item  Création  d'un  template  pour \cmd{autoconf}  contenant  les
     macros utiles pour notre projet
 \begin{lstlisting}
@@ -955,30 +991,13 @@ AC_INIT([hello], [1.0], [bug@sysmic.org])
 AM_INIT_AUTOMAKE
 ...
 \end{lstlisting}
-  \end{itemize}
-\end{frame}
-
-\begin{frame}[fragile=singleslide]{Créer un projet avec autotools}
-  \begin{itemize}
-  \item Déclaration de notre programme et de nos sources pour \cmd{automake}
-\begin{lstlisting}
-$ vim Makefile.am
-\end{lstlisting} %$
-\begin{lstlisting}
-bin_PROGRAMS = hello
-hello_SOURCES = hello.c hello.h
-\end{lstlisting}
-  \item Les \cmd{autotools}  imposent l'existence de certains fichiers
-    de documentation
-\begin{lstlisting}
-$ touch NEWS README AUTHORS ChangeLog
-\end{lstlisting} %$
   \item      Génération      du      \file{configure}      et      des
     \file{Makefile.in}. C'est cette version qui devrait être livée aux
     packageurs.
 \begin{lstlisting}
 $ autoreconf -iv
 \end{lstlisting} %$
+    \note[item]{Bon, pas de TP la dessus, ca pas très utile}
   \end{itemize}
 \end{frame}
 
@@ -1039,34 +1058,36 @@ host$ make CC=arm-linux-gcc CFLAGS=-Wall
   Remarques que pour que VPATH fonctionne correctement, vous devez avoir
   correctement utilisé le quoting pour les directive d'inclusion (\verb+<+ pour
   les entête systèmes et \verb+"+ pour les entêtes du projet)
-  \lstinputlisting{hello/Makefile.2}
+%  \lstinputlisting{hello/Makefile.2}
+  \\[2ex] 
   Testons:
 \begin{lstlisting}
 host$ cd build
-host$ make -f ../Makefile CC=arm-linux-gcc
+host$ make -f ../Makefile VPATH=.. CC=arm-linux-gcc 
 \end{lstlisting} %$  
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Créer un projet sans autotools}
   \cmd{gcc} peut  générer les dépendances de vos  fichiers.  On génère
-  ainsi des morceaux de Makefile que l'on inclut. Il ne faut pas oublier
-  d'ajouter la dépendance entre \cmd{hello.d} et les dépendances de
-  \cmd{hello.c}
+  ainsi  des morceaux  de Makefile  que l'on  inclut. Il  ne  faut pas
+  oublier   d'ajouter  la  dépendance   entre  \cmd{hello.d}   et  les
+  dépendances de \cmd{hello.c}
   \lstinputlisting{hello/Makefile.3}
   \note{ Voir http://www.makelinux.net/make3/make3-CHP-2-SECT-7.html}
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Créer un projet sans autotools}
-  Les Makefile permettent  d'utiliser des fonctions d'auto-générations
-  qui  peuvent  nous  aider  à  rendre notre  système  plus  générique.
+  Les  Makefile permettent d'utiliser  des fonctions  de substitutions
+  qui  peuvent  nous aider  à  rendre  notre  système plus  générique.
   \lstinputlisting{hello/Makefile.4}
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Créer un projet sans autotools}
   Nous pouvons  ajouter des alias  pour nous aider dans  les commandes
   complexes 
-  \lstinputlisting[firstline=16]{hello/Makefile.5}
-  \note[item]{Ajouter des \#ifdef CONFIG pour faire dans Kconfig}
+  \lstinputlisting[firstline=11]{hello/Makefile.5}
+  \note[item]{TODO: Ajouter des \#ifdef CONFIG pour faire dans Kconfig}
+  \note[item]{Parler de apt-get source (-b), dpkg -L, dpkg -l, dpkg-buildpackage}
 \end{frame}
 
 
@@ -1077,8 +1098,7 @@ host$ make -f ../Makefile CC=arm-linux-gcc
   implémentation de \cmd{make}.
 \end{frame}
 
-
 %%% Local Variables: 
 %%% mode: latex
-%%% TeX-master: "main-present"
+%%% TeX-master: "main"
 %%% End: 

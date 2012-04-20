@@ -1,12 +1,8 @@
-VPATH = .
-
 %.d: %.c
 	$(CC) $(CFLAGS) -w -MM -MF $@ $<
 	sed -i -e 's,\($*\.o\) *:,\1 $@ :,g' $@
 
 HELLO_SRC = hello.c
-
 -include $(HELLO_SRC:%.c=%.d)
-
 hello: $(HELLO_SRC:%.c=%.o)
 

@@ -127,7 +127,8 @@ gdb> thread 1
   \item Vérifiez la limite \emph{coredump size} avec \texttt{ulimit -c}
   \item Core Dump automatique en cas de crash
   \item Forcé avec \texttt{kill -QUIT} ou \verb|<Ctrl+\>| (man kill)
-  \item Créé avec la commande gdb \texttt{gcore} (voir avec attach)
+  \item Créé  avec la commande  gdb \texttt{gcore} (voir  avec attach)
+    (malheureusement, ne fonctionnement pas en mode debug croisé)
   \item  Il est possible  de savoir  à quelle  binaire est  attaché le
     coredump avec \cmd{file}
   \end{itemize}
@@ -179,10 +180,14 @@ host$ arm-ulibceabi-gdb
 > set solib-absolute-prefix /home/user/nfs-root
 > exec-file hello
     \end{lstlisting}  
-  \item Il est peut-être intéressant de faire un \emph{core dump}
-    \begin{lstlisting}
-> gcore
-    \end{lstlisting}  
+  \item   Remarque:   Si   vous   dugger   une   programme   utilisant
+    \file{libpthread}, vous devez avoir le fichier \file{libthread\_db}
+    pour que  \cmd{gdb} puisse décoder les emplacements  les piles des
+    threads
+%   \item Il est peut-être intéressant de faire un \emph{core dump}
+%     \begin{lstlisting}
+% > gcore
+%     \end{lstlisting}  
   \item Libérons le processus
     \begin{lstlisting}
 > detach
@@ -238,12 +243,14 @@ ok
     sortir beaucoup d'informations sans execution
   \item  \cmd{objdump  -h} permet  d'obtenir  des  information sur  le
     placement des sections dans le fichier
-  \item \cmd{readelf -s} ou \cmd{nm} liste les symbols contenu dans un
-    fichier
+  \item  \cmd{objdump -T} ou  \cmd{readelf -s}  ou \cmd{nm}  liste les
+    symbols contenu dans un fichier
   \item \cmd{objdump -d} permet de désassembler un fichier objet
   \item \cmd{objdump -S}  permet d'obtenir l'assembleur intermixé avec
     les code
   \item \cmd{objdump -C} permet de "demangler" des fonction C++
+  \item \cmd{adddr2line}  permet de convertir une  addresse mémoire en
+    numéro ligne dans le code
   \end{itemize}
 % \note[item] {
 % Ainsi:
@@ -287,6 +294,7 @@ host$ cp build-dbg/uImage /srv/tftp/uImage-2.6.33.7-dbg
     \end{lstlisting} 
   \end{itemize}
 \end{frame}
+
 \begin{frame}[fragile=singleslide]{Debuguer le noyau}
   \begin{itemize}
   \item  Passage des arguments  \cmd{kgdboc} indiquant  quel interface
@@ -302,17 +310,42 @@ gdb> target remote /dev/ttyUSB1
   \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile=singleslide]{Debuguer le noyau}
-  Nécessite  une modification  du driver  \file{atmel\_serial}  afin de
-  permettre   l'utilisation  de   son  port   serie   par  \cmd{kgdb}.
-  Modification  apportée par  Albin Tonerre  backportée de  la version
-  2.6.34 du noyau (nous y reviendrons):
-  \begin{lstlisting}
-host$ patch -p1 < 0001-serial-atmel_serial-add-poll_get_char-and-poll_put_c.patch 
-  \end{lstlisting} 
+\begin{frame}[fragile=singleslide]{Kgdb et les modules}
+  \begin{itemize} 
+  \item Les modules sont chargé dynamiquement. Ils ne sont pas contenu
+    dans le fichier \file{vmlinux}
+  \item Il  est nécessaire d'indiquer à  gdb de charger  le module que
+    l'on souhaite débuguer
+  \item Néanmoins, gdb ne peut pas savoir à quel addresse à été chargé
+    le module
+  \item    Ces    informations    peuvent   être    récupérées    dans
+    \file{/sys/modules/*/sections}
+  \item On peut alors les donner à gdb avec \c{add-symbol-file}:
+    \begin{lstlisting} 
+target% cat /sys/modules/my_modules/sections
+host$ gdb vmlinux
+> target remote 192.168.1.55:2345
+> add-symbol-file my_modules.ko 0xd0832000 \
+     -s .bss 0xd0837100 -s .data 0xd0836be0
+    \end{lstlisting} 
+  \item    Il   existe   des    scripts   effectuant    la   procédure
+    automatiquement. A adapter suivant vos besoins.
+  \item  Remarque:  Les modules  sont  des  fichiers  ELF normaux.  Il
+    peuvent être analysés avec \cmd{objdump}
+  \end{itemize}
+\end{frame} 
 
-\note[item]{testé avec la version 2.6.37, mais devait fonctionner comme ca}
-\end{frame}
+% \begin{frame}[fragile=singleslide]{Debuguer le noyau}
+%   Nécessite  une modification  du driver  \file{atmel\_serial}  afin de
+%   permettre   l'utilisation  de   son  port   serie   par  \cmd{kgdb}.
+%   Modification  apportée par  Albin Tonerre  backportée de  la version
+%   2.6.34 du noyau (nous y reviendrons):
+%   \begin{lstlisting}
+% host$ patch -p1 < 0001-serial-atmel_serial-add-poll_get_char-and-poll_put_c.patch 
+%   \end{lstlisting} 
+
+% \note[item]{testé avec la version 2.6.37, mais devait fonctionner comme ca}
+% \end{frame}
 
 % \begin{frame}[fragile=singleslide]{Debuguer avec Qemu}
 %   \note[item]{il faudrait ajouter le support de l'AT91 dans qemu et ca devrait tourner plus ou moins}
@@ -333,8 +366,8 @@ host$ patch -p1 < 0001-serial-atmel_serial-add-poll_get_char-and-poll_put_c.patc
   \begin{itemize} 
   \item  \cmd{LD\_LIBRARY\_PATH} permet d'ajouter  un répertoire  ou les
     bibliothèques seront recherchées.
-  \item \cmd{LD\_PRELOAD} permet de précharger une biliothèque.  Ainsi
-    les  symboles  définit   dans  cette  bibliothèque  surcharge  les
+  \item  \cmd{LD\_PRELOAD}  permet  de  précharger  une  bibliothèque.
+    Ainsi les  symboles définis dans cette  bibliothèque surcharge les
     symboles standards:
     \begin{lstlisting}[language=c]
 #include <stdio.h>
@@ -373,14 +406,14 @@ taregt$ ./hello
     \begin{lstlisting} 
 target$ strace ./hello
     \end{lstlisting}  
+  \item Il est possible de filtrer les appels systèmes à suivre.
   \item  \cmd{ltrace}  est  une  génératlisation de  \cmd{strace}.  Il
     permet de suivre les appels à une bibliothèque extérieure
     \begin{lstlisting} 
 host$ arm-linux-ldd --root . ./hello
-target$ strace -l /lib/libc.so.0 -e sleep ./hello
-target$ strace -l /lib/libc.so.0 -e malloc -e free /bin/ls
+target$ ltrace -l /lib/libc.so.0 -e sleep ./hello
+target$ ltrace -l /lib/libc.so.0 -e malloc -e free /bin/ls
     \end{lstlisting}  
-  \item Il est possible de filtrer les appels systèmes à suivre.
   \item  Ces outils  sont une  aide préciseuse  lorsque  l'on souhaite
     identifier le  comportement d'une  binaire dont nous  ne disposons
     pas des sources.
@@ -452,8 +485,7 @@ host$ firefox html/index.html
   \item On précise le répertoire ou les fichier doivent être stockés
     \begin{lstlisting}
 host$ cd arm-cov
-host$ arm-linux-gcc --fprofile-generate=/tmp/hello --coverage
-../hello.c -o hello-arm-cov
+host$ arm-linux-gcc --fprofile-generate=/tmp/hello --coverage ../hello.c -o hello-arm-cov
     \end{lstlisting} 
   \item On execute sur la cible
     \begin{lstlisting}
@@ -583,6 +615,9 @@ host$ valgrind --leak-check=full ./hello
     processus en cours d'éxecution
   \item    \verb+/proc/${PID}/{stat,statm,status}+   contiennent   les
     données bruts de ces outils
+  \item    \verb+/proc/${PID}/{map,smap,pagesmap}+   contiennent   des
+    infomration  très précisesnt  aux  sujet du  mapping mémoire  d'un
+    processus
   \end{itemize}
 \end{frame}
 
@@ -828,30 +863,30 @@ SOC    = at91sam926x
     \url{http://forum.sparkfun.com/viewtopic.php?p=78242&sid=1a2a21faa788048ad502179f1598444f}
   }
 
-  Votre distribution inclut peut-être le packet:
+%  Votre distribution inclut peut-être le packet:
   \begin{lstlisting}
 host% apt-get install openocd
   \end{lstlisting}
-  Il est possible de récupérer le paquet d'une autre disctribution:
-  \begin{lstlisting}
-host$ wget http://archive.ubuntu.com/ubuntu/pool/universe/o/openocd/openocd_0.4.0-1+nmu1_amd64.deb
-host$ wget http://archive.ubuntu.com/ubuntu/pool/main/libf/libftdi/libftdi1_0.18-1_amd64.deb
-host% dpkg -i libftdi1_0.18-1_amd64.deb openocd_0.4.0-1+nmu1_amd64.deb
-  \end{lstlisting} 
+%   Il est possible de récupérer le paquet d'une autre disctribution:
+%   \begin{lstlisting}
+% host$ wget http://archive.ubuntu.com/ubuntu/pool/universe/o/openocd/openocd_0.4.0-1+nmu1_amd64.deb
+% host$ wget http://archive.ubuntu.com/ubuntu/pool/main/libf/libftdi/libftdi1_0.18-1_amd64.deb
+% host% dpkg -i libftdi1_0.18-1_amd64.deb openocd_0.4.0-1+nmu1_amd64.deb
+%   \end{lstlisting} 
 \end{frame}
 
-\begin{frame}[fragile=singleslide]{OpenOCD}
-  Evidement, il possible de le compiler
-  \begin{lstlisting}
-host$ wget http://downloads.sourceforge.net/project/openocd/openocd/0.4.0/openocd-0.4.0.tar.bz2
-host$ tar xvf openocd-0.4.0.tar.bz2
-host% apt-get install libftdi-dev
-host$ mkdir build && cd build
-host$ ../configure --enable-usbprog --enable-ft2232_libftdi 
-host$ make
-host% make install
-  \end{lstlisting} 
-\end{frame}
+% \begin{frame}[fragile=singleslide]{OpenOCD}
+%   Evidement, il possible de le compiler
+%   \begin{lstlisting}
+% host$ wget http://downloads.sourceforge.net/project/openocd/openocd/0.4.0/openocd-0.4.0.tar.bz2
+% host$ tar xvf openocd-0.4.0.tar.bz2
+% host% apt-get install libftdi-dev
+% host$ mkdir build && cd build
+% host$ ../configure --enable-usbprog --enable-ft2232_libftdi 
+% host$ make
+% host% make install
+%   \end{lstlisting} 
+% \end{frame}
 
 \begin{frame}[fragile=singleslide]{OpenOCD}
   Il  est   nécessaire  de  corriger   un  bug  dans  le   fichier  de
