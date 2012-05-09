@@ -181,9 +181,9 @@ host$ arm-ulibceabi-gdb
 > exec-file hello
     \end{lstlisting}  
   \item   Remarque:   Si   vous   dugger   une   programme   utilisant
-    \file{libpthread}, vous devez avoir le fichier \file{libthread\_db}
-    pour que  \cmd{gdb} puisse décoder les emplacements  les piles des
-    threads
+    \file{libpthread},     vous     devez     avoir     le     fichier
+    \file{libthread\_db}  pour   que  \cmd{gdb}  puisse   décoder  les
+    emplacements les piles des threads
 %   \item Il est peut-être intéressant de faire un \emph{core dump}
 %     \begin{lstlisting}
 % > gcore
@@ -373,8 +373,12 @@ host$ gdb vmlinux
 #include <stdio.h>
 #include <unistd.h>
 unsigned int sleep(unsigned int s) {
+    static int (*real_sleep)(unsigned int) = NULL;
+    if (!real_sleep)
+        real_sleep = dlsym(RTLD_NEXT, "sleep");
+
     printf("Try to reveal race-conditions\n");
-    sleep(5 * s);
+    return real_sleep(5 * s);
 }
     \end{lstlisting} 
   \end{itemize}
@@ -383,7 +387,7 @@ unsigned int sleep(unsigned int s) {
 \begin{frame}[fragile=singleslide]{\cmd{ld.so}}
   \begin{itemize} 
     \begin{lstlisting} 
-host$ gcc -shared -fPIC mysleep.c -o libmysleep.so
+host$ gcc -shared -ldl -fPIC mysleep.c -o libmysleep.so
 target$ LD_PRELOAD=libmysleep.so ./hello 
 target$ export LD_PRELOAD=libmysleep.so
 taregt$ ./hello 

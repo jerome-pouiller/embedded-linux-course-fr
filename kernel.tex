@@ -265,7 +265,7 @@
 \subsection{Template}
 
 \begin{frame}[fragile=singleslide]{Les modules noyau}{my\_module}
-  \lstinputlisting[language=c,firstline=16]{modules/my_module1.c}
+  \lstinputlisting[language=c,firstline=16]{samples/mod1_tmpl/mod1_tmpl.c}
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Quelques macros de base}
@@ -338,7 +338,7 @@ EXPORT_SYMBOL_GPL
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Les modules noyau}{my\_module}
-  \lstinputlisting[language=c,lastline=14]{modules/my_module1.c}
+  \lstinputlisting[language=c,lastline=14]{samples/mod1_tmpl/mod1_tmpl.c}
 \end{frame}
 
 \subsection{Compilation externe}
@@ -366,7 +366,7 @@ host$ make ARCH=arm CROSS_COMPILE=arm-linux- KDIR=../linux-2.6/usb-a9260
   \end{lstlisting} % $
 \end{frame}
 
-\subsection{Com[pilation interne}
+\subsection{Compilation interne}
 
 \begin{frame}[fragile=singleslide]{Compilation avec Kbuild}
   Fichier \file{Makefile} à l'intérieur de l'arborescence noyau:
@@ -380,7 +380,7 @@ obj-$(MY_COMPILE_OPTION) := my_module.o
   \item y: compilé en statique
   \end{itemize}
   Fichier \file{Kconfig}:
-  \lstinputlisting[langage=]{modules/Kconfig}
+  \lstinputlisting[language=]{samples/mod1_tmpl/Kconfig}
 \end{frame} 
 
 \begin{frame}[fragile=singleslide]{Utilisation de Kconfig}
