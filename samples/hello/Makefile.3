@@ -1,0 +1,8 @@
+%.d: %.c
+	$(CC) $(CFLAGS) -w -MM -MF $@ $<
+	# Ajoutons la dépendance sur %.d
+	sed -i -e 's,\($*\.o\) *:,\1 $@ :,g' $@
+
+-include hello.d
+hello: hello.o
+
