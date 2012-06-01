@@ -1,0 +1,19 @@
+EMBEDED LINUX TRAINING
+======================
+Jérôme Pouiller <jezz@sysmic.org>
+
+This directory contains training material about embeded Linux systems. This
+course is written in French.
+
+This training can be followed by another called "Linux Kernel" that you can
+also find on my site.
+
+How to compile
+--------------
+
+These are written in LaTeX with beamer. If you have correctly installed your
+LaTeX distribution, a simple "pdflatex main.tex" should be sifficient to
+compile pdf version of this course. You can also found an already compiled
+version on http://sysmic.org/elinux
+
+
