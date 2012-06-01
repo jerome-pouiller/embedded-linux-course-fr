@@ -6,7 +6,11 @@ This directory contains training material about embeded Linux systems. This
 course is written in French.
 
 This training can be followed by another called "Linux Kernel" that you can
-also find on my site.
+also find on my site. 
+
+Even it is not mandatory, I suggest to purchase a board referenced as USB-A9263
+to Calao (I may also supply some board if you mail me). You will also need BSP
+for this board. This one is also available on my site: http://sysmic.org/BSP
 
 How to compile
 --------------
