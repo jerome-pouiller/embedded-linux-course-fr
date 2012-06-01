@@ -548,12 +548,12 @@ host$ firefox html/index.html
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Valgrind}
-  \lstinputlisting[language=c,lastline=16]{test-valgrind/hello.c}
+  \lstinputlisting[language=c,lastline=16]{samples/valgrind/test-valgrind.c}
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Valgrind}
   Appellons nos deux fonctions de tests
-  \lstinputlisting[language=c,firstline=18]{test-valgrind/hello.c}
+  \lstinputlisting[language=c,firstline=18]{samples/valgrind/test-valgrind.c}
   Testons:
   \begin{lstlisting}
 host$ gcc -Wall -g3 hello.c -o hello

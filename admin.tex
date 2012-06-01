@@ -599,17 +599,17 @@ target%
 \section{Compiler et executer}
 
 \begin{frame}[fragile=singleslide]{Notre premier programme}{\file{hello.c}}
-  \embedfile{hello/hello.c}
-  \lstinputlisting[language=c,lastline=15]{hello/hello.c}
+  \embedfile{samples/hello/hello.c}
+  \lstinputlisting[language=c,lastline=15]{samples/hello/hello.c}
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Notre premier programme}{\file{hello.c}}
-  \lstinputlisting[language=c,firstline=16]{hello/hello.c}
+  \lstinputlisting[language=c,firstline=16]{samples/hello/hello.c}
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Notre premier programme}{\file{hello.h}}
-  \embedfile{hello/hello.h}
-  \lstinputlisting[language=c]{hello/hello.h}
+  \embedfile{samples/hello/hello.h}
+  \lstinputlisting[language=c]{samples/hello/hello.h}
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Compilation}
@@ -1046,7 +1046,7 @@ $ tar tvzf hello-1.0.tar.gz
 
 \begin{frame}[fragile=singleslide]{Créer un projet sans autotools}
   Utiliser les règles implicites facilite votre travail
-  \lstinputlisting{hello/Makefile.1}
+  \lstinputlisting{samples/hello/Makefile.1}
   Testons:
 \begin{lstlisting}
 host$ make CC=arm-linux-gcc CFLAGS=-Wall
@@ -1055,11 +1055,11 @@ host$ make CC=arm-linux-gcc CFLAGS=-Wall
 
 \begin{frame}[fragile=singleslide]{Créer un projet sans autotools}
   \cmd{VPATH} vous permet de géré la compilation \emph{out-of-source}.
-  Remarques que pour que VPATH fonctionne correctement, vous devez avoir
+  Remarques que pour que \verb+VPATH+ fonctionne correctement, vous devez avoir
   correctement utilisé le quoting pour les directive d'inclusion (\verb+<+ pour
   les entête systèmes et \verb+"+ pour les entêtes du projet)
-%  \lstinputlisting{hello/Makefile.2}
-  \\[2ex] 
+  % Pas besoin d'ajouter VPATH = . Du coup, c'est la meme chose que Makefile.1
+  %\lstinputlisting{samples/hello/Makefile.2}
   Testons:
 \begin{lstlisting}
 host$ cd build
@@ -1072,20 +1072,20 @@ host$ make -f ../Makefile VPATH=.. CC=arm-linux-gcc
   ainsi  des morceaux  de Makefile  que l'on  inclut. Il  ne  faut pas
   oublier   d'ajouter  la  dépendance   entre  \cmd{hello.d}   et  les
   dépendances de \cmd{hello.c}
-  \lstinputlisting{hello/Makefile.3}
+  \lstinputlisting{samples/hello/Makefile.3}
   \note{ Voir http://www.makelinux.net/make3/make3-CHP-2-SECT-7.html}
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Créer un projet sans autotools}
   Les  Makefile permettent d'utiliser  des fonctions  de substitutions
   qui  peuvent  nous aider  à  rendre  notre  système plus  générique.
-  \lstinputlisting{hello/Makefile.4}
+  \lstinputlisting{samples/hello/Makefile.4}
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Créer un projet sans autotools}
   Nous pouvons  ajouter des alias  pour nous aider dans  les commandes
   complexes 
-  \lstinputlisting[firstline=11]{hello/Makefile.5}
+  \lstinputlisting[firstline=11]{samples/hello/Makefile.5}
   \note[item]{TODO: Ajouter des \#ifdef CONFIG pour faire dans Kconfig}
   \note[item]{Parler de apt-get source (-b), dpkg -L, dpkg -l, dpkg-buildpackage}
 \end{frame}
