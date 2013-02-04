@@ -8,9 +8,8 @@ hello: $(HELLO_SRC:%.c=%.o)
 
 -include $(HELLO_SRC:%.c=%.d)
 
-%.d: %.c
-	$(CC) $(CFLAGS) -w -MM -MF $@ $<
-	sed -i -e 's,\($*\.o\) *:,\1 $@ :,g' $@
+%.o: %.c
+	$(COMPILE.c) -MMD -o $@ $<
 
 define _MKTARGET
 x86$(1):

@@ -1,6 +1,5 @@
-%.d: %.c
-	$(CC) $(CFLAGS) -w -MM -MF $@ $<
-	sed -i -e 's,\($*\.o\) *:,\1 $@ :,g' $@
+%.o: %.c
+	$(COMPILE.c) -MMD -o $@ $<
 
 HELLO_SRC = hello.c
 -include $(HELLO_SRC:%.c=%.d)
