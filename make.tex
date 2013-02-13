@@ -705,7 +705,7 @@ host$ echo "::sysinit:mount -t sysfs none /sys" >> etc/inittab
 
 \section{Quelques ajouts}
  
-\subsection{\file{fstab}}
+\subsection{\texttt{fstab}}
 
 \begin{frame}[fragile=singleslide]{Utilisation de \file{fstab}}
   Il  est   possible  d'automatiser  ce  montage   au  démarrage  avec
@@ -724,7 +724,7 @@ host$ echo "::shutdown:/bin/mount -r -a" >> etc/inittab
   \end{lstlisting}
 \end{frame}
 
-\subsection{\file{tmpfs}}
+\subsection{\texttt{tmpfs}}
 
 \begin{frame}[fragile=singleslide]{Filesystem temporaire}
   Créer un  filesystem en  memoire permet de  protèger notre  flash (à
@@ -747,7 +747,7 @@ host$ echo 'none /tmp tmpfs' >> etc/fstab
   \end{itemize}
 \end{frame}
 
-\subsection{\file{MAKEDEV}}
+\subsection{\texttt{MAKEDEV}}
 
 \begin{frame}[fragile=singleslide]{Utilisation de \cmd{MAKEDEV}}
   \cmd{MAKEDEV} permet d'automatiser  la création des fichiers devices
@@ -759,7 +759,7 @@ host$ MAKEDEV console
   \end{lstlisting}
 \end{frame}
 
-\subsection{\file{ptms}}
+\subsection{\texttt{ptms}}
 
 \begin{frame}[fragile=singleslide]{Peudo Terminal Multiplexer}
   \cmd{ptmx} (Peudo  Terminal Multiplexer) Permet  de facilement gérer
@@ -771,7 +771,7 @@ host$ echo 'none /dev/pts devpts' >> etc/fstab
   \end{lstlisting}
 \end{frame}
 
-\subsection{\file{mdev}}
+\subsection{\texttt{mdev}}
 
 \begin{frame}[fragile=singleslide]{Utilisation de \cmd{mdev}}
   \begin{itemize}
@@ -804,7 +804,7 @@ target% echo /sbin/mdev > /sys/kernel/uevent_helper
   \end{itemize}
 \end{frame}
 
-\subsection{\file{resolv.conf}}
+\subsection{\texttt{resolv.conf}}
 
 \begin{frame}[fragile=singleslide]{Résolution DNS}
   \begin{itemize}
@@ -823,7 +823,7 @@ target% ping www.google.com
   \end{itemize}
 \end{frame}
 
-\subsection{\file{passwd}}
+\subsection{\texttt{passwd}}
 
 \begin{frame}[fragile=singleslide]{Ajouts d'utilisateurs}
   \begin{itemize}

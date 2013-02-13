@@ -10,11 +10,13 @@ hello: $(HELLO_SRC:%.c=%.o)
 clean:
 	rm -f hello $(HELLO_SRC:%.c=%.o) $(HELLO_SRC:%.c=%.d)
 
-debug-x86:
-	[ -d debug ] || mkdir debug 
-	make -C debug -f ../Makefile VPATH=.. CFLAGS=-g
+.PHONY: debug-x86 debug-arm clean
 
-debug-arm:
-	[ -d debug ] || mkdir debug 
-	make -C debug -f ../Makefile VPATH=.. CFLAGS=-g CC=arm-linux-gcc
+debug-arm/Makefile:
+	mkdir -p debug-arm
+	echo 'all %:' >> debug-arm/Makefile
+	echo '	make -f ../Makefile VPATH=.. CFLAGS=-g CC=arm-linux-gcc $$@' >> debug-arm/Makefile
+
+debug-arm: debug-arm/Makefile
+	make -C debug-arm
 

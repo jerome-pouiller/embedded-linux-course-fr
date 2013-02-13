@@ -40,7 +40,7 @@
   \begin{center}
     \begin{tikzpicture}
       \filldraw[cbrown]
-       (-0.05,0.95) -- +(9,0) -- +(9,1) -- +(8,1) -- +(8,2) -- +(7,2) -- +(7,3) 
+       (-0.05,0.95) -- +(9,0) -- +(9,1) -- +(8,1) -- +(8,2) -- +(7,2) -- +(7,3)
        -- +(6,3) -- +(6,4) -- +(2,4) -- +(2,3) -- +(1,3) -- +(1,1) -- +(+0,1) -- cycle;
 % node {Posix};
      \filldraw[ccyan]
@@ -77,7 +77,7 @@
   \item Uniformise les OS
   \item Première version publiée en 1988
   \item Souvent implémenté en partie
-  \item ...  et parfois  s'en inspire simplement 
+  \item ...  et parfois  s'en inspire simplement
     \note[item]{Parler de uC-OS II, \texttt{printf}, etc...}
   \item Posix $\nrightarrow$ Linux
   \item Linux $\nrightarrow$ Posix
@@ -91,15 +91,15 @@
     \note[item]{Expliquer ce qu'est la GPL}
     \begin{itemize}
     \item GPL publiée en 1989
-    \item GPLv2 en 1991 
+    \item GPLv2 en 1991
     \item GPLv3 en 2006
     \end{itemize}
   \item \cmd{gcc} apparait en 1985
-    \note[item]{Expliquer ce qu'est gcc} 
+    \note[item]{Expliquer ce qu'est gcc}
   \item \cmd{bash} et les  Coreutils apparaissent en 1988 (inspirés de
     \cmd{sh} 1971/1977)
     \note[item]{Expliquer coreutils}
-    \note[item]{Expliquer   bash} 
+    \note[item]{Expliquer   bash}
   \item Nombre d'architectures supportées incalculable
   \end{itemize}
 \end{frame}
@@ -114,14 +114,14 @@
   \item Environ 5000 contributeurs depuis la première version de Linux
   \item  Environ  650  mainteneurs  (c'est-à-dire  responsbales  d'une
     partie du noyau)
+  \item Domaine d'application très large, du DSP au super-calculateurs
+    en passant pas les grille de calcul
   \item 24 architecures (= jeux d'instructions)
   \item Des centaines de plateformes
   \item Environ 1000 drivers
   \item Une centaine de versions publiées
   \item Environ 10000 contributions sur chaque version
   \item Enormément de ``forks'' et de version non-officielles
-  \item Domaine d'application très large, du DSP au super-calculateurs
-    en passant pas les grille de calcul
   \end{itemize}
 \end{frame}
 
@@ -213,8 +213,8 @@ $ mkdir dir1 dir2
       option courte et '-\--'  pour les options longues (attention aux
       exceptions)
 \begin{lstlisting}
-$ ls -l -a 
-$ ls -la 
+$ ls -l -a
+$ ls -la
 $ ls --sort=time
 \end{lstlisting} %$
   \end{itemize}
@@ -279,33 +279,35 @@ $ mkdir ../../tmp/titi
     ``locale'')
   \item Votre shell peut vous simplifier la vie:
     \begin{itemize}
-    \item Globbing
+    \item  Globbing   (à  ne   pas  confondre  avec   les  expressions
+      régulières)
       \begin{lstlisting}
 $ rm *.o
       \end{lstlisting}
-    \item Complétion 
+    \item Complétion
       \begin{lstlisting}
 $ cd /h<TAB>/j<TAB>/c<TAB>
       \end{lstlisting}
     \item Alias
-\begin{lstlisting}
+      \begin{lstlisting}
 $ alias ll="ls -l --color=auto"
-$ alias cp="cp -i"              
-$ alias mv="mv -i"              
+$ alias cp="cp -i"
+$ alias mv="mv -i"
 $ alias rm="rm --one-file-system"
-\end{lstlisting} %$
-      \note[item]{Leur faire  chercher dans la  doc la signification  de ces
-        commandes}       
+      \end{lstlisting} %$
+      \note[item]{Leur faire chercher dans  la doc la signification de
+        ces commandes}
       \note[item]{Leur faire changer de shell et installer ma conf}
     \item Man de la commande courante
-\begin{lstlisting}
+      \begin{lstlisting}
 $ rm -<M-h>
-\end{lstlisting} %$
+      \end{lstlisting} %$
     \end{itemize}
     \note[item]{Exo: créer  un fichier contenant la  liste des fichier
-    de votre home. Comment afficher les fichier trié par date?}
-  \note[item]{Parler de grep, des expression régulière et la différence avec le globbing}
-\note[item]{Exercice: Quel fichier inclure pour utiliser dlopen?}
+      de votre home.  Comment afficher les fichier trié par date?}
+    \note[item]{Parler  de  grep,   des  expression  régulière  et  la
+      différence avec le  globbing} \note[item]{Exercice: Quel fichier
+      inclure pour utiliser dlopen?}
   \end{itemize}
 \end{frame}
 
@@ -314,25 +316,25 @@ $ rm -<M-h>
   celles de la ligne de commande.
   \begin{itemize}
   \item Ouvrir  un nouveau fichier. On suffixe  généralement les shell
-    par \verb+.sh+
-\begin{lstlisting}
-$ vim scipt.sh
-\end{lstlisting} %$
+    par \file+.sh+
+    \begin{lstlisting}
+$ vim script.sh
+    \end{lstlisting} %$
   \item Indiquer  le shell utilisé  sur la première ligne,  préfixé de
     \verb+#!+
-\begin{lstlisting}
+    \begin{lstlisting}
 #!/bin/sh
-\end{lstlisting} %$
+    \end{lstlisting} %$
   \item La suite s'ecrit comme sur la ligne de commande
-\begin{lstlisting}
+    \begin{lstlisting}
 echo foo bar
-\end{lstlisting} %$
+    \end{lstlisting} %$
   \item Il est nécéssaire de donner les droits en exécution au script
-\begin{lstlisting}
+    \begin{lstlisting}
 $ bash script.sh
 $ chmod +x script.sh
 $ ./script.sh
-\end{lstlisting} %$
+    \end{lstlisting} %$
     \note[item]{Ecrivez  un  script  shell  qui compte  le  nombre  de
       fichier d'un répertoire en paramètre. Compter le nombre de ligne
       contenant 'x' dans un fichier  (man grep). Afficher le plus gros
@@ -374,8 +376,8 @@ $ ./script.sh
 \begin{frame}{Se connecter par RS232}
   \begin{itemize}
   \item Il faut un cable nul modem (= cable croisé)
-  \item  Il faut  que  le Linux  sur  la target  soit configurer  pour
-    logguer par RS232
+  \item Il faut que le Linux sur la cible soit configuré pour utiliser
+    le port RS232 comme console
     \begin{itemize}
     \item Possible en ajoutant \texttt{console=ttyS0,115200n8} dans la
       ligne  de commande du  noyau (sur  PC, il  suffit de  passer par
@@ -395,9 +397,9 @@ $ ./script.sh
   \begin{itemize}
   \item L'outil de haut niveau: \cmd{minicom}
 \begin{lstlisting}[language=sh]
-host% adduser user tty
+host% adduser user dialout
 host% apt-get install minicom
-host$ minicom -D /dev/ttyUSB1
+host$ minicom -D /dev/ttyUSB0
 host$ minicom
 \end{lstlisting} %$
     \note[item]{Expliquer l'option -D}
@@ -412,12 +414,21 @@ Software Flow Control : No
 \end{lstlisting}
     \note[item]{Sauvez, quitter, relancer}
   \end{itemize}
-  \note[item]{Parler de putty qui fonctionne sous Linux et Windows}
-  \note[item]{Parler de cu}
   \note[item]{TP: Just do it}
   \note[item]{Lancer stty pour voir la configuration}
   \note[item]{Faire lancer quelques commandes}
   \note[item]{Expliquer fg/bg/jobs}
+  \note[item]{Les cartes  doivent booter  directement sur la  flash et
+    être prête à recevoir des binaires}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Communiqer par RS232}{Alternatives}
+  \begin{itemize}
+  \item   picocom:   Fonctionne   sans  \emph{ncurses}   (mieux   pour
+    l'automatisation)
+  \item gtkterm: Fonctionne en graphique
+  \item putty: Fonctionne sous Linux et sous Windows
+  \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Communiquer par RS232}{Avec les outils de bas niveau}
@@ -430,16 +441,16 @@ Software Flow Control : No
   \begin{itemize}
   \item Configuration:
 \begin{lstlisting}
-host$ stty -F/dev/ttyUSB1 115200
+host$ stty -F/dev/ttyUSB0 115200
 \end{lstlisting} %$
   \item Lecture
 \begin{lstlisting}
-host$ cat /dev/ttyUSB1 > file
+host$ cat /dev/ttyUSB0 > file
 \end{lstlisting} %$
   \item Ecriture
 \begin{lstlisting}
-host$ echo root > /dev/ttyUSB1
-host$ cat file > /dev/ttyUSB1
+host$ echo root > /dev/ttyUSB0
+host$ cat file > /dev/ttyUSB0
 \end{lstlisting} %$
   \end{itemize}
   \note[item]{Verifier les options de stty}
@@ -485,15 +496,13 @@ host$ cat file > /dev/ttyUSB1
   \item Telnet
     \begin{itemize}
     \item \cmd{telnetd} et \cmd{telnet}
-\begin{lstlisting}
+      \begin{lstlisting}
 host$ telnet -l root target
 target%
-\end{lstlisting} %$
+      \end{lstlisting} %$
     \item   Pas   sécurisé,   attention   a   votre   mot   de   passe
-      \note[item]{faire    une   démonstration    avec    telnetd   et
-        \texttt{tcpdump  -i lo -A  port telnet}  (il faut  regarder le
-        dernier caractère de chaque paquet envoyé)}
-      \note[item]{Pas de  telnetd/sshd sur la cible, du  coup, il faut
+      (\cmd{tshark -i lo -o out}, puis \cmd{chaosreader out})
+      \note[item]{Pas de  telnetd sur la cible, du  coup, il faut
         le faire en local}
     \item \verb/<CTRL+]>/ permet d'accéder à l'interface de commande
     \end{itemize}
@@ -525,10 +534,10 @@ target$ scp -r user@host:dir-host .
 \end{lstlisting} %$
   \item tftp
 \begin{lstlisting}[language=sh]
-target$ tftp -g -r file host
-target$ tftp -p -l file host
-host$ tftp -g -r file target
-host$ tftp -p -l file target
+target$ tftp host -c get file
+target$ tftp host -c put file
+host$ tftp target -c get file
+host$ tftp target -c put file
 \end{lstlisting} %$
   \item wget
 \begin{lstlisting}[language=sh]
@@ -544,9 +553,9 @@ host$ wget ftp://host/file
   Par liaison série
   \begin{itemize}
   \item Plus lent, moins maléable, mais peut vous sauver
-  \item Protocoles \verb+{Z,Y,Z}MODEM+ ou \verb+Kermit+
+  \item Protocoles \verb+{X,Y,Z}MODEM+ ou \verb+Kermit+
 \begin{lstlisting}[language=sh]
-host% apt-get install lrzsz 
+host% apt-get install lrzsz
 target$ sz file
 target$ rz
 \end{lstlisting} %$
@@ -588,7 +597,7 @@ host$ ssh-add
   \item Forwarder votre agent
 \begin{lstlisting}[language=sh]
 host$ ssh -A root@target
-target% 
+target%
 \end{lstlisting} %$
     \note[item]{TP: Mettre  l'agent pour tout le  monde. FIXME: depend
       des distribs}
@@ -614,28 +623,62 @@ target%
 
 \begin{frame}[fragile=singleslide]{Compilation}
   \note[item]{See Also
-    http://www.codesourcery.com/sgpp/lite/arm/portal/package7813/public/arm-none-eabi/arm-2010.09-51-arm-none-eabi-i686-pc-linux-gnu.tar.bz2}
-  \note[item]{\texttt{ln -s /home/user/arm-linux-uclibc-calao
-      /home/jezz/cour-eLinux/FromCalao/usb-a9260-buildroot/build\_arm/staging\_dir}}
+    \url{http://www.codesourcery.com/sgpp/lite/arm/portal/package7813/public/arm-none-eabi/arm-2010.09-51-arm-none-eabi-i686-pc-linux-gnu.tar.bz2}}
   \note[item]{Leur donner ma toolchain toute propre}
   \note[item]{TP: Installer la tool chain}
-  \note[item]{Expliqer la compilation statique}
+  \note[item]{Expliquer la compilation statique}
+  \note[item]{Expliquer l'intérêt de la compilation out-of-source}
+  \note[item]{Les toolchain ne sont pas toujours relogeable}
+  \note[item]{\$PATH}
+  Installation du compilateur:
+  \begin{lstlisting}
+host# apt-get install gcc libc-dev
+  \end{lstlisting}
   Compilation normale:
-\begin{lstlisting}
+  \begin{lstlisting}
 host$ mkdir build-x86
 host$ gcc hello.c -o build-x86/hello
 host$ build-x86/hello 1
 Hello World
 \end{lstlisting} %$
+Remarque: On préfère effectuer des compilation \emph{out-of-source} ou
+les objets  se trouvent  séparés des sources.   Il est  ainsi possible
+d'avoir un répertoire  pour la production et un pour  le debug ou bien
+un répertoire par cible.
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Compilation}
+  Décompression de la toolchain:
+  \begin{lstlisting} 
+host# cd /
+host# tar xvzf .../arm-sysmic-linux-uclibcgnueabi_i386.tgz
+  \end{lstlisting}
+  \begin{itemize} 
+  \item   On  installe  très souvent  les  chaines  de cross-compilation  dans
+    \path{/opt}. 
+  \item      Beaucoup      de      toolchain     ne      sont      pas
+    \emph{relocable}.  C'est-à-dire  qu'elle  doivent  être  placée  à
+    l'endroit où  elles ont été compilée (car  il contiennent certains
+    chemins en ``dur'').
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Compilation}
   Compilation pour la cible:
-\begin{lstlisting}
+  \begin{lstlisting}
 host$ mkdir build-arm
-host$ /opt/arm-sysmic-linux-uclibc/usr/bin/arm-linux-gcc hello.c -o build-arm/hello
+host$ /opt/arm-sysmic-linux-uclibc/bin/arm-linux-gcc hello.c -o build-arm/hello
+  \end{lstlisting} 
+  ou bien
+  \begin{lstlisting} 
+host$ PATH+=:/opt/arm-sysmic-linux-uclibc/bin
+host$ arm-linux-gcc hello.c -o build-arm/hello
+  \end{lstlisting}
+  Test:
+  \begin{lstlisting} 
 target% ./hello 1
 Hello World
-\end{lstlisting} %$
-  On  installe  très souvent  les  chaines  de cross-compilation  dans
-  \path{/opt}.
+  \end{lstlisting} %$
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Identifier le résultat}
@@ -661,7 +704,7 @@ x86-static/hello: ELF 64-bit LSB executable, x86-64, version 1 (GNU/Linux), stat
     \item Différence de periphérique. Conséquences:
       \begin{itemize}
       \item Drivers différents
-      \item   Bibliotèques   différentes   (exemple:  Qt   dépend   de
+      \item   Bibliothèques   différentes   (exemple:  Qt   dépend   de
         l'acceleration graphique)
       \end{itemize}
     \item   Les  différence   d'architecture   CPU  peuvent   empecher
@@ -689,12 +732,12 @@ x86-static/hello: ELF 64-bit LSB executable, x86-64, version 1 (GNU/Linux), stat
   \item Utilisé pour les petits projets ou les projets non standard
   \item Ressemble souvent à:
     \begin{lstlisting}
-host$ make CC=arm-linux-gcc LD=arm-linux-ld 
+host$ make CC=arm-linux-gcc LD=arm-linux-ld
     \end{lstlisting} %$
   \item Il peut être nécessaire d'avoir la chaine de cross-compilation
     dans son \verb+PATH+.
     \begin{lstlisting}
-host$ PATH+=/opt/arm-unknown-linux-uclibcgnueabi/usr/bin
+host$ PATH+=:/opt/arm-sysmic-linux-uclibcgnueabi/bin
     \end{lstlisting} %$
   \item Ne pas hésiter à lire le \file{Makefile}
   \end{itemize}
@@ -732,45 +775,78 @@ host$ arm-linux-gcc memstat.c -o memstat
 \end{lstlisting} %$
 \end{frame}
 
+\subsection{Les Autotools}
+
 \begin{frame}[fragile=singleslide]{Compiler avec autotools}
   \begin{itemize}
   \item C'est le cas le plus courant
   \item Pour une compilation classique:
-\begin{lstlisting}
+    \begin{lstlisting}
 host$ ./configure
 host$ make
 host% make install
-\end{lstlisting} %$
+    \end{lstlisting} %$
   \item Compilation \emph{out-of-source}. il est nécessaire d'appeller
     le \file{configure} à partir du répertoire de build.
-\begin{lstlisting}
+    \begin{lstlisting}
 host$ mkdir build
 host$ cd build
 host$ ../configure
 host$ make
 host% make install
-\end{lstlisting} %$
+    \end{lstlisting} %$
+  \item L'installation peut nécessiter les droits \emph{root}
+    \begin{itemize} 
+    \item Utiliser \cmd{sudo -E} (attention à l'option \c{secure_path}
+      dans \file{/etc/sudoers})
+    \item Utiliser \cmd{fakeroot}
+    \end{itemize} 
   \end{itemize}
 \end{frame}
 
-\subsection{Les Autotools}
-
 \begin{frame}[fragile=singleslide]{Compiler avec autotools}
   \begin{itemize}
-  \item    Installation   résultat    dans    un   répertoire    tiers
-    (particulièrement utile pour l'utilisation en milieu embarqué)
-\begin{lstlisting}
+  \item  Compilation out-of-source:
+    \begin{lstlisting}
 host$ cd build
 host$ ../configure --prefix=$(pwd)/install
 host$ make
 host$ make install
-\end{lstlisting} %$
+    \end{lstlisting} %$
   \item  Cross-compilation.
-\begin{lstlisting}
-host$ PATH+=/opt/arm-sysmic-linux-uclibc/usr/bin
+    \begin{lstlisting}
+host$ PATH+=/opt/arm-sysmic-linux-uclibcgnueabi/usr/bin
 host$ mkdir build
-host$ ../configure --host=arm-linux --build=i386 --prefix=$(pwd)/../install
+host$ ../configure --host=arm-linux --build=i386 --prefix=$(pwd)/install
 host$ make
+host$ make install
+    \end{lstlisting} %$
+  \item  Il   est  aussi  possible   (parfois  préférable)  d'utiliser
+    \c{DESTDIR=} lors de \cmd{make install} au lieu de \cmd{-\-prefix=}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Compiler avec autotools}
+  Exemple avec \cmd{lzma}:
+  \begin{itemize}
+  \item Récupération et décompression des sources
+\begin{lstlisting}
+host$ wget http://tukaani.org/lzma/lzma-4.32.7.tar.gz
+host$ tar xvzf lzma-4.32.7.tar.gz
+host$ cd lzma-4.32.7
+\end{lstlisting} %$
+  \item Configuration
+\begin{lstlisting}
+host$ mkdir build && cd build
+host$ PATH+=/opt/arm-sysmic-linux-uclibcgnueabi/usr/bin
+host$ ../configure --host=arm-linux --build=i386 --prefix=~/rootfs
+\end{lstlisting} %$
+  \item Compilation
+\begin{lstlisting}
+host$ make
+\end{lstlisting} %$
+  \item Installation
+\begin{lstlisting}
 host$ make install
 \end{lstlisting} %$
   \end{itemize}
@@ -797,31 +873,7 @@ host$ head config.log
   \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile=singleslide]{Compiler un  programme tiers}{Un programme géré par autotools}
-  Exemple avec \cmd{lzma}:
-  \begin{itemize}
-  \item Récupération et décompression des sources
-\begin{lstlisting}
-host$ wget http://tukaani.org/lzma/lzma-4.32.7.tar.gz  
-host$ tar xvzf lzma-4.32.7.tar.gz
-host$ cd lzma-4.32.7
-\end{lstlisting} %$
-  \item Configuration
-\begin{lstlisting}
-host$ mkdir build && cd build
-host$ PATH+=/opt/arm-...-uclibc/usr/bin
-host$ ../configure --host=arm-linux --build=i386 --prefix=$(pwd)/install
-\end{lstlisting} %$
-  \item Compilation
-\begin{lstlisting}
-host$ make
-\end{lstlisting} %$
-  \item Installation
-\begin{lstlisting}
-host$ make install
-\end{lstlisting} %$
-  \end{itemize}
-\end{frame}
+% TODO: cmake
 
 \subsection{Kmake}
 
@@ -829,19 +881,43 @@ host$ make install
   \begin{itemize}
   \item Système de compilation du noyau
   \item Très bien adapté à la cross-compilation
+  \item Adapté au environnements embarqué
+  \item Adapté aux environnements avec beaucoup de configuration
+  \item  Pas un  système de  compilation réel. Composé de :
+    \begin{itemize}
+    \item Kconfig, Système de gestion de configuration
+    \item  Kmake, règles  Makefile  bien étudiées.  Chaque projet  les
+      adapte à ces besoins
+    \end{itemize}
+  \item Application de la règle: "Pas générique mais simple à hacker"
+  \item Dépend principalement de \cmd{gmake}
+  \item Exemple avec busybox:
+    \begin{lstlisting}
+host$ wget http://busybox.net/downloads/busybox-1.18.3.tar.bz2
+host$ tar xvjf busybox-1.18.3.tar.bz2
+host$ cd busybox-1.18.3
+host$ make help
+    \end{lstlisting} %$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Compiler un programme tiers}{Kconfig}
+  \begin{itemize}
   \item Pour configurer les options:
-    \begin{itemize}    
-    \item En ncurses
+    \begin{itemize}
+    \item En ncurses (2 versions)
 \begin{lstlisting}
 host% apt-get install libncurses5-dev
 host$ make ARCH=arm CROSS_COMPILE=arm-linux- menuconfig
+host$ make ARCH=arm CROSS_COMPILE=arm-linux- nconfig
 \end{lstlisting} %$
-    \item En Qt3
+    \item En Qt4
 \begin{lstlisting}
-host% apt-get install libqt3-mt-dev
+host% apt-get install libqt4-dev
 host$ make ARCH=arm CROSS_COMPILE=arm-linux- xconfig
 \end{lstlisting} %$
     \end{itemize}
+  \item Permettent d'effectuer des recherches
   \item Ne pas oublier d'installer les headers des bibliothèques
   \end{itemize}
 \end{frame}
@@ -857,56 +933,25 @@ host$ make ARCH=arm CROSS_COMPILE=arm-linux-
 host$ mkdir build
 host$ make ARCH=arm CROSS_COMPILE=arm-linux- O=build
 \end{lstlisting} %$
-  \end{itemize}
-\end{frame}
-
-\begin{frame}[fragile=singleslide]{Compiler un programme tiers}{Kconfig}
-  Principaux points importants:
-  \begin{itemize}
-  \item Adapté au environnements embarqué
-  \item Adapté aux environnements avec beaucoup de configuration
-  \item Initié par le Kernel Linux
-  \item  Pas un  système de  compilation réel. Composé de :
-    \begin{itemize}
-    \item Kconfig, Système de gestion de configuration
-    \item  Kmake, règles  Makefile  bien étudiées.  Chaque projet  les
-      adapte à ces besoins
-    \end{itemize}
-  \item Application de la règle: "Pas générique mais simple à hacker"
-  \item Dépend principalement de \cmd{gmake}
   \item Mode verbose: \verb+V=1+
-  \item Permet d'effectuer des recherche
   \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Compiler un programme tiers}{Kconfig}
   Test avec busybox:
   \begin{itemize}
-  \item Préparation
-\begin{lstlisting}
-host$ wget http://busybox.net/downloads/busybox-1.18.3.tar.bz2
-host$ tar xvjf busybox-1.18.3.tar.bz2
-\end{lstlisting} %$
   \item Récupération d'une configuration par défaut
 \begin{lstlisting}
-host$ make help
 host$ make ARCH=arm CROSS_COMPILE=arm-linux- O=build defconfig
 \end{lstlisting} %$
   \item Personnalisation de la configuration
 \begin{lstlisting}
 host% apt-get install libncurses5-dev
 host$ make ARCH=arm CROSS_COMPILE=arm-linux- O=build menuconfig
-# Supprimer inetd et le support NFS
 \end{lstlisting} %$
-  \end{itemize}
-\end{frame}
-
-\begin{frame}[fragile=singleslide]{Compiler un programme tiers}{Kconfig}
-  Test avec busybox:
-  \begin{itemize}
   \item Compilation
 \begin{lstlisting}
-host$ make ARCH=arm CROSS_COMPILE=arm-linux- 
+host$ make ARCH=arm CROSS_COMPILE=arm-linux-
 \end{lstlisting} %$
   \item Installation
 \begin{lstlisting}
@@ -927,7 +972,7 @@ host$ make ARCH=arm CROSS_COMPILE=arm-linux- install
   \item Deux solutions:
     \begin{itemize}
     \item Résoudre le probleme et envoyer un patch
-    \item Compiler sur la target. 
+    \item Compiler sur la target.
       \begin{itemize}
       \item Vous avez alors besoin d'un gcc natif sur la target
       \item Un émulateur type qemu peut vous aider
@@ -954,7 +999,7 @@ host$ make ARCH=arm CROSS_COMPILE=arm-linux- install
 \begin{frame}[fragile=singleslide]{Créer un projet avec autotools}
   Fonctionnement des autotools:
   \begin{itemize}
-  \item Préparation 
+  \item Préparation
 \begin{lstlisting}
 % apt-get install automake autoconf
 \end{lstlisting}
@@ -1032,7 +1077,7 @@ $ make install
 \begin{frame}[fragile=singleslide]{Créer un projet avec autotools}
   Si \cmd{automake}  est appellé avec  \verb+-gnits+, \verb+distcheck+
   effectue des vérification supplémentaires sur la documentation,
-  etc... 
+  etc...
   \\[2ex]
   La fonctionnalité \verb+distcheck+ est  le point fort souvent énoncé
   des autotools.
@@ -1060,11 +1105,11 @@ host$ make CC=arm-linux-gcc CFLAGS=-Wall
   les entête systèmes et \verb+"+ pour les entêtes du projet)
   % Pas besoin d'ajouter VPATH = . Du coup, c'est la meme chose que Makefile.1
   %\lstinputlisting{samples/hello/Makefile.2}
-  Testons:
+  Testons: 
 \begin{lstlisting}
 host$ cd build
-host$ make -f ../Makefile VPATH=.. CC=arm-linux-gcc 
-\end{lstlisting} %$  
+host$ make -f ../Makefile VPATH=.. CC=arm-linux-gcc
+\end{lstlisting} %$
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Créer un projet sans autotools}
@@ -1084,21 +1129,48 @@ host$ make -f ../Makefile VPATH=.. CC=arm-linux-gcc
 
 \begin{frame}[fragile=singleslide]{Créer un projet sans autotools}
   Nous pouvons  ajouter des alias  pour nous aider dans  les commandes
-  complexes 
-  \lstinputlisting[firstline=11]{samples/hello/Makefile.5}
+  complexes
+  \lstinputlisting[firstline=10]{samples/hello/Makefile.5}
   \note[item]{TODO: Ajouter des \#ifdef CONFIG pour faire dans Kconfig}
   \note[item]{Parler de apt-get source (-b), dpkg -L, dpkg -l, dpkg-buildpackage}
 \end{frame}
 
 
 \begin{frame}[fragile=singleslide]{Créer un projet sans autotools}
-  En puissant ce fonctionnement un peu plus loin, on obtient le Kmake.\\[2ex]
-
+  En puissant ce fonctionnement un peu plus loin, on obtient le Kmake.\\
+  Un système  génère un fichier contenant toutes  les options.  Kmake,
+  utilise des variables pour rendre la compilation conditionnelle:
+\begin{lstlisting}
+HELLO_$(CONFIG1) += hello.o
+\end{lstlisting}
   Néanmoins,  le résultat  n'est  pas portable  entre les  différentes
   implémentation de \cmd{make}.
 \end{frame}
 
-%%% Local Variables: 
+\section{Bibliothèques courantes}
+
+\begin{frame}[fragile=singleslide]{Bibliothèques courantes}
+  Il existe  des milliers de  bibliothèques et d'API  disponibles pour
+  Linux. Parmi elles:
+  \begin{itemize} 
+  \item Les  appels systèmes. Inclus  avec le noyau  Linux. Documentés
+    par les pages de man. Liste sur \man{syscalls(2)}
+  \item L'interface  Posix.  Fournis par la libc.   Documentés par les
+    pages    de   man   des    sections   3    ou   3posix    ou   sur
+    \url{http://www.unix.org/version3/}
+  \item Les bibliothèques très  utilisées: libapr, glibc, ømq, ...  La
+    documentation se trouve avec les source ou sur leur site web.
+  \item Qt.  Bibliothèque très complète pouvant être  utilisé pour des
+    usage    très   divers:    embarqué,    multimédia,   etc...    En
+    C++. Documentation sur \url{http://qt-project.org/doc/qt-5.0}
+  \item  Regarder  les packets  inclus  dans  Buildroot  ou sur  votre
+    distribution permet  d'avoir une  idée des bibliothèques  les plus
+    courantes
+  \end{itemize} 
+\end{frame} 
+
+
+%%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "main"
-%%% End: 
+%%% End:
