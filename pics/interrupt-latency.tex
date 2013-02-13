@@ -1,0 +1,11 @@
+   \begin{tikzpicture}[scale=0.8]
+     \tikzstyle{msize}=[main, minimum height=2cm, font=\LARGE]
+     \draw
+       node[anchor=south]                at (2, 3) {Interruption}
+       edge[->, line width=0.5mm]  (2, 1.5)
+       node[msize, cblue,  minimum width=4cm, text width=4cm] at (  0, 0) {Tache}
+       node[msize, cgreen, minimum width=3cm, text width=3cm] at (3.5, 0) {Latence}
+       node[msize, cblue,  minimum width=6cm, text width=6cm] at (  8, 0) {Tache de priorité supérieure}
+       (-2, -1.2) edge[->, line width=0.5mm]  (11, -1.2)
+       node at (10, -1.5) {temps};
+   \end{tikzpicture}
