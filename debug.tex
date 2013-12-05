@@ -64,7 +64,7 @@ gdb> bt
     \end{lstlisting}
   \item Afficher les variable locales à la fonction
     \begin{lstlisting}
-gdb> i locales
+gdb> i locals
     \end{lstlisting}
   \item Afficher les arguments de la fonction
     \begin{lstlisting}
@@ -139,26 +139,22 @@ gdb> thread 1
   \begin{itemize}
   \item Compilation
     \begin{lstlisting}
-host$ arm-linux-gcc -Wall -g3 -c hello.c -o hello.o
-host$ arm-linux-gcc -Wall -g3 hello.o -o hello-arm-dbg
+host$ arm-linux-gcc -g3 -c hello.c -o hello.o
+host$ arm-linux-gcc -g3 hello.o -o hello-arm-dbg
     \end{lstlisting}
   \item Démarrage du serveur de debug
     \begin{lstlisting}
 target$ gdbserver *:1234 hello
-host$ arm-ulibceabi-gdb
+host$ arm-ulibceabi-gdb hello
+    \end{lstlisting}
+  \item Configuration des chemins
+    \begin{lstlisting}
+> set solib-absolute-prefix /home/user/nfs
     \end{lstlisting}
   \item Connexion au serveur de debug
     \begin{lstlisting}
 > target remote target:1234
     \end{lstlisting}
-  \item Configuration des chemins
-    \begin{lstlisting}
-> set solib-absolute-prefix /home/user/nfs-root
-    \end{lstlisting}
-  \item Chargement des symboles de debug
-    \begin{lstlisting}
-> exec-file hello
-    \end{lstlisting}  
   \end{itemize}
 \end{frame}
 
@@ -175,10 +171,10 @@ target$ gdbserver *:1234 --attach $!
     \end{lstlisting}  
   \item configuration classque de \cmd{gdb}
     \begin{lstlisting}
-host$ arm-ulibceabi-gdb
-> target remote target:1234
-> set solib-absolute-prefix /home/user/nfs-root
+host$ arm-linux-gdb
 > exec-file hello
+> set solib-absolute-prefix /home/user/nfs
+> target remote target:1234
     \end{lstlisting}  
   \item   Remarque:   Si   vous   dugger   une   programme   utilisant
     \file{libpthread},     vous     devez     avoir     le     fichier
@@ -305,7 +301,7 @@ uboot> set bootargs ${bootargs} kgdboc=ttyS0 kgdbwait
 uboot> tftp
 <Ctrl-a q>
 host$ arm-linux-gdb vmlinux 
-gdb> target remote /dev/ttyUSB1
+gdb> target remote /dev/ttyUSB0
     \end{lstlisting} 
   \end{itemize}
 \end{frame}
@@ -322,7 +318,7 @@ gdb> target remote /dev/ttyUSB1
     \file{/sys/modules/*/sections}
   \item On peut alors les donner à gdb avec \c{add-symbol-file}:
     \begin{lstlisting} 
-target% cat /sys/modules/my_modules/sections
+target% cat /sys/module/mod2_chr/sections
 host$ gdb vmlinux
 > target remote 192.168.1.55:2345
 > add-symbol-file my_modules.ko 0xd0832000 \
@@ -368,7 +364,11 @@ host$ gdb vmlinux
     bibliothèques seront recherchées.
   \item  \cmd{LD\_PRELOAD}  permet  de  précharger  une  bibliothèque.
     Ainsi les  symboles définis dans cette  bibliothèque surcharge les
-    symboles standards:
+    symboles standards
+  \end{itemize}
+\end{frame}  
+
+\begin{frame}[fragile=singleslide]{\cmd{ld.so}}
     \begin{lstlisting}[language=c]
 #include <stdio.h>
 #include <unistd.h>
@@ -381,7 +381,6 @@ unsigned int sleep(unsigned int s) {
     return real_sleep(5 * s);
 }
     \end{lstlisting} 
-  \end{itemize}
 \end{frame}  
 
 \begin{frame}[fragile=singleslide]{\cmd{ld.so}}
@@ -460,12 +459,12 @@ target$ ltrace -l /lib/libc.so.0 -e malloc -e free /bin/ls
   \begin{itemize}
   \item Compilation
     \begin{lstlisting}
-host$ cd x86-cov
-host$ gcc --coverage ../hello.c -o hello-cov
+host$ mkdir x86-cov
+host$ gcc --coverage hello.c -o x86-cov/hello
     \end{lstlisting} 
   \item Execution d'un scénario d'utilisation
     \begin{lstlisting}
-host$ ./hello-cov
+host$ x86-cov/hello
     \end{lstlisting} 
   \item Conversion des fichiers  \file{gcda} dans un format lisible
     \begin{lstlisting}
@@ -476,9 +475,8 @@ host$ for i in **/*.gcda; do
   \item  Convertion  des  fichier  \file{gcda} en  HTML  en  utilisant
     \cmd{lcov}/\cmd{genhtml}
     \begin{lstlisting}
-host$ lcov -i -o coverage-x86.info -b .. -d .
+host$ lcov -i -o coverage-x86.info -b . -d x86-cov
 host$ genhtml -o html coverage-x86.info
-host$ firefox html/index.html
     \end{lstlisting} 
   \end{itemize}
 \end{frame}
@@ -489,17 +487,16 @@ host$ firefox html/index.html
   \item On précise le répertoire ou les fichier doivent être stockés
     \begin{lstlisting}
 host$ cd arm-cov
-host$ arm-linux-gcc --fprofile-generate=/tmp/hello --coverage ../hello.c -o hello-arm-cov
+host$ arm-linux-gcc --fprofile-generate=/tmp/data --coverage ../hello.c -o hello-arm-cov
     \end{lstlisting} 
   \item On execute sur la cible
     \begin{lstlisting}
 host$ scp hello-arm-cov root@target:
 target$ ./hello-arm-cov
-target$ exit
     \end{lstlisting} 
   \item On récupère les résultats pour les traiter sur le host
     \begin{lstlisting}
-host$ scp -r root@target:/tmp/hello . 
+host$ scp -r root@target:/tmp/data . 
     \end{lstlisting} 
   \end{itemize}
 \end{frame}
@@ -511,7 +508,7 @@ host$ scp -r root@target:/tmp/hello .
 host$ for i in **/*.gcda; do
 > arm-linux-gcov -o $(dirname $i) $i
 > done
-host$ lcov -i -o coverage-arm.info -b .. -d hello --gcov-tool arm-linux-gcov
+host$ lcov -i -o coverage-arm.info -b .. -d data --gcov-tool arm-linux-gcov
 host$ genhtml -o html coverage-arm.info
 host$ firefox html/index.html
     \end{lstlisting} 

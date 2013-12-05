@@ -25,7 +25,7 @@
   \emph{General setup}:
   \begin{itemize} 
   \item \emph{Prompt for  development and/or incomplete code/drivers}:
-    Débloque  les  options  de  compilation  pour  les  drivers/option
+    Débloque  les  options  de  compilation  pour  les  drivers/options
     instables (staging, etc...)
   \item  \emph{Cross-compiler  tool  prefix}  :  Affecte  la  variable
     \c{CROSS_COMPILE}
@@ -38,7 +38,7 @@
     l'identifiant git  à la version. Indispensable dans  les phases de
     développement
   \item \emph{Kernel  compression mode}: Permet de choisir  le type de
-    compression.   Chaque  algorithme   a  ces  inconvénients  et  ses
+    compression.   Chaque  algorithme   a  ses  inconvénients  et  ses
     intérêts.
     \note[item]{cf. \url{http://free-electrons.com/blog/lzo-kernel-compression}}
   \item \c{SWAP}: Permet de gérer un espace d'échange dur un disque
@@ -62,7 +62,7 @@
 \begin{frame}[fragile=singleslide]{Les périphériques de block}
   \c{MODULES}: Active la gestion des modules
   \\[2ex]
-  \c{BLOCK}: Il est possible  de désactiver la gestion des périphérique
+  \c{BLOCK}: Il est possible  de désactiver la gestion des périphériques
   de block si votre système n'utilise que de la mémoire flash.
   \begin{itemize} 
   \item \emph{IO  Schedulers}: Permet de choisir  un ordonnanceur d'E/S
@@ -73,7 +73,7 @@
   \item Permet de choisir le type d'architecture et de chipset
   \item Il est  possible de désactiver certains cache  lors des phases
     de développement
-  \item Vous trouverez aussi dans  ce menu les options relative au jeu
+  \item Vous trouverez aussi dans  ce menu les options relatives au jeu
     d'instructions accepté
   \end{itemize}
 \end{frame}
@@ -92,7 +92,7 @@
     (finalement  négligeable avec  l'ordonnanceur  en $o(1)$).  Permet
     surtout de gagner en consommation électrique.
   \item   \c{HIGH_RES_TIMER}:  Gère  les   timers  avec   une  horloge
-    différente de  l'ordonnanceur (l'horloge  est alors géré  comme un
+    différente de  l'ordonnanceur (l'horloge  est alors gérée  comme un
     périphérique  à  part).    Permet  d'obtenir  une  bien  meilleure
     précision sur les mesure de  temps, à condition que votre matériel
     possède une horloge \emph{HighRes}.
@@ -229,10 +229,9 @@
 \begin{frame}[fragile=singleslide]{Configuration des Drivers}
   \emph{Device Drivers} Des centaines de drivers. Notons:
   \begin{itemize}
-  \item   \emph{path to uevent helper}:  Le  programme   apellé  lorsqu'un
-    nouveau            périphérique            est           détecté
-    (cf.              \c{/proc/sys/kernel/hotplug}             et
-    \c{/sys/kernel/uevent_helper})
+  \item \emph{path  to uevent  helper}: Le programme  apellé lorsqu'un
+    nouveau périphérique est détecté (cf. \c{/proc/sys/kernel/hotplug}
+    et \c{/sys/kernel/uevent_helper})
   \item  \emph{Maintain a devtmpfs  filesystem to  mount at  /dev}: Un
     tmpfs  spécifique  pour  les  devices  automatiquement  monté  sur
     \file{/dev}.   Les  fichiers  devices sont  alors  automatiquement
@@ -280,66 +279,25 @@ module_init
     \begin{lstlisting} 
 module_exit
     \end{lstlisting} 
-  \item Déclare un paramètre
-    \begin{lstlisting}
-module_param
-    \end{lstlisting}
-  \item Documente un paramètre pour modinfo
-    \begin{lstlisting}
-MODULE_PARM_DESC
-    \end{lstlisting}
   \item Déclare un auteur du fichier. Peut apparaitre plusieurs fois.
     \begin{lstlisting}
 MODULE_AUTHOR
     \end{lstlisting}
-  \end{itemize}
-\end{frame}
-\begin{frame}[fragile=singleslide]{Quelques macros de base}
-  \begin{itemize} 
   \item Description du modules
     \begin{lstlisting}
 MODULE_DESCRIPTION
-    \end{lstlisting}
-  \item License. Indispensable
-    \begin{lstlisting}
-MODULE_LICENSE
     \end{lstlisting}
   \item Version du module
     \begin{lstlisting}
 MODULE_VERSION
     \end{lstlisting}
-  \item Rend le symbole visible par les autres modules.  Il sera alors
-    pris en compte dans le calcul des dépendances de symboles.
-    \begin{lstlisting}
-EXPORT_SYMBOL
-    \end{lstlisting} 
-  \item Idem \cmd{EXPORT\_SYMBOL} mais  ne permet sont utilisation que
-    pour les modules GPL
-    \begin{lstlisting}
-EXPORT_SYMBOL_GPL
-    \end{lstlisting} 
   \end{itemize}
-\end{frame}
-
-\subsection{Licences}
-
-\begin{frame}[fragile=singleslide]{Parlons des licenses}
-  Le noyau est sous license GPL. Néanmoins, le débat est ouvert sur la
-  possibilité  qu'un module  propriétaire puisse  se linker  avec.  Le
-  débat n'est pas  tranché. Le noyau laisse la  posisbilité à l'auteur
-  d'exporter   ses   modules   avec   \verb+EXPORT_SYMBOL+   ou   avec
-  \verb+EXPORT_SYMBOL_GPL+.
-\\[2ex]
-  Si vous développez un module Propriétaire, vous n'aurez pas accès à
-  toute l'API du noyau (environ 90\% seulement).
-\\[2ex]
-  Il est néanmoins possible de contourner le problème en utilisant un
-  module intermédiaire comme proxy logiciel.
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Les modules noyau}{my\_module}
   \lstinputlisting[language=c,lastline=14]{samples/mod0_min/mod0_min.c}
 \end{frame}
+
 
 \subsection{Compilation externe}
 
@@ -351,69 +309,23 @@ obj-m := my_module.o
   Puis, on appelle:
   \begin{lstlisting}
 host$ KDIR=/lib/modules/$(uname -r)/build
-host$ make -C $KDIR ARCH=arm SUBDIRS=$(pwd) modules
+host$ make -C $KDIR ARCH=arm M=$(pwd) modules
   \end{lstlisting} % $
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Les modules noyau}{my\_module}
   Pour améliorer le processus, on ajoute ces lignes dans le Makefile:
   \begin{lstlisting}
 KDIR ?= /lib/modules/$(shell uname -r)/build
-
-default:
-        $(MAKE) -C $(KDIR) SUBDIRS=$(shell pwd) modules
+default: modules
+install: modules_install
+modules modules_install help clean:
+        $(MAKE) -C $(KDIR) M=$(shell pwd) $@
   \end{lstlisting}
   et on appelle
   \begin{lstlisting}
-host$ make ARCH=arm CROSS_COMPILE=arm-linux- KDIR=../linux-2.6/usb-a9260 
+host$ make ARCH=arm CROSS_COMPILE=arm-linux- KDIR=../linux-3.5.7/usb-a9260 
   \end{lstlisting} % $
-\end{frame}
-
-\subsection{Compilation interne}
-
-\begin{frame}[fragile=singleslide]{Compilation avec Kbuild}
-  Fichier \file{Makefile} à l'intérieur de l'arborescence noyau:
-  \begin{lstlisting}
-obj-$(MY_COMPILE_OPTION) := my_module.o  
-  \end{lstlisting} % $
-  \lstinline+$(MY_COMPILE_OPTION)+ sera remplacé par :
-  \begin{itemize}
-  \item ø: Non compilé
-  \item m: compilé en module
-  \item y: compilé en statique
-  \end{itemize}
-  Fichier \file{Kconfig}:
-  \lstinputlisting[language=]{samples/mod0_min/Kconfig}
-\end{frame} 
-
-\begin{frame}[fragile=singleslide]{Utilisation de Kconfig}
-  Chaque entrée \c{config} prend comme attribut:
-  \begin{itemize} 
-  \item Son type et sa description en une ligne:
-    \begin{itemize}
-    \item \c{tristate}, le plus  classique pouvant prendre les valeurs
-     ø, m et y
-    \item \c{bool} pouvant prendre seulement les valeurs n et y
-    \item \c{int} prennant un nombre
-    \item \c{string} prennant une chaîne
-    \end{itemize} 
-  \item \c{default} Sa valeur par défaut
-  \item  \c{depends on} L'option  n'apparait si  l'expression suivante
-    est vraie.  Il est possible de spécifier  des conditions complexes
-    avec les opérateurs \c{&&}, \c{||}, \c{=} et \c{\!=}
-  \item \c{select}  Active automatiquement les options  en argument si
-    l'option est activée
-  \item   \c{help}  Description   détaillée  de   l'option.   Si  votre
-    description ne  tient pas en moins  de 20 lignes,  pensez à écrire
-    une documentation dans \file{Documentation} et à y faire référence
-  \end{itemize} 
-\end{frame}
-
-\begin{frame}[fragile=singleslide]{Utilisation de Kconfig}
-  Il est aussi possible:
-  \begin{itemize} 
-  \item D'inclure d'autres fichiers avec \c{source}
-  \item De déclarer un sous menu avec \c{menu}
-  \item  De demander  un choix  parmis un  nombre fini  d'options avec
-    \c{choice}
-  \end{itemize} 
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Gérer les modules}
@@ -477,6 +389,91 @@ MODULE_PARM_DESC(param, "Display this value at loading and unloading");
   \end{itemize}
 \end{frame}
 
+\subsection{Licences}
+
+\begin{frame}[fragile=singleslide]{Quelques macros de base}
+  \begin{itemize} 
+  \item License. Indispensable
+    \begin{lstlisting}
+MODULE_LICENSE
+    \end{lstlisting}
+  \item Rend le symbole visible par les autres modules.  Il sera alors
+    pris en compte dans le calcul des dépendances de symboles.
+    \begin{lstlisting}
+EXPORT_SYMBOL
+    \end{lstlisting} 
+  \item Idem \cmd{EXPORT\_SYMBOL} mais  ne permet sont utilisation que
+    pour les modules GPL
+    \begin{lstlisting}
+EXPORT_SYMBOL_GPL
+    \end{lstlisting} 
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Parlons des licenses}
+  Le noyau est sous license GPL. Néanmoins, le débat est ouvert sur la
+  possibilité  qu'un module  propriétaire puisse  se linker  avec.  Le
+  débat n'est pas  tranché. Le noyau laisse la  posisbilité à l'auteur
+  d'exporter   ses   modules   avec   \verb+EXPORT_SYMBOL+   ou   avec
+  \verb+EXPORT_SYMBOL_GPL+.
+\\[2ex]
+  Si vous développez un module Propriétaire, vous n'aurez pas accès à
+  toute l'API du noyau (environ 90\% seulement).
+\\[2ex]
+  Il est néanmoins possible de contourner le problème en utilisant un
+  module intermédiaire comme proxy logiciel.
+\end{frame}
+
+\subsection{Compilation interne}
+
+\begin{frame}[fragile=singleslide]{Compilation avec Kbuild}
+  Fichier \file{Makefile} à l'intérieur de l'arborescence noyau:
+  \begin{lstlisting}
+obj-$(CONDIF_MY_OPTION) := my_module.o  
+  \end{lstlisting} % $
+  \lstinline+$(CONFIG_MY_OPTION)+ sera remplacé par :
+  \begin{itemize}
+  \item ø: Non compilé
+  \item m: compilé en module
+  \item y: compilé en statique
+  \end{itemize}
+  Fichier \file{Kconfig}:
+  \lstinputlisting[language=]{samples/mod0_min/Kconfig}
+\end{frame} 
+
+\begin{frame}[fragile=singleslide]{Utilisation de Kconfig}
+  Chaque entrée \c{config} prend comme attribut:
+  \begin{itemize} 
+  \item Son type et sa description en une ligne:
+    \begin{itemize}
+    \item \c{tristate}, le plus  classique pouvant prendre les valeurs
+     ø, m et y
+    \item \c{bool} pouvant prendre seulement les valeurs n et y
+    \item \c{int} prennant un nombre
+    \item \c{string} prennant une chaîne
+    \end{itemize} 
+  \item \c{default} Sa valeur par défaut
+  \item  \c{depends on} L'option  n'apparait si  l'expression suivante
+    est vraie.  Il est possible de spécifier  des conditions complexes
+    avec les opérateurs \c{&&}, \c{||}, \c{=} et \c{\!=}
+  \item \c{select}  Active automatiquement les options  en argument si
+    l'option est activée
+  \item   \c{help}  Description   détaillée  de   l'option.   Si  votre
+    description ne  tient pas en moins  de 20 lignes,  pensez à écrire
+    une documentation dans \file{Documentation} et à y faire référence
+  \end{itemize} 
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Utilisation de Kconfig}
+  Il est aussi possible:
+  \begin{itemize} 
+  \item D'inclure d'autres fichiers avec \c{source}
+  \item De déclarer un sous menu avec \c{menu}
+  \item  De demander  un choix  parmis un  nombre fini  d'options avec
+    \c{choice}
+  \end{itemize} 
+\end{frame}
+
 \begin{frame}[fragile=singleslide]{Les modules noyau}{my\_module}
   Quelques conseils:
   \begin{itemize} 
@@ -492,6 +489,18 @@ host$ scripts/cleanfile my_module.c
   \end{itemize} 
 \end{frame}
 
+\begin{frame}[fragile=singleslide]{Obtenir de la documentation}
+  \begin{lstlisting}
+host$ make mandocs
+host% make installmandocs
+  \end{lstlisting}  % $
+  \begin{itemize}
+    \item Paquet linux-doc: \file{/usr/share/doc/linux-doc/html/kernel-api}
+    \item Pas de paquet pour ces pages de man 
+    %\item ou pages de man sur \url{http://tfm.cz}
+  \end{itemize}
+\end{frame}
+
 \section{Notre premier device}
 
 \begin{frame}[fragile=singleslide]{Communiquer avec le noyau}{char\_dev}
@@ -504,7 +513,7 @@ target% mknod my_chardev c <major> <minor>
   \item Communication en écrivant/lisant des données
     \begin{lstlisting}
 target% insmod my_chardev.ko
-target% echo toto >  my_dhardev
+target% echo toto > my_chardev
 target% cat my_chardev
     \end{lstlisting}
   \item Possibilité de faire un peu de configuration par les ioctl
@@ -512,38 +521,164 @@ target% cat my_chardev
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Communiquer avec le noyau}{char\_dev}
-  Exo: Faire un pipe avec un buffer:
+  Tentons de faire un driver qui renvois la dernière chaine recue:
   \begin{lstlisting}
 target% insmod my_chardev.ko
-target% echo toto >  my_dhardev
+target% mknod my_chardev c 249 0
+target% echo toto >  my_chardev
 target% cat my_chardev
 toto
   \end{lstlisting}
-  \begin{itemize}
-  \item \verb+copy_to_user+, \verb+copy_from_user+
-  \item \verb+kcalloc+, \verb+kfree+
-  \item \verb+register_chrdev+, \verb+unregister_chrdev_region+
-  \item   \verb+mutex_lock+,  \verb+mutex_unlock+,  \verb+mutex_init+,
-    \verb+mutex_destroy+
-  \item \verb+memmove+
-  \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Communiquer avec le noyau}{char\_dev}
-   Vérifions votre comportement:
-   \begin{lstlisting}
-target% insmod my_chrdev.ko
-target% mknod my_chrdev c 251 0
-target$ for i in {1..64}; echo "$i " > my_chrdev
-target$ cat my_chrdev
-target% rmmod my_chrdev
-target% insmod my_chrdev.ko buf_size=2
-target$ echo foo > /dev/my_chrdev
-target$ cat /dev/my_chrdev
-target% rmmod my_chrdev
-target% insmod my_chrdev.ko buf_size=-1
-    \end{lstlisting} % $
+  Enregistrement du \emph{file device}
+  \begin{lstlisting}[language=c]
+#include <linux/fs.h>
+static int major = 0;
+
+static int __init m_init(void) {
+  major = register_chrdev(0, "m_chrdev", &m_fops);
+}
+
+static void __exit m_exit(void) {
+  unregister_chrdev(major, "m_chrdev");
+}
+
+  \end{lstlisting}
 \end{frame}
+
+\begin{frame}[fragile=singleslide]{Communiquer avec le noyau}{char\_dev}
+  \cmd{&m_fops} est une structure contenant les références des callbacks à appeller par le noyau (cf. \cmd{include/linux/fs.h}):
+  \begin{lstlisting}[language=c]
+static struct file_operations m_fops = {
+  .owner          = THIS_MODULE,
+  .read           = m_read,
+  .write          = m_write,
+};
+  \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Communiquer avec le noyau}{char\_dev}
+Nous devons maintenant implémenter \cmd{m_read} et \cmd{m_write}
+  \begin{lstlisting}[language=c]
+static ssize_t m_read(struct file *file, char *user_buf, size_t count, loff_t *ppos) {
+    return 0;
+}
+
+static ssize_t m_write(struct file *file, const char *user_buf, size_t count, loff_t *ppos) {
+    return count;
+}
+  \end{lstlisting}
+Effectuons un premier test:
+  \begin{lstlisting}
+target% echo toto > my_chardev
+target% cat my_chardev
+  \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Communiquer avec le noyau}{char\_dev}
+Ajoutons la gestion du buffer. Il est necessaire de prendre des précaution pour 
+accéder à la mémoire du programme utilisateur.
+  \begin{lstlisting}[language=c]
+static char global_buf[255];
+
+static ssize_t m_read(struct file *file, char *user_buf, size_t count, loff_t *ppos) {
+    if (count > idx)
+        count = idx;
+    copy_to_user(user_buf, global_buf, count);
+    idx = 0;
+    return count;
+}
+
+static ssize_t m_write(struct file *file, const char *user_buf, size_t count, loff_t *ppos) {
+    if (count > 255)
+        count = 255;
+    copy_from_user(global_buf, user_buf, count);
+    idx = count;
+    return count;
+}
+  \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Communiquer avec le noyau}{char\_dev}
+Protégeons notre code contre les accès concurent:
+  \begin{lstlisting}[language=c]
+#include <linux/mutex.h>
+static struct mutex mutex;
+
+static ssize_t m_read(struct file *file, char *user_buf, size_t count, loff_t *ppos) {
+  mutex_lock(&mutex);
+[...]
+  mutex_unlock(&mutex);
+  return count;
+}
+
+static ssize_t m_write(struct file *file, const char *user_buf, size_t count, loff_t *ppos) {
+  mutex_lock(&mutex);
+[...]
+  mutex_unlock(&mutex);
+  return count;
+}
+  \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Communiquer avec le noyau}{char\_dev}
+  Ajoutons un \emph{ioctl}:
+  \begin{lstlisting}[language=c]
+#include "mod2_chr.h"
+static long m_ioctl(struct file *file, unsigned int nr, unsigned long arg) {
+  if (nr == FIFO_GET_LEN) {
+    int ret = copy_to_user((void *) arg, &idx, sizeof(idx));
+    return ret;
+  }
+  return -EINVAL;
+}
+static struct file_operations m_fops = {
+[...]
+  .unlocked_ioctl = m_ioctl,
+};
+
+  \end{lstlisting}
+Dans \cmd{mod2_chr.h}:
+  \begin{lstlisting}[language=c]
+#include <linux/ioctl.h>
+
+#define FIFO_GET_LEN _IOR('f', 0x01, int)
+  \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Communiquer avec le noyau}{char\_dev}
+Testons:
+  \begin{lstlisting}[language=c]
+#include "mod2_chr.h"
+
+int main(int argc, char **argv) {
+        int ret, arg = 42;
+        int fd = open(argv[1], O_RDONLY);
+        ret = ioctl(fd, FIFO_GET_LEN, &arg);
+        printf("Returned %m with argument %d\n", -ret, arg);
+        return 0;
+}
+  \end{lstlisting}
+\end{frame}
+
+
+%\begin{frame}[fragile=singleslide]{Communiquer avec le noyau}{char\_dev}
+%   Vérifions votre comportement:
+%   \begin{lstlisting}
+%target% insmod my_chrdev.ko
+%target% mknod my_chrdev c 251 0
+%target$ for i in {1..64}; echo "$i " > my_chrdev
+%target$ cat my_chrdev
+%target% rmmod my_chrdev
+%target% insmod my_chrdev.ko buf_size=2
+%target$ echo foo > /dev/my_chrdev
+%target$ cat /dev/my_chrdev
+%target% rmmod my_chrdev
+%target% insmod my_chrdev.ko buf_size=-1
+%    \end{lstlisting} % $
+%\end{frame}
  
 % \begin{frame}{Les ioctls}
 %   C'est un appel système qui permet de faire passer une structure
@@ -579,17 +714,6 @@ target% insmod my_chrdev.ko buf_size=-1
 % Aller plus loin: \file{device.h}: Implémentation d'un device complet.
 % \end{frame}
 
-\begin{frame}[fragile=singleslide]{Obtenir de la documentation}
-  \begin{lstlisting}
-host$ make mandocs
-host% make installmandocs
-  \end{lstlisting}  % $
-  \begin{itemize}
-    \item Paquet linux-doc: \file{/usr/share/doc/linux-doc/html/kernel-api}
-    \item Pas de paquet pour ces pages de man 
-    \item ou pages de man sur \url{http://tfm.cz}
-  \end{itemize}
-\end{frame}
 
 % TODO: Faire un device usb-gadget/hid 
 
