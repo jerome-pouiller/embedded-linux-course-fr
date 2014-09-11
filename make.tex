@@ -127,7 +127,7 @@ uboot> help
   \item Mise en place:
     \begin{lstlisting}
 host% apt-get install tftp-hpa tftpd-hpa
-host% cp hello/build-arm/hello /srv/tftp
+host% cp hello/build-arm/hello /var/lib/tftpboot
     \end{lstlisting}
   \item Test en local
     \begin{itemize}
@@ -143,6 +143,8 @@ host$ tftp 127.0.0.1 -c get hello
       \end{lstlisting} % $
     \end{itemize}
     \note[item]{Il est possible de parler de inetd et /etc/default/atftpd}
+  \item  Il  est  possible  de  modifier le  répertoire  partagé  dans
+    \file{/etc/default/tftpd-hpa}  
   \item En cas de  problème, consultez les logs (\file{/var/log/syslog}
     ou \file{/var/log/daemon.log})
 % A priori, ca n'est plus vrai avec les nouvelles version:
@@ -158,8 +160,6 @@ host$ tftp 127.0.0.1 -c get hello
   %   \file{/etc/inetd.conf} ou dans \file{/etc/default/atftpd} (suivant
   %   le mode d'éxecution)
   %   \note[item]{Parler de inetd}
-  \item  Il  est  possible  de  modifier le  répertoire  partagé  dans
-    \file{/etc/default/tftpd-hpa}
   \end{itemize}
 \end{frame}  
 
@@ -184,12 +184,17 @@ uboot> setenv serverip 192.168.1.10
     \end{lstlisting}
     \note[item]{Eventuellement,   rebooter  après   le   saveenv  pour
       initialiser correctement le réseau}
- \item Nécésaire de passer la console au noyau:
+ \item Pafois nécessaire de passer la console au noyau:
     \begin{lstlisting}
 uboot> setenv console console=ttyS0,115200
-uboot> set bootargs ${console}
+uboot> setenv bootargs ${console}
 uboot> saveenv
     \end{lstlisting}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{TFTP}
+  \begin{itemize}
   \item Téléchargement du noyau dans une zone libre de la mémoire
     \note[item]{Expliquer d'où provient 21000000}
     \note[item]{L'adresse de  chargement du noyau  dépend de plusieurs
@@ -242,13 +247,13 @@ host% service nfs-kernel-server restart
 host$ mkdir nfs-mount
 host% mount -t nfs 127.0.0.1:/home/user/nfs nfs-mount
       \end{lstlisting} % $
-    \item Vérification des droits root
-      \begin{lstlisting}
-host$ echo foo > nfs/file
-host$ chmod 000 nfs/file
-host$ ls -l nfs-mount
-host% cat nfs-mount/file
-      \end{lstlisting} % $
+%    \item Vérification des droits root
+%      \begin{lstlisting}
+%host$ echo foo > nfs/file
+%host$ chmod 000 nfs/file
+%host$ ls -l nfs-mount
+%host% cat nfs-mount/file
+%      \end{lstlisting} % $
       \note[item]{ Le  test sur la cible  ne fonctionne que  si les binaires
         necessaires sont installée}
 %     \item Test sur la cible (nécessite le support de NFS dans \cmd{mount})
@@ -274,7 +279,7 @@ host% cat nfs-mount/file
     \begin{itemize}
     \item Configuration IP
       \begin{lstlisting}
-uboot> setenv ipconf ip=192.168.1.13::::::off
+uboot> setenv ipconf ip=192.168.1.13
       \end{lstlisting}
     \item Configuration NFS
       \begin{lstlisting}
@@ -369,14 +374,14 @@ host$ make O=build ARCH=arm CROSS_COMPILE=arm-linux- uImage
     \end{lstlisting}
   \item Partage de l'image par TFTP
     \begin{lstlisting}
-host% cp build/arch/arm/boot/uImage /srv/tftp/uImage-3.5.7
-host% ln -s uImage-3.5.7 /srv/tftp/uImage
+host% cp build/arch/arm/boot/uImage /var/lib/tftpboot/uImage-3.5.7
+host% ln -s uImage-3.5.7 /var/lib/tftpboot/uImage
     \end{lstlisting} % $ 
-  \item  Au   redémarrage,  le   bootloader  passe  par   un  registre
-    l'identifiant  de   la  carte.   Cet   identifiant  (spécifique  à
-    l'architecture ARM) est erroné. A  ce stade, il est plus facile de
-    corriger   ce   problème   dans   le   noyau   dans   le   fichier
-    \file{arch/arm/tools/mach-types}.
+  %\item  Au   redémarrage,  le   bootloader  passe  par   un  registre
+  %  l'identifiant  de   la  carte.   Cet   identifiant  (spécifique  à
+  %  l'architecture ARM) est erroné. A  ce stade, il est plus facile de
+  %  corriger   ce   problème   dans   le   noyau   dans   le   fichier
+  %  \file{arch/arm/tools/mach-types}.
     \note[item]{C'est mieux de compiler avec -j3}
     \note[item]{Il faut les laisser démarrer en NFS}
     \note[item]{Il faut  commenter la ligne  1108 et changer  la ligne
@@ -390,20 +395,19 @@ host% ln -s uImage-3.5.7 /srv/tftp/uImage
   \begin{itemize}
   \item  \verb+vmlinux+:  L'image  ELF  du  noyau.   Lisible  par  les
     debugueurs, certains flasheurs, certains bootloaders
-  \item  \verb+vmlinuz+: parfois  équivalent  du \verb+bzImage+,  mais
-    normalement, il  s'agit de\verb+vmlinux+ compressé  et strippé des
-    informations inutiles  au démarrage. Inutilisable  dans l'état, il
-    est nécessaire de lui adjoindre un bootloader pour le décompresser
-    et l'exécuter.
   \item  \verb+Image+:  \verb+vmlinux+   strippé  et  préfixé  par  un
     mini-bootloader   permettant    de   sauter   sur    la   fonction
     \verb+start_kernel+ de \verb+vmlinux+.
-  \item  \verb+bzImage+  et   \verb+zImage+:  \verb+vmlinuz+  avec  le
-    bootloader \cmd{bz2} ou \cmd{gz}.
+  \item  \verb+bzImage+  et   \verb+zImage+: Comme \verb+Image+ mais compressé en \cmd{bz2} ou \cmd{gz}.
+  \item  \verb+vmlinuz+: Normalement  équivalent  du \verb+bzImage+.
+    %normalement, il  s'agit de\verb+vmlinux+ compressé  et strippé des
+    %informations inutiles  au démarrage. Inutilisable  dans l'état, il
+    %est nécessaire de lui adjoindre un bootloader pour le décompresser
+    %et l'exécuter.
   \item  \verb+xipImage+  :  Idem  \verb+Image+ mais  destiné  à  être
     exécuté  directement  sur un  \emph{eeprom}  sans  être copier  en
     mémoire au préalable.
-  \item  \verb+uImage+:  \verb+Image+ avec  une  entête spéciale  pour
+  \item  \verb+uImage+:  \verb+zImage+ avec  une  entête spéciale  pour
     \emph{u-boot}.
   \end{itemize}
 %   Il est possible  de générer des image au  format SRecord en utiliant
@@ -548,7 +552,6 @@ host$ mkdir build
     \end{lstlisting}
   \item On retrouve \cmd{Kconfig}
     \begin{lstlisting}
-host$ make O=build CROSS_COMPILE=arm-linux- allnoconfig
 host$ make O=build CROSS_COMPILE=arm-linux- menuconfig
     \end{lstlisting}
   \end{itemize}
@@ -559,14 +562,15 @@ host$ make O=build CROSS_COMPILE=arm-linux- menuconfig
   \item On trouve plein d'outils
     \note[item]{TODO: mettre en plusieurs colonnes}
   \item    Au   minimum,    vérifions les options    \cmd{ash},   \cmd{init},    les
-    \emph{Coreutils},   
+    \emph{Coreutils}
+  \item Vérifions le chemin d'installation
     %\cmd{dmesg},   \cmd{ifconfig},   \cmd{mount},
     %\cmd{tftp}, \cmd{tar}, \cmd{reboot}, \cmd{vi}, \cmd{flashcp}
     \note[item]{TODO: mettre en plusieurs colonnes}
-  \item         Et         aussi:        \verb+CONFIG_PLATFORM_LINUX+,
-    \verb+CONFIG_FEATURE_EDITING+,        \verb+CONFIG_FEATURE_DEVPTS+,
-    \verb+CONFIG_LONG_OPTS+,                  \verb+CONFIG_SHOW_USAGE+,
-    \verb+FEATURE_VERBOSE_CP_MESSAGE+, \verb+IOCTL_HEX2STR_ERROR+
+  %\item         Et         aussi:        \verb+CONFIG_PLATFORM_LINUX+,
+  %  \verb+CONFIG_FEATURE_EDITING+,        \verb+CONFIG_FEATURE_DEVPTS+,
+  %  \verb+CONFIG_LONG_OPTS+,                  \verb+CONFIG_SHOW_USAGE+,
+  %  \verb+FEATURE_VERBOSE_CP_MESSAGE+, \verb+IOCTL_HEX2STR_ERROR+
   \end{itemize}
   \note[item]{TODO P2 Lister de manière exhaustive}
 \end{frame}
@@ -576,7 +580,7 @@ host$ make O=build CROSS_COMPILE=arm-linux- menuconfig
   \item Configurons le chemin de destination vers \file{\~/nfs}
     \begin{lstlisting}
 host$ make O=build CROSS_COMPILE=arm-linux-
-host$ make O=build CROSS_COMPILE=arm-linux- install
+host$ make O=build CROSS_COMPILE=arm-linux- CONFIG_PREFIX=~/nfs install
     \end{lstlisting}
     \note[item]{Compiler avec -j3}
   \item  L'installation créé  des  liens symboliques  vers la  binaire
@@ -596,7 +600,7 @@ host$ make O=build CROSS_COMPILE=arm-linux- install
   \begin{itemize}
   \item Lancement automatique d'un shell
     \begin{lstlisting}
-host$ echo 'ttyS0::askfirst:/bin/sh' > etc/inittab 
+host$ echo '::askfirst:/bin/sh' > etc/inittab 
     \end{lstlisting}
   \item Appel d'un script de démarrage.
     \begin{lstlisting}
@@ -614,49 +618,22 @@ host$ chmod +x etc/init.d/rcS
     l'inittab": Non ca ne marche pas}
 \end{frame}
 
-\begin{frame}[fragile=singleslide]{Démarrage d'une binaire statique}
-  Les fichiers devices
+\begin{frame}[fragile=singleslide]{Autres \cmd{init}}
+  Il existe d'autres formes d'\cmd{init}:
   \begin{itemize}
-  \item Permettent de communiquer avec le noyau
-  \item Il représente plus ou moins chacun un périphérique
-  \item       Les       plus        importants       sont       normés
-    (\file{Documentation/devices.txt})
-  \item Il est possible de les créer avec \cmd{mknod}:
-    \begin{lstlisting}
-host% mknod dev/console c 5 1
-    \end{lstlisting}
-%  \item  Ce  device  est  nécessaire  pour  \cmd{printf}.   Il  serait
-%    possible  d'écrire un programme  ne nécessitant  aucun accès  à un
-%    périphérique (exemple: le service réseau echo)
+  \item SystemV (celui que nous utilisons)
+  \item runit (aussi proposé par Busybox)
+  \item upstart (utilisé autrefois par Ubuntu)
+  \item systemd (utilisé par le reste du monde)
   \end{itemize}
-%  Nous pouvons maintenant démarrer avec \verb+init=/hello-arm-static+
+  Ces \cmd{init},  plus modernes  offrent de nouvelles  fonctionnalités et
+  plus de robustesse pour le système.
 \end{frame}
-
-\begin{frame}[fragile=singleslide]{Compilons init}{Fichiers devices}
-  Ajoutons  les devices  \file{/dev/tty}  (En fait,  pas  tout à  fait
-  obligatoire)
-  \begin{lstlisting}
-host% mknod dev/ttyS0 c 4 64
-host% mknod dev/tty2 c 4 2
-host% mknod dev/tty3 c 4 3
-host% mknod dev/tty4 c 4 4
-  \end{lstlisting}
-  \note[item]{tester  avec console=ttyS0,115200  et retirer  cette section : Non, ca ne marche pas}
-%   \item \cmd{MAKEDEV} automatise une partie de la création des fichiers
-%     devices
-%     \note[item]{TODO Voir si on ne  peut pas continuer sans MAKEDEV et
-%       l'introduire dans la section "Ajouts"}
-%     \begin{lstlisting}
-% host% cd dev
-% host% MAKEDEV std
-% host% MAKEDEV console
-%     \end{lstlisting}
-  Nous  pouvons  maintenant  démarrer avec  \cmd{init=/bin/init}  mais
-  certaines fonctionnalités sont absentes (\cmd{ps}, etc... )
-\end{frame}
-
 
 \begin{frame}[fragile=singleslide]{Compilons init}{Fichiers de configuration}
+  Nous  pouvons  maintenant  démarrer avec  \cmd{init=/bin/init}  mais
+  certaines fonctionnalités sont absentes (\cmd{ps}, \cmd{ifconfig}, 
+  \cmd{top}, \cmd{lsusb}, etc... )\\
   Il faut monter les partitions \cmd{/proc} et \cmd{/sys}:
   \begin{lstlisting}
 target% mount -t proc none /proc 
@@ -670,50 +647,6 @@ host$ echo "::sysinit:mount -t sysfs none /sys" >> etc/inittab
   Nos commandes semblent maintenant correctement fonctionner.
 \end{frame}
 
-\begin{frame}[fragile=singleslide]{Autres \cmd{init}}
-  Il existe d'autres formes d'\cmd{init}:
-  \begin{itemize}
-  \item SystemV (celui que nous utilisons)
-  \item runit (aussi proposé par Busybox)
-  \item upstart (utilisé par Ubuntu)
-  \end{itemize}
-  Ces \cmd{init},  plus modernes  offrent de nouvelles  fonctionnalités et
-  plus de robustesse pour le système.
-\end{frame}
-
-\begin{frame}{Et si ca ne marche toujours pas?}
-  \begin{itemize}
-  \item Toujours commencer par  \emph{hello-static}, le moins dépendant
-  \item Si il ne fonctionne  pas, recherchez du coté du format de binaire
-    de  la chaîne  de compilation  et avec  sa compatibilité  avec les
-    options du noyaux
-  \item  Si \emph{hello-static} fonctionne,  mais pas  \emph{hello} en
-    dynamique, cherchez du coté du format de la \emph{libc} et de
-    sa compatibilité avec le format de binaire de \emph{hello}
-  \item Si \emph{hello} fonctionne mais  que vous ne pouvez pas lancer
-    de shell, cherchez du coté des devices et des droits.
-  \item Si le  shell démarre mais pas init, rechechez  du coté des
-    fichiers de configuration et des devices
-  \item Vérifier que votre cible  ne change pas d'IP en démarrant (ici
-    dans \file{/etc/inittab})
-  \item Sinon, cherchez dans les parametres passés au noyau ou dans la
-    configuration
-  \item Si possible, toujours tester entre chaque modification
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Résumé}
-  Que contient l'espace utilisateur standard?
-  \begin{itemize}
-  \item une arborescence
-  \item des binaires
-  \item des bibliothèques
-  \item des fichiers devices
-  \end{itemize}
-\end{frame}
-
-\section{Quelques ajouts}
- 
 \begin{frame}[fragile=singleslide]{Utilisation de \file{fstab}}
   Il  est   possible  d'automatiser  ce  montage   au  démarrage  avec
   \file{fstab} et \cmd{mount -a}
@@ -742,23 +675,68 @@ host$ mkdir tmp
     \end{lstlisting}
   \item Ajout du \emph{stickybit} comme il se doit
     \begin{lstlisting}
+host$ chmod 777 tmp
 host$ chmod +t tmp
     \end{lstlisting}
   \item Montage d'un filesystem contenu en mémoire
     \begin{lstlisting}
-target% mount -t tmpfs none tmp
+target% mount -t tmpfs none /tmp
 host$ echo 'none /tmp tmpfs' >> etc/fstab
     \end{lstlisting}
   \end{itemize}
 \end{frame}
+
+% TODO : A revoir, les fichier device ne sont pas utilisé par les commandes de base.
+\begin{frame}[fragile=singleslide]{Démarrage d'une binaire statique}
+  Les fichiers devices
+  \begin{itemize}
+  \item Permettent de communiquer avec le noyau
+  \item Il représente plus ou moins chacun un périphérique
+  \item       Les       plus        importants       sont       normés
+    (\file{Documentation/devices.txt})
+  \item Il est possible de les créer avec \cmd{mknod}:
+    \begin{lstlisting}
+host% mknod dev/console   c  5  1
+host% mknod dev/ttyS0     c  4 64
+host% mknod dev/random    c  1  8
+host% mknod dev/mtdblock1 b 31  1
+host% mknod dev/sda       b  8  0
+host% mknod dev/sda1      b  8  1
+    \end{lstlisting}
+%  \item  Ce  device  est  nécessaire  pour  \cmd{printf}.   Il  serait
+%    possible  d'écrire un programme  ne nécessitant  aucun accès  à un
+%    périphérique (exemple: le service réseau echo)
+  \end{itemize}
+%  Nous pouvons maintenant démarrer avec \verb+init=/hello-arm-static+
+\end{frame}
+
+%\begin{frame}[fragile=singleslide]{Compilons init}{Fichiers devices}
+%  Ajoutons  les devices  \file{/dev/tty}  (En fait,  pas  tout à  fait
+%  obligatoire)
+%  \begin{lstlisting}
+%host% mknod dev/tty2 c 4 2
+%host% mknod dev/tty3 c 4 3
+%host% mknod dev/tty4 c 4 4
+%  \end{lstlisting}
+%  \note[item]{tester  avec console=ttyS0,115200  et retirer  cette section : Non, ca ne marche pas}
+%   \item \cmd{MAKEDEV} automatise une partie de la création des fichiers
+%     devices
+%     \note[item]{TODO Voir si on ne  peut pas continuer sans MAKEDEV et
+%       l'introduire dans la section "Ajouts"}
+%     \begin{lstlisting}
+% host% cd dev
+% host% MAKEDEV std
+% host% MAKEDEV console
+%     \end{lstlisting}
+%\end{frame}
 
 \begin{frame}[fragile=singleslide]{Utilisation de \cmd{MAKEDEV}}
   \cmd{MAKEDEV} permet d'automatiser  la création des fichiers devices
   de base
   \begin{lstlisting}
 host$ cd dev
-host$ MAKEDEV std
-host$ MAKEDEV console
+host% MAKEDEV std
+host% MAKEDEV console
   \end{lstlisting}
 \end{frame}
 
@@ -803,11 +781,45 @@ target% echo /sbin/mdev > /proc/sys/kernel/hotplug
     \begin{lstlisting}
 host$ echo 'none /dev tmpfs' >> etc/fstab
 host$ echo "mdev -s" >> etc/rcS
-host$ echo "echo /sbin/mdev > /sys/kernel/uevent_helper" >> etc/rcS
+host$ echo "echo /sbin/mdev > /proc/sys/kernel/hotplug" >> etc/rcS
     \end{lstlisting}
   \item Il est aussi possible d'utiliser devtmpfs
   \end{itemize}
 \end{frame}
+
+\begin{frame}{Résumé}
+  \begin{itemize}
+  \item Toujours commencer par  \emph{hello-static}, le moins dépendant
+  \item Si il ne fonctionne  pas, recherchez du coté du format de binaire
+    de  la chaîne  de compilation  et avec  sa compatibilité  avec les
+    options du noyaux
+  \item  Si \emph{hello-static} fonctionne,  mais pas  \emph{hello} en
+    dynamique, cherchez du coté du format de la \emph{libc} et de
+    sa compatibilité avec le format de binaire de \emph{hello}
+  \item Si \emph{hello} fonctionne mais  que vous ne pouvez pas lancer
+    de shell, cherchez du coté des devices et des droits.
+  \item Si le  shell démarre mais pas init, rechechez  du coté des
+    fichiers de configuration et des devices
+  \item Vérifier que votre cible  ne change pas d'IP en démarrant (ici
+    dans \file{/etc/inittab})
+  \item Sinon, cherchez dans les parametres passés au noyau ou dans la
+    configuration
+  \item Si possible, toujours tester entre chaque modification
+  \end{itemize}
+\end{frame}
+
+% A supprimer
+%\begin{frame}{Résumé}
+%  Que contient l'espace utilisateur standard?
+%  \begin{itemize}
+%  \item une arborescence
+%  \item des binaires
+%  \item des bibliothèques
+%  \item des fichiers devices
+%  \end{itemize}
+%\end{frame}
+
+\section{Quelques ajouts}
 
 \begin{frame}[fragile=singleslide]{Résolution DNS}
   \begin{itemize}
@@ -818,14 +830,14 @@ target% ping www.google.com
     \end{lstlisting}
   \item  Si nous Utilisions la  \emph{glibc}  au lieu  de  la \emph{uclibc},  il
     serait    alors    nécessaire    de    configurer    le    fichier
-    \file{nsswitch.conf}.   Il  serait   possible  de   choisir  parmi
+    \file{/etc/nsswitch.conf}.   Il  serait   possible  de   choisir  parmi
     différents  backends  pour  gérer  les  authentifications  et  le
     réseau.
   \item  Le reste  de la  configuration réseau  s'effectue normalement
-    dans \file{/etc/network}
-    \item Pour utiliser le dhcp, ne pas oublier de recopier le fichier 
-    \cmd{examples/udhcp/simple.script} fourni avec busybox vers 
-    \cmd{/usr/share/udhcpc/default.script}
+    dans \file{/etc/network}, puis en utilisant \cmd{ifup} et \cmd{ifdown}
+  \item Pour utiliser le dhcp, ne pas oublier de recopier le fichier 
+    \file{examples/udhcp/simple.script} fourni avec busybox vers 
+    \file{/usr/share/udhcpc/default.script}
   \end{itemize}
 \end{frame}
 
@@ -845,7 +857,6 @@ host$ echo "::sysinit:login" >> etc/inittab
     \begin{lstlisting}
 host$ echo 'root:x:::::::' > etc/shadow
     \end{lstlisting}
-    \note[item]{TODO: Parler de shadow, mkpasswd}
   \end{itemize}
 \end{frame}
 
@@ -992,19 +1003,19 @@ $ ct-ng build
 $ ct-ng clean 
 $ ct-ng menuconfig
        \end{lstlisting}
-     \item Dans la configuration
-       \begin{lstlisting}
-... Prefix directory: /opt/${CT_TARGET}
-... Remove documentation 
-... Build Static Toolchain
-# Documentation du CPU + man gcc + wikipedia (http://en.wikipedia.org/wiki/ARM_architecture)
-... Architecture level: armv5te
-# Page de man de gcc + documentation du CPU :
-... Emit assembly for CPU: arm926ej-s
-... Tuple's vendor string : sysmic
-... Threading implementation to use: (nptl) 
-... Add support for locales
-       \end{lstlisting}
+%     \item Dans la configuration
+%       \begin{lstlisting}
+%... Prefix directory: /opt/${CT_TARGET}
+%... Remove documentation 
+%... Build Static Toolchain
+%# Documentation du CPU + man gcc + wikipedia (http://en.wikipedia.org/wiki/ARM_architecture)
+%... Architecture level: armv5te
+%# Page de man de gcc + documentation du CPU :
+%... Emit assembly for CPU: arm926ej-s
+%... Tuple's vendor string : sysmic
+%... Threading implementation to use: (nptl) 
+%... Add support for locales
+%       \end{lstlisting}
   \end{itemize}
 \end{frame}
 
@@ -1217,6 +1228,56 @@ uboot> nand write 21000000 400000 200000
   \end{itemize}
 \end{frame}
 
+\begin{frame}[fragile=singleslide]{Ubifs}
+  \begin{itemize}
+  \item Ubi ajoute une couche d'abstraction à la flash
+  \item Il a le même rôle que controlleur matériel de mémoire flash sur les clefs USB
+  \item Ubi est géré en volume. A l'intérieur d'un volume, il est possible d'avoir plusieurs partition
+  \item Ubifs est un filesystem qui optimise les accès à la flash au dessus d'UBI
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Ubifs}
+  \begin{itemize}
+  \item Création d'une partition Ubifs:
+    \begin{lstlisting}
+host% mkfs.ubifs -m 2048 -e 128KiB -c 960 -d /home/user/nfs -o rootfs.ubifs
+     \end{lstlisting}
+  \item Integration dans un volume UBI:
+    \begin{lstlisting}
+host$ cat <<EOF > ubinize.cfg
+>[rootfs]
+>mode=ubi
+>image=rootfs.ubifs
+>vol_id=0
+>vol_type=dynamic
+>vol_name=rootfs
+>vol_alignment=1
+EOF
+host$ ubinize -p 128KiB -m 2048 -o rootfs.ubi /tmp/ubinize.cfg
+     \end{lstlisting}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Ubifs}
+  \begin{itemize}
+  \item Flashage. Remarquez que l'utilisation de ubiformat permet de conserver les \emph{erase counters}
+    \begin{lstlisting}
+target% ubiformat /dev/mtd1 -f rootfs.ubifs
+     \end{lstlisting}
+  \item On peut maintenant monter le volume puis la partition
+    \begin{lstlisting}
+target% ubiattach /dev/ubi_ctrl -m 1
+target% mount -t ubifs /dev/ubi0_0 /tmp/ubi0
+     \end{lstlisting}
+     \item Remarquez que le volume doit être attaché avant de pouvoir monter la partition. Du coup, démarrer sur une partition ubifs possède une syntaxe particulière:
+    \begin{lstlisting}
+ubi.mtd=rootfs rootfstype=ubifs root=ubi0:0
+     \end{lstlisting}
+  \end{itemize}
+\end{frame}
+
+
 %\begin{frame}[fragile=singleslide]{Automatisation}
 %  Les  options  non utilisées  par  le  noyau  sont passées  au  script
 %  d'initialisation.   Ajoutons  une   option  permettant   de  flasher
@@ -1247,6 +1308,7 @@ host% nandwrite -p /dev/mtd0 rootfs.jffs2
     \begin{lstlisting}
 host% losetup /dev/loop0 rootfs.jffs2
 host% modprobe block2mtd block2mtd=/dev/loop0
+host% mount -t jffs2 /dev/mtdblock0 nfs-mount
     \end{lstlisting} 
   \end{itemize}
 \end{frame}
@@ -1334,8 +1396,16 @@ host$ wget http://wiki.qemu.org/download/arm-test-0.2.tar.gz
 host$ tar xvzf arm-test-0.2.tar.gz
 host$ qemu-system-arm -M integrator -cpu arm926 -m 16 -kernel zImage.integrator -initrd arm_root.img
 host$ qemu-system-arm -M integrator -cpu arm926 -m 16 -kernel zImage.integrator -initrd arm_root.img -nographic -append "console=ttyAMA0"
+host$ qemu-system-arm -M integrator -cpu arm926 -m 16 -kernel zImage.integrator -nographic -append "console=ttyAMA0 root=/dev/nfs nfsroot=10.0.2.2:/home/user/nfs ip=10.0.2.15"
   \end{lstlisting}
 \end{frame}
+
+% NFS Par qemu:
+% qemu-system-arm -kernel zImage.integrator -nographic -append "console=ttyAMA0 root=/dev/nfs nfsroot=10.0.2.2:/home/default/nfs,v3 rootfstype=nfs ip=10.0.2.15::::integrator:eth0:off"
+%Installation de Debian:
+% wget http://ftp.de.debian.org/debian/dists/etch/main/installer-arm/current/images/rpc/netboot/initrd.gz 
+% qemu-system-arm -kernel zImage.integrator -initrd ../initrd.gz -append "root=/dev/ram console=ttyAMA0" -nographic
+
 
 % Acceder aux disque Qemu sans  démarrer Qemu: Before you can use this
 % command you  need to  have the NBD  kernel module  loaded ('modprobe
