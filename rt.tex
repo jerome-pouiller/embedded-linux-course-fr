@@ -382,11 +382,11 @@ $ lxc-cgroup -n test cpuacct.usage
 \begin{frame}[fragile=singleslide]{Adeos}
   Installation du patch noyau
   \begin{lstlisting}
-$ wget http://download.gna.org/adeos/patches/v3.x/arm/ipipe-core-3.5.7-arm-3.patch
-$ wget http://download.gna.org/xenomai/stable/xenomai-2.6.2.1.tar.bz2
-$ tar xvf xenomai-2.6.2.1.tar.bz2
-$ xenomai-2.6.2.1/scripts/prepare-kernel.sh --ipipe=ipipe-core-3.5.7-arm-3.patch --arch=arm --linux=linux-3.5.7
-$ cd linux-3.5.7
+$ wget https://xenomai.org/downloads/ipipe/v3.x/arm/older/ipipe-core-3.10.32-arm-9.patch
+$ wget http://download.gna.org/xenomai/stable/xenomai-2.6.4.tar.bz2
+$ tar xvf xenomai-2.6.4.tar.bz2
+$ xenomai-2.6.4/scripts/prepare-kernel.sh --ipipe=ipipe-core-3.10.32-arm-9.patch --arch=arm --linux=linux-3.10.32
+$ cd linux-3.10.32
 $ make ARCH=arm menuconfig
 $ make ARCH=arm uImage modules
 $ sudo make INSTALL_MOD_PATH=/home/user/nfs ARCH=arm modules_install
@@ -399,16 +399,16 @@ $ sudo mknod /home/user/nfs/dev/rtp c 150 0
 \begin{frame}[fragile=singleslide]{Adeos}
   Installation (Autotools classiques) de la bibliothèque Xenomai:
   \begin{lstlisting}
-$ cd ../xenomai-2.6.2.1
+$ cd ../xenomai-2.6.4
 $ ./configure --host=arm-linux --enable-shared=yes --enable-smp
 $ make
 $ sudo -E make DESTDIR=/home/user/nfs install
   \end{lstlisting}
-  \begin{itemize} 
+  \begin{itemize}
   \item   Possibilité de faire la même chose avec Buildroot
   \item Il  sera ensuite nécessaire de compiler  les programme Xenomai
     avec le résultat de
-    \begin{lstlisting} 
+    \begin{lstlisting}
 $ xeno-config --skin=native --ldflags/--cflags | sed 's:=/:=/home/user/nfs/'
     \end{lstlisting} 
   \end{itemize} 
@@ -462,11 +462,11 @@ target# /usr/xenomai/bin/arith
  \begin{itemize}
  \item                 Patch                RT                (Patchs:
    \url{http://www.kernel.org/pub/linux/kernel/projects/rt/},   Git:
-   \url{git://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-2.6-rt.git})
+   \url{git://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-rt.git})
   \item Implémentation assez complexe
   \item[$\to$] Non portable
   \item Performance très bonnes (~20µs)
-  \item Intégré dans le noyau 3.0
+  \item Intégré en partie dans le noyau 3.0
  \end{itemize}
 \end{frame}
 %     -> Gère les interruption dans des thread
