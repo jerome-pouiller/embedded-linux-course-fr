@@ -131,6 +131,9 @@ gdb> thread 1
     (malheureusement, ne fonctionnement pas en mode debug croisé)
   \item  Il est possible  de savoir  à quelle  binaire est  attaché le
     coredump avec \cmd{file}
+  \item Possibilité de faire du traitement automatique avec
+    \file{/proc/sys/kernel/core_pattern}. Cf.
+    \file{linux/Documentation/sysctl/kernel.txt}
   \end{itemize}
 \end{frame}
 
@@ -145,7 +148,7 @@ host$ arm-linux-gcc -g3 hello.o -o hello-arm-dbg
   \item Démarrage du serveur de debug
     \begin{lstlisting}
 target$ gdbserver *:1234 hello
-host$ arm-ulibceabi-gdb hello
+host$ arm-uclibceabi-gdb hello
     \end{lstlisting}
   \item Configuration des chemins
     \begin{lstlisting}
@@ -245,7 +248,7 @@ ok
   \item \cmd{objdump -S}  permet d'obtenir l'assembleur intermixé avec
     les code
   \item \cmd{objdump -C} permet de "demangler" des fonction C++
-  \item \cmd{adddr2line}  permet de convertir une  addresse mémoire en
+  \item \cmd{addr2line}  permet de convertir une  addresse mémoire en
     numéro ligne dans le code
   \end{itemize}
 % \note[item] {

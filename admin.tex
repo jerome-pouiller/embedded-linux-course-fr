@@ -997,8 +997,11 @@ host$ make CROSS_COMPILE=arm-linux- CONFIG_PREFIX=~/rootfs install
 
 \begin{frame}{Compiler un programme tiers}{Placement des bibliothèques}
   \begin{itemize}
-  \item Pour que les autres programmes puissent en profiter le plus simple est d'installer les bibliothèques dans \cmd{TOOLCHAIN/TRIPLET/sysroot}. Elle seront ainsi trouvées automatiquement par le compilateur.
-  \item Il est aussi possible de modifier les variables CFLAGS et LDFLAGS (plus complexe)
+  \item Pour que les autres programmes puissent en profiter le plus simple est
+    d'installer les bibliothèques dans \cmd{TOOLCHAIN/TRIPLET/sysroot}. Elle
+    seront ainsi trouvées automatiquement par le compilateur.
+  \item Il est aussi possible de modifier les variables \cmd{CFLAGS} et
+    \cmd{LDFLAGS} (plus complexe)
   \item Nous verrons que les bibliothèques doivent aussi se trouver sur la cible.
   \end{itemize}
 \end{frame}
@@ -1209,7 +1212,7 @@ HELLO_$(CONFIG1) += hello.o
   \item L'interface  Posix.  Fournis par la libc.   Documentés par les
     pages    de   man   des    sections   3    ou   3posix    ou   sur
     \url{http://www.unix.org/version3/}
-  \item Les bibliothèques très  utilisées: libapr, glibc, ømq, ...  La
+  \item Les bibliothèques très  utilisées: libapr, glib, ømq, ...  La
     documentation se trouve avec les source ou sur leur site web.
   \item Qt.  Bibliothèque très complète pouvant être  utilisé pour des
     usage    très   divers:    embarqué,    multimédia,   etc...    En
