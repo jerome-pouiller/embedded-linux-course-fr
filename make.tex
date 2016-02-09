@@ -127,7 +127,7 @@ uboot> help
   \item Mise en place:
     \begin{lstlisting}
 host% apt-get install tftp-hpa tftpd-hpa
-host% cp hello/build-arm/hello /var/lib/tftpboot
+host% cp build-arm/hello /var/lib/tftpboot
     \end{lstlisting}
   \item Test en local
     \begin{itemize}
@@ -204,6 +204,7 @@ uboot> saveenv
 %      \verb+http://www.at91.com/linux4sam/bin/view/Linux4SAM/GettingStarted#Linux4SAM_NandFlash_demo_Memory+
 %      mais pour la RAM}
     \begin{lstlisting}
+host$ cp BSP/uImage /var/lib/tftpboot
 uboot> tftpboot 21000000 uImage
     \end{lstlisting}
   \item Exécution du noyau
@@ -211,8 +212,8 @@ uboot> tftpboot 21000000 uImage
 uboot> bootm 21000000
     \end{lstlisting}
     \note[item]{Si autostart=yes, pas besoin de cette derniere ligne}
-  \item Le noyau  trouve la flash, monte la flash  et charge l'init de
-    la flash
+  %\item Le noyau  trouve la flash, monte la flash  et charge l'init de
+  %  la flash
     \note[item]{Exo: faites la même chose par ZMODEM}
     \note[item]{Tester avec le NFS éteind}
   \end{itemize}
@@ -234,8 +235,13 @@ host% vim /etc/exports
     \note[item]{Autrefois le paquet s'apellait nfs-user-serveur}
   \item Configuration du partage
     \begin{lstlisting}
-/home/user/nfs 0.0.0.0/0.0.0.0(rw,no_root_squash)
+/home/user/nfs 0.0.0.0/0.0.0.0(rw,no_root_squash,insecure)
     \end{lstlisting}
+  \item Décompression du rootfs:
+    \begin{lstlisting}
+host$ cd nfs
+host% tar -xf ../BSP/rootfs.tar
+    \end{lstlisting} % $
   \end{itemize}
 \end{frame}
 
@@ -244,8 +250,8 @@ host% vim /etc/exports
     \item Test sur l'hôte
       \begin{lstlisting}
 host% service nfs-kernel-server restart
-host$ mkdir nfs-mount
-host% mount -t nfs 127.0.0.1:/home/user/nfs nfs-mount
+host$ mkdir tmp
+host% mount -t nfs 127.0.0.1:/home/user/nfs tmp
       \end{lstlisting} % $
 %    \item Vérification des droits root
 %      \begin{lstlisting}
@@ -291,7 +297,7 @@ uboot> setenv bootargs ${ipconf} ${nfsconf} ${console}
       \end{lstlisting}
     \item Démarrage
       \begin{lstlisting}
-uboot> tftpboot 21000000 uImage
+uboot> tftpboot 21000000 uImage; bootm
       \end{lstlisting}
     \end{itemize}
   \item Voir \file{Documentation/filesystem/nfs/nfsroot.txt}
@@ -315,8 +321,8 @@ uboot> tftpboot 21000000 uImage
   \end{enumerate}
   \note[item]{Fonctionne aussi avec 2.6.37}
   \begin{lstlisting}
-host$ wget http://www.kernel.org/pub/linux/kernel/v3.X/linux-3.5.7.tar.bz2
-host$ tar xvjf linux-3.5.7.tar.bz2
+host$ wget http://www.kernel.org/pub/linux/kernel/v3.X/linux-3.10.32.tar.bz2
+host$ tar xvjf linux-3.10.32.tar.bz2
   \end{lstlisting}
 \end{frame}
 
@@ -331,10 +337,10 @@ host$ make O=build ARCH=arm CROSS_COMPILE=arm-linux- menuconfig
      \item  Beaucoup d'options,  mais il  y a  l'aide (\verb+<h>+)  et la
        recherche (\verb+</>+)
     \item La configuration est sauvée dans \file{.config}
-    \item    \verb+usb-a9260_defconfig+   permet   de    charger   une
+    \item    \verb+at91sam9263_defconfig+   permet   de    charger   une
       configuration pré-établie pour notre carte
       \begin{lstlisting}
-host$ make O=build ARCH=arm CROSS_COMPILE=arm-linux- usb-a9260_defconfig
+host$ make O=build ARCH=arm CROSS_COMPILE=arm-linux- at91sam9263_defconfig
       \end{lstlisting}
     \begin{itemize}
     \item Certains constructeur vous  fournirons un patch ajoutant une
@@ -369,23 +375,15 @@ host$ make O=build ARCH=arm CROSS_COMPILE=arm-linux- XXImage
   \begin{itemize}
   \item Compilation
     \begin{lstlisting}
-host% apt-get install uboot-mkimage
+host% apt-get install u-boot-tools
 host$ make O=build ARCH=arm CROSS_COMPILE=arm-linux- uImage
     \end{lstlisting}
   \item Partage de l'image par TFTP
     \begin{lstlisting}
-host% cp build/arch/arm/boot/uImage /var/lib/tftpboot/uImage-3.5.7
-host% ln -s uImage-3.5.7 /var/lib/tftpboot/uImage
+host% cp build/arch/arm/boot/uImage /var/lib/tftpboot/
     \end{lstlisting} % $ 
-  %\item  Au   redémarrage,  le   bootloader  passe  par   un  registre
-  %  l'identifiant  de   la  carte.   Cet   identifiant  (spécifique  à
-  %  l'architecture ARM) est erroné. A  ce stade, il est plus facile de
-  %  corriger   ce   problème   dans   le   noyau   dans   le   fichier
-  %  \file{arch/arm/tools/mach-types}.
     \note[item]{C'est mieux de compiler avec -j3}
     \note[item]{Il faut les laisser démarrer en NFS}
-    \note[item]{Il faut  commenter la ligne  1108 et changer  la ligne
-      1700}
   \end{itemize}
   \note{Parler de l'installation des modules et de l'option INSTALL\_MOD\_PATH}
 \end{frame}
@@ -424,7 +422,7 @@ Deux mots sur les modules:
   \begin{itemize}
   \item Morceaux de noyaux externalisés
   \item Compilation avec \cmd{make [...] modules}
-  \item Installation avec \cmd{make [...] INSTALL_MOD_PATH=~/rootfs modules_install}
+  \item Installation avec \cmd{make [...] INSTALL_MOD_PATH=~/nfs modules_install}
   \end{itemize}
 \end{frame}
 
@@ -461,8 +459,9 @@ Kernel panic - not syncing: No init found.  Try passing init= option to kernel.
 
     Copions maintenant  \verb+hello-arm-static+ et \verb+hello-arm+ et
     essayons de démarrer avec.
-\end{frame}
 
+     \verb+hello-arm-static+ fonctionne, mais pas \verb+hello-arm+
+\end{frame}
 
 \begin{frame}[fragile=singleslide]{Installation des bibliothèques de base}
   Les bibliothèques de base  (\cmd{libc} et apparentés) sont forcement
@@ -475,8 +474,8 @@ host$ arm-linux-ldd --root . hello-arm
     \item Copie
     \begin{lstlisting}
 host$ mkdir lib
-host$ cp /opt/arm-linux-.../lib/ld-uClibc-0.9.30.2.so lib
-host$ cp /opt/arm-linux-.../lib/libuClibc-0.9.30.2.so lib
+host$ cp /opt/arm-linux-.../lib/ld-uClibc-1.0.9.so lib
+host$ cp /opt/arm-linux-.../lib/libuClibc-1.0.9.so lib
     \end{lstlisting}
   \end{itemize}
 \end{frame}  
@@ -512,8 +511,8 @@ host$ ldconfig -r .
     souvent des options non-implémentées ou des comportements différents
   \item Téléchargement
     \begin{lstlisting}
-host$ wget http://busybox.net/downloads/busybox-1.19.4.tar.bz2
-host$ tar xvjf busybox-1.19.4.tar.bz2
+host$ wget http://busybox.net/downloads/busybox-1.23.2.tar.bz2
+host$ tar xvjf busybox-1.23.2.tar.bz2
 host$ mkdir build
     \end{lstlisting}
   \item On retrouve \cmd{Kconfig}
@@ -566,13 +565,13 @@ host$ make O=build CROSS_COMPILE=arm-linux- CONFIG_PREFIX=~/nfs install
   \begin{itemize}
   \item Lancement automatique d'un shell
     \begin{lstlisting}
-host$ echo '::askfirst:/bin/sh' > etc/inittab 
+host$ echo "::askfirst:/bin/sh" > etc/inittab 
     \end{lstlisting}
   \item Appel d'un script de démarrage.
     \begin{lstlisting}
-host$ echo '::sysinit:/etc/init.d/rcS' >> etc/inittab 
+host$ echo "::sysinit:/etc/init.d/rcS" >> etc/inittab 
 host$ mkdir etc/init.d
-host$ echo '#!/bin/sh' > etc/init.d/rcS
+host$ echo "#!/bin/sh" > etc/init.d/rcS
 host$ chmod +x etc/init.d/rcS
     \end{lstlisting}
   \end{itemize}
@@ -607,8 +606,8 @@ target% mount -t sysfs none /sys
   \end{lstlisting}
   Automatisation du montage avec \file{inittab}:
   \begin{lstlisting}
-host$ echo "::sysinit:mount -t proc none /proc" >> etc/inittab 
-host$ echo "::sysinit:mount -t sysfs none /sys" >> etc/inittab 
+host$ echo "::sysinit:/bin/mount -t proc none /proc" >> etc/inittab 
+host$ echo "::sysinit:/bin/mount -t sysfs none /sys" >> etc/inittab 
   \end{lstlisting}
   Nos commandes semblent maintenant correctement fonctionner.
 \end{frame}
@@ -617,8 +616,8 @@ host$ echo "::sysinit:mount -t sysfs none /sys" >> etc/inittab
   Il  est   possible  d'automatiser  ce  montage   au  démarrage  avec
   \file{fstab} et \cmd{mount -a}
   \begin{lstlisting}
-host$ echo 'none /proc proc'  >> etc/fstab
-host$ echo 'none /sys  sysfs' >> etc/fstab
+host$ echo "none /proc proc"  >> etc/fstab
+host$ echo "none /sys  sysfs" >> etc/fstab
 target% mount -a
   \end{lstlisting}
 
@@ -647,14 +646,13 @@ host$ chmod +t tmp
   \item Montage d'un filesystem contenu en mémoire
     \begin{lstlisting}
 target% mount -t tmpfs none /tmp
-host$ echo 'none /tmp tmpfs' >> etc/fstab
+host$ echo "none /tmp tmpfs" >> etc/fstab
     \end{lstlisting}
   \end{itemize}
 \end{frame}
 
-% TODO : A revoir, les fichier device ne sont pas utilisé par les commandes de base.
-\begin{frame}[fragile=singleslide]{Démarrage d'une binaire statique}
-  Les fichiers devices
+\begin{frame}[fragile=singleslide]{Les fichiers périphériques}
+  Les fichiers périphériques (\emph{file device})
   \begin{itemize}
   \item Permettent de communiquer avec le noyau
   \item Il représente plus ou moins chacun un périphérique
@@ -662,7 +660,9 @@ host$ echo 'none /tmp tmpfs' >> etc/fstab
     (\file{Documentation/devices.txt})
   \item Il est possible de les créer avec \cmd{mknod}:
     \begin{lstlisting}
+host% mknod dev/tty       c  5  0
 host% mknod dev/console   c  5  1
+host% mknod dev/tty0      c  4  0
 host% mknod dev/ttyS0     c  4 64
 host% mknod dev/random    c  1  8
 host% mknod dev/mtdblock1 b 31  1
@@ -700,6 +700,7 @@ host% mknod dev/sda1      b  8  1
   \cmd{MAKEDEV} permet d'automatiser  la création des fichiers devices
   de base
   \begin{lstlisting}
+host% apt-get install makedevs
 host$ cd dev
 host% MAKEDEV std
 host% MAKEDEV console
@@ -712,7 +713,7 @@ host% MAKEDEV console
   \begin{lstlisting}
 host% mknod dev/ptmx c 5 2
 host$ mkdir dev/pts
-host$ echo 'none /dev/pts devpts' >> etc/fstab
+host$ echo "none /dev/pts devpts" >> etc/fstab
   \end{lstlisting}
 \end{frame}
 
@@ -745,11 +746,11 @@ target% echo /sbin/mdev > /proc/sys/kernel/hotplug
   \begin{itemize}
   \item  Automatisation du processus
     \begin{lstlisting}
-host$ echo 'none /dev tmpfs' >> etc/fstab
-host$ echo "mdev -s" >> etc/rcS
-host$ echo "echo /sbin/mdev > /proc/sys/kernel/hotplug" >> etc/rcS
+host$ echo "none /dev tmpfs" >> etc/fstab
+host$ echo "mdev -s" >> etc/init.d/rcS
+host$ echo "echo /sbin/mdev > /proc/sys/kernel/hotplug" >> etc/init.d/rcS
     \end{lstlisting}
-  \item Il est aussi possible d'utiliser devtmpfs
+  \item Il est aussi possible d'utiliser `devtmpfs`
   \end{itemize}
 \end{frame}
 
@@ -789,6 +790,8 @@ host$ echo "echo /sbin/mdev > /proc/sys/kernel/hotplug" >> etc/rcS
 
 \begin{frame}[fragile=singleslide]{Résolution DNS}
   \begin{itemize}
+    \item La configuration réseau peut s'effectuer en utilisant \cmd{ifup} et
+      \cmd{ifdown} et en configurant \file{/etc/network/interfaces}
   \item Ajout de la résolution DNS
     \begin{lstlisting}
 host$ echo nameserver 8.8.8.8 > etc/resolv.conf
@@ -799,8 +802,6 @@ target% ping www.google.com
     \file{/etc/nsswitch.conf}.   Il  serait   possible  de   choisir  parmi
     différents  backends  pour  gérer  les  authentifications  et  le
     réseau.
-  \item  Le reste  de la  configuration réseau  s'effectue normalement
-    dans \file{/etc/network}, puis en utilisant \cmd{ifup} et \cmd{ifdown}
   \item Pour utiliser le dhcp, ne pas oublier de recopier le fichier 
     \file{examples/udhcp/simple.script} fourni avec busybox vers 
     \file{/usr/share/udhcpc/default.script}
@@ -812,16 +813,17 @@ target% ping www.google.com
   \item Ajout d'utilisateurs  (nécessaire pour beaucoup d'applications
     dont Dropbear)
     \begin{lstlisting}
-host$ echo 'root:x:0:0:root:/root:/bin/sh' > etc/passwd
-host$ echo 'root:x:0:' > etc/group
-host$ echo "::sysinit:login" >> etc/inittab 
+host$ echo "root:x:0:0:root:/root:/bin/sh" > etc/passwd
+host$ echo "root:x:0:" > etc/group
+host$ echo "::sysinit:/bin/login" >> etc/inittab 
     \end{lstlisting}
   \item  \verb'root::0:0:root:/root:/bin/sh'  créerait un  utilisateur
     sans mot de passe
-    \item Possibilité de calculer les mots de passe avec \cmd{mkpasswd}. Voir \cmd{mkpasswd -m help}
-    \item Possibilité de gérer les mots de passe dans \cmd{/etc/shadow} (\man{shadow(5)}) pour plus de sécurité:
+  \item Possibilité de calculer les mots de passe avec \cmd{mkpasswd}. Voir
+    \cmd{mkpasswd -m help} \item Possibilité de gérer les mots de passe dans
+    \cmd{/etc/shadow} (\man{shadow(5)}) pour plus de sécurité:
     \begin{lstlisting}
-host$ echo 'root:x:::::::' > etc/shadow
+host$ echo "root:x:::::::" > etc/shadow
     \end{lstlisting}
   \end{itemize}
 \end{frame}
@@ -831,12 +833,12 @@ host$ echo 'root:x:::::::' > etc/shadow
   \item Serveur et client ssh
   \item Procédure classique (ou presque, cf. \cmd{INSTALL})
     \begin{lstlisting}
-host$ wget http://matt.ucc.asn.au/dropbear/releases/dropbear-0.53.tar.bz2
-host$ tar xvjf dropbear-0.53.tar.bz2
+host$ wget http://matt.ucc.asn.au/dropbear/releases/dropbear-2015.71.tar.bz2
+host$ tar xvjf dropbear-2015.71.tar.bz2
 host$ cd dropbear; mkdir build; cd build
-host$ ../configure --disable-zlib --host=arm-linux --build=i386 --prefix=$(pwd)/../install
+host$ ../configure --disable-zlib --host=arm-linux --build=i386 --prefix=/usr
 host$ make PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp"
-host$ make install
+host$ make install DESTDIR=~/nfs
     \end{lstlisting}
   \end{itemize}
 \end{frame}
@@ -851,10 +853,8 @@ host$ cat ~/.ssh/id_dsa.pub >> root/.ssh/authorized_keys
     \end{lstlisting}%$
   \item Génération des clefs host:
     \begin{lstlisting}
-target% dropbearkey -t rsa -f /etc/dropbear/dropbear_rsa_host_key
-target% dropbearkey -t dss -f /etc/dropbear/dropbear_dss_host_key
-target% dropbear -E
-host$ echo "ttyS0::respawn:/sbin/dropbear -EF" >> etc/inittab
+target% dropbear -ER
+host$ echo "::respawn:/usr/sbin/dropbear -EFR" >> etc/inittab
 host$ ssh root@target
     \end{lstlisting}
   \end{itemize}
@@ -922,10 +922,14 @@ host$ touch var/log/wtmp
   \begin{itemize}
   \item 3 étapes: 
     \begin{itemize}
-    \item On compile \cmd{arm-unknown-gcc}
-    \item On configure le noyau pour installer les \emph{headers}
-    \item On  compile la  \cmd{libc} avec \cmd{arm-unknown-gcc}  et le
-      noyau préconfiguré, on compile le noyau
+    \item On compile les \cmd{binutils} (assembleur et linker)
+    \item On compile \cmd{gcc} (compilateur) avec les \cmd{binutils}
+      pour créer \cmd{arm-unknown-gcc}
+    \item On installe les \emph{headers} du noyau
+    \item On compile une version light (sans les threads) de la \cmd{libc} avec
+      \cmd{arm-unknown-gcc}
+    \item On compile \cmd{arm-linux-light-libc-gcc}
+    \item On compile la \cmd{libc} avec \cmd{arm-linux-light-libc-gcc}
     \item On compile \cmd{arm-linux-libc-gcc}
     \end{itemize}
   \item Difficultés :
@@ -934,7 +938,7 @@ host$ touch var/log/wtmp
     \item Souvent des problèmes de compatibilité entre les versions
     \end{itemize}
   \end{itemize}
-\end{frame}    
+\end{frame} 
 
 \begin{frame}[fragile=singleslide]{Compiler le cross-compiler et la libc}
   Différentes \cmd{libc}:
@@ -961,9 +965,9 @@ host$ touch var/log/wtmp
     même:
     \begin{lstlisting}
 host% apt-get install automake libtool texinfo flex bison gawk ...
-host$ wget http://crosstool-ng.org/download/crosstool-ng/crosstool-ng-1.13.4.tar.bz2
-host$ tar xvzf crosstool-ng-1.13.4.tar.bz2
-host$ cd crosstool-ng-1.13.4
+host$ wget http://crosstool-ng.org/download/crosstool-ng/crosstool-ng-1.20.0.tar.bz2
+host$ tar xvzf crosstool-ng-1.20.0.tar.bz2
+host$ cd crosstool-ng-1.20.0
 host$ ./configure && make
 host% make install
     \end{lstlisting}
@@ -1030,7 +1034,7 @@ target$ ./hello-mygcc-static
        \begin{lstlisting}[basicstyle=\ttfamily\scriptsize\color{colBasic}]
 host$ /opt/arm-sysmic-linux-uclibcgnueabi/bin/arm-sysmic-linux-uclibcgnueabi-gcc -Wall hello.c -o hello-mygcc
 target$ ./hello-mygcc
-	\end{lstlisting}
+       \end{lstlisting}
   \end{itemize}
 \end{frame}
 
@@ -1047,7 +1051,7 @@ host$ cd /opt/arm-unknown-linux-uclibcgnueabi/bin
 host$ for i in arm-unknown-linux-uclibcgnueabi-*; do 
 > ln -s $i arm-linux-${i#arm-unknown-linux-uclibcgnueabi-}; 
 > done
-	\end{lstlisting}
+       \end{lstlisting}
       \item N'espérez  pas compiler  du premier coup.  Mais autrefois,
         c'était pire!
       \end{itemize}
@@ -1192,8 +1196,13 @@ uboot> nand erase clean 1000000 7800000
     \end{lstlisting} 
   \item On place l'image en mémoire afin de la flasher
     \begin{lstlisting} 
-uboot> tftp 21000000 rootfs.arm.jffs2
-uboot> nand write 21000000 1000000 5A0000
+uboot> tftp 21000000 rootfs.jffs2
+uboot> nand write 21000000 1000000 ${filesize}
+    \end{lstlisting} 
+  \item On demande au noyau de booter sur la flash
+    \begin{lstlisting} 
+uboot> set flashconf root=/dev/mtdblock1 rootfstype=jffs2
+uboot> set bootargs $bootargs $flashconf
     \end{lstlisting} 
   \end{itemize}
 \end{frame}
@@ -1206,16 +1215,15 @@ uboot> nand write 21000000 1000000 5A0000
   \item Sous Linux
     \begin{lstlisting}
 target% flash_erase /dev/mtd0 0x400000 0
-target% cd /tmp
 target% tftp -g -r uImage
 target% nandwrite -s 0x400000 -p /dev/mtd0 uImage 
     \end{lstlisting}
   \item Sous U-boot
-    \begin{lstlisting} 
+    \begin{lstlisting}
 uboot> tftp 21000000 uImage
-uboot> nand erase clean 400000 200000
-uboot> nand write 21000000 400000 200000
-    \end{lstlisting} 
+uboot> nand erase clean 400000 400000
+uboot> nand write 21000000 400000 400000
+    \end{lstlisting}
   \end{itemize}
 \end{frame}
 
@@ -1230,11 +1238,11 @@ uboot> nand write 21000000 400000 200000
 
 \begin{frame}[fragile=singleslide]{Ubifs}
   \begin{itemize}
-  \item Création d'une partition Ubifs:
+    \item Création d'une partition Ubifs (128Ko * 984 = 120Mo):
     \begin{lstlisting}
-host% mkfs.ubifs -m 2048 -e 128KiB -c 960 -d /home/user/nfs -o rootfs.ubifs
+host% mkfs.ubifs -m 2048 -e 128KiB -c 960 -d ~/nfs -o rootfs.ubifs
      \end{lstlisting}
-  \item Integration dans un volume UBI:
+  \item Integration dans une image UBI:
     \begin{lstlisting}
 host$ cat <<EOF > ubinize.cfg
 >[rootfs]
@@ -1245,23 +1253,31 @@ host$ cat <<EOF > ubinize.cfg
 >vol_name=rootfs
 >vol_alignment=1
 EOF
-host$ ubinize -p 128KiB -m 2048 -o rootfs.ubi /tmp/ubinize.cfg
+host$ ubinize -p 128KiB -m 2048 -o rootfs.ubi ubinize.cfg
      \end{lstlisting}
-  \end{itemize}
+
+ \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Ubifs}
   \begin{itemize}
-  \item Flashage. Remarquez que l'utilisation de ubiformat permet de conserver les \emph{erase counters}
+  \item Flashage.
     \begin{lstlisting}
-target% ubiformat /dev/mtd1 -f rootfs.ubifs
+target% nandwrite -p /dev/mtd1 rootfs.ubi
+     \end{lstlisting}
+  \item Flashage alternatif. Remarquez que l'utilisation de ubiformat permet de
+    conserver les \emph{erase counters}
+    \begin{lstlisting}
+target% ubiformat /dev/mtd1 -f rootfs.ubi
      \end{lstlisting}
   \item On peut maintenant monter le volume puis la partition
     \begin{lstlisting}
 target% ubiattach /dev/ubi_ctrl -m 1
 target% mount -t ubifs /dev/ubi0_0 /tmp/ubi0
      \end{lstlisting}
-     \item Remarquez que le volume doit être attaché avant de pouvoir monter la partition. Du coup, démarrer sur une partition ubifs possède une syntaxe particulière:
+     \item Remarquez que le volume doit être attaché avant de pouvoir monter la
+       partition. Du coup, démarrer sur une partition ubifs possède une syntaxe
+       particulière:
     \begin{lstlisting}
 ubi.mtd=rootfs rootfstype=ubifs root=ubi0:0
      \end{lstlisting}
@@ -1269,28 +1285,22 @@ ubi.mtd=rootfs rootfstype=ubifs root=ubi0:0
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Monter le rootfs sur l'hôte}
-  L'hôte  ne possédant  pas  de  flash, nous  devons  la simuler  pour
+  L'hôte  ne possèdant  pas  de  flash, nous  devons  la simuler  pour
   pouvoir monter le rootfs:
-  \begin{itemize} 
+  \begin{itemize}
   \item  Chargeons le  module  permettant l'émulation  d'une flash  et
     copions notre image sur la flash virtuelle
     \begin{lstlisting}
-host% modprobe mtdram total_size=65536 erase_size=256
-host% nandwrite -p /dev/mtd0 rootfs.jffs2
-    \end{lstlisting}
-  \item  Alternativement, il  est  possible de  directement mapper  un
-    fichier sur une flash avec \file{block2mtd}
-    \begin{lstlisting}
-host% losetup /dev/loop0 rootfs.jffs2
-host% modprobe block2mtd block2mtd=/dev/loop0
-host% mount -t jffs2 /dev/mtdblock0 nfs-mount
-    \end{lstlisting} 
+host% modprobe nandsim cache_file=/home/user/flash first_id_byte=0x20 second_id_byte=0xaa third_id_byte=0x00 fourth_id_byte=0x15 parts=128,960,960
+host% nandwrite -p /dev/mtd1 rootfs.jffs2
+# ou: nandwrite -p /dev/mtd1 rootfs.ubifs
+     \end{lstlisting}
   \end{itemize}
 \end{frame}
-
+  
 \begin{frame}[fragile=singleslide]{Monter le rootfs sur l'hôte}
-  \begin{itemize} 
-  \item Chargeons la couche d'émulation par block et le filesystem
+  \begin{itemize}
+\item La suite est classique
     \begin{lstlisting}
 host% modprobe mtdblock
 host% mkdir /tmp/mtd1
@@ -1337,11 +1347,9 @@ make CROSS_COMPILE=arm-linux-
     le type  de CPU,  d'architecture et de carte,  ainsi que le  nom du
     vendeur et le modèle de chipset.
     \begin{lstlisting} 
-host% mkdir jffs2-mount
-host% mount -t jffs2 /dev/mtdblock0 jffs2-mount
+./mkconfig usb-a9260 arm arm926ejs usb-a9260 Calao at91sam926x
     \end{lstlisting} 
   \end{itemize}
-  % http://wiki.maemo.org/Modifying_the_root_image
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{U-boot}
@@ -1439,7 +1447,7 @@ host% apt-get install qemu-kvm-extras
       systèmes de l'hôte
       \begin{lstlisting}
 host% qemu-arm ./hello-arm-static
-host% qemu-arm -L ../arm-linux-uclibceabi/ ./hello-arm-debug
+host% qemu-arm -L ../arm-linux-uclibceabi/ ./hello-arm
       \end{lstlisting}
     \item Poccibilité de faire des \emph{chroot}:
       \begin{lstlisting}
@@ -1473,18 +1481,17 @@ chroot% ./hello-arm
   \item Le  port série de l'AT91  n'est pas présent dans  la liste des
     périphériques de Qemu
   \item On va donc simuler une autre board
+  %\item Vérifier que le nfs est exporté avec l'option \emph{insecure}
   \end{itemize}
   \begin{lstlisting}[basicstyle=\ttfamily\scriptsize\color{colBasic}]
 host$ wget http://wiki.qemu.org/download/arm-test-0.2.tar.gz
 host$ tar xvzf arm-test-0.2.tar.gz
-host$ qemu-system-arm -M integrator -cpu arm926 -m 16 -kernel zImage.integrator -initrd arm_root.img
-host$ qemu-system-arm -M integrator -cpu arm926 -m 16 -kernel zImage.integrator -initrd arm_root.img -nographic -append "console=ttyAMA0"
-host$ qemu-system-arm -M integrator -cpu arm926 -m 16 -kernel zImage.integrator -nographic -append "console=ttyAMA0 root=/dev/nfs nfsroot=10.0.2.2:/home/user/nfs ip=10.0.2.15"
+host$ qemu-system-arm -M integratorcp -cpu arm926 -m 16 -kernel zImage.integrator -initrd arm_root.img
+host$ qemu-system-arm -M integratorcp -cpu arm926 -m 16 -kernel zImage.integrator -initrd arm_root.img -nographic -append "console=ttyAMA0"
+host$ qemu-system-arm -M integratorcp -cpu arm926 -m 16 -kernel zImage.integrator -nographic -append "console=ttyAMA0 root=/dev/nfs nfsroot=10.0.2.2:/home/user/nfs ip=10.0.2.15"
   \end{lstlisting}
 \end{frame}
 
-% NFS Par qemu:
-% qemu-system-arm -kernel zImage.integrator -nographic -append "console=ttyAMA0 root=/dev/nfs nfsroot=10.0.2.2:/home/default/nfs,v3 rootfstype=nfs ip=10.0.2.15::::integrator:eth0:off"
 %Installation de Debian:
 % wget http://ftp.de.debian.org/debian/dists/etch/main/installer-arm/current/images/rpc/netboot/initrd.gz 
 % qemu-system-arm -kernel zImage.integrator -initrd ../initrd.gz -append "root=/dev/ram console=ttyAMA0" -nographic
@@ -1515,7 +1522,7 @@ host$ qemu-system-arm -M integrator -cpu arm926 -m 16 -kernel zImage.integrator 
   \item Utilisation de Kconfig
   %\item Thomas Petazzoni
   \item Permet d'automatiser la création  de la toolchain, du noyau,
-    de busybox et d'environ 300 outils
+    de busybox et d'environ 1700 outils
     \begin{itemize}
     \item serveurs http, ftp, ssh, etc..
     \item outils réseau, wireless, bluetooth, etc...
@@ -1532,21 +1539,21 @@ host$ qemu-system-arm -M integrator -cpu arm926 -m 16 -kernel zImage.integrator 
   \begin{itemize}
   \item Récupération des sources
     \begin{lstlisting}
-host$ wget http://buildroot.uclibc.org/downloads/buildroot-2010.11.tar.bz2
-host$ tar xvf buildroot-2010.11.tar.bz2
-host$ cd buildroot-2010.11
-    \end{lstlisting} 
+host$ wget http://buildroot.net/downloads/buildroot-2015.05.tar.bz2
+host$ tar xvf buildroot-2015.05.tar.bz2
+host$ cd buildroot-2015.05
+    \end{lstlisting}
   \item  Utilisation  d'une configuration  pré-établie  comme base  de
     configuration
     \begin{lstlisting}
-host$ make usb-a9260_defconfig
+host$ make calao-usb-a9263_defconfig
 host$ make menuconfig
-host$ make linux26-menuconfig
+host$ make linux-menuconfig
 host$ make uclibc-menuconfig
 host$ make busybox-menuconfig
 host$ make all
     \end{lstlisting}
-  \item Documentation: \url{http://buildroot.uclibc.org/buildroot.html}
+  \item Documentation: \url{http://buildroot.org/downloads/manual/manual.pdf}
   \end{itemize}
 \end{frame}
 
