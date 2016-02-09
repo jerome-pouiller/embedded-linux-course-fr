@@ -669,42 +669,42 @@ target$ perf report
     différencier la target du host}
 \end{frame}
 
-\begin{frame}[fragile=singleslide]{\cmd{oprofile}}
-  \begin{itemize} 
-  \item Idem \cmd{perf}, mais moins générique
-  \item Initialement sur les architectures ST (pas ARM, ni x86)
-  \item  Si  vous avez  un  noyau  suffisament récent,  \cmd{oprofile}
-    utilise \cmd{perf} comme backend
-  \item Démarrage du daemon
-    \begin{lstlisting} 
-target% opcontrol --init
-    \end{lstlisting} 
-  \item Liste des évènements pouvant être enregistrés
-    \begin{lstlisting} 
-target% opcontrol -l
-    \end{lstlisting} 
-  \item Profiling d'un évènement 
-    \begin{lstlisting} 
-target% opcontrol --start --no-vmlinux -e CPU_CLK_UNHALTED:100000:0:1:1
-target% ./hello
-target% opcontrol --shutdown
-    \end{lstlisting} 
-  \end{itemize}
-\end{frame}
-
-\begin{frame}[fragile=singleslide]{\cmd{oprofile}}
-  \begin{itemize} 
-  \item Génération du rapport
-    \begin{lstlisting} 
-target% opreport hello
-    \end{lstlisting} 
-  \item Génération du source annoté
-    \begin{lstlisting} 
-target% opannotate --source hello-prof
-    \end{lstlisting} 
-  \end{itemize} 
-\end{frame}
-
+% \begin{frame}[fragile=singleslide]{\cmd{oprofile}}
+%   \begin{itemize} 
+%   \item Idem \cmd{perf}, mais moins générique
+%   \item Initialement sur les architectures ST (pas ARM, ni x86)
+%   \item  Si  vous avez  un  noyau  suffisament récent,  \cmd{oprofile}
+%     utilise \cmd{perf} comme backend
+%   \item Démarrage du daemon
+%     \begin{lstlisting} 
+% target% opcontrol --init
+%     \end{lstlisting} 
+%   \item Liste des évènements pouvant être enregistrés
+%     \begin{lstlisting} 
+% target% opcontrol -l
+%     \end{lstlisting} 
+%   \item Profiling d'un évènement 
+%     \begin{lstlisting} 
+% target% opcontrol --start --no-vmlinux -e CPU_CLK_UNHALTED:100000:0:1:1
+% target% ./hello
+% target% opcontrol --shutdown
+%     \end{lstlisting} 
+%   \end{itemize}
+% \end{frame}
+% 
+% \begin{frame}[fragile=singleslide]{\cmd{oprofile}}
+%   \begin{itemize} 
+%   \item Génération du rapport
+%     \begin{lstlisting} 
+% target% opreport hello
+%     \end{lstlisting} 
+%   \item Génération du source annoté
+%     \begin{lstlisting} 
+% target% opannotate --source hello-prof
+%     \end{lstlisting} 
+%   \end{itemize} 
+% \end{frame}
+% 
 % \begin{frame}[fragile=singleslide]{\emph{Tracepoints}}
 % \begin{itemize} 
 % \item dynamic printk
