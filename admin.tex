@@ -583,6 +583,15 @@ host$ wget ftp://host/file
   \begin{itemize}
   \item Plus lent, moins malléable, mais peut vous sauver
   \item Protocoles \verb+{X,Y,Z}MODEM+ ou \verb+Kermit+
+  \item \cmd{Ctrl+X} pluieurs fois pour annuler
+  \item Les commandes \cmd{rz}/\cmd{sz} sont lancées sur le host par le terminal
+    (ne fonctionne pas en autonome)
+  \item \cmd{rz} est automatiquement lancé par le terminal sur la cible
+  \item Le terminal détecte automatiquement la séquence de démarrage de \cmd{sz}
+  \item Fonctionne bien dans minicom (\cmd{<Ctrl-A><S>}), Konsole
+  \item Fonctionne dans picocom à condition d'utiliser \verb+Xmodem+
+    (\cmd{--receive-cmd "rx"}) et de démarrer la reception manuellement
+    (\cmd{<Ctrl-A><Ctrl-R>})
 \begin{lstlisting}[language=sh]
 host% apt-get install lrzsz
 target$ sz file
