@@ -33,156 +33,6 @@
 \tableofcontents
 \end{frame}
 
-\section{Systèmes Symétriques et Asymétriques}
-
-\begin{frame}{Architectures multi-coeurs}
-  Il est  possible d'utiliser  des architecture multi-coeurs  pour des
-  systèmes temps réels.
-  \\
-  On distingue alors 2 types d'architectures:
-  \begin{itemize}
-  \item  Les systèmes  symétriques (SMP)  où  les tâches  ne sont  pas
-    affectées à un CPU particulier
-  \item  Les  systèmes asymétriques  où  on  affecte manuellement  les
-    tâches à un CPU
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Systèmes asymétriques}
-  Les systèmes asymétriques sont assez simples à architecturer:
-  \begin{itemize}
-  \item On effectue une étude séparées pour chaque CPU
-  \item   On  considère  les   échanges  entre   les  CPU   comme  des
-    entrées/sorties
-  \end{itemize}
-  Sous Linux, il  est possible d'associer une tâche  avec un CPU grâce
-  à:
-  \begin{itemize}
-  \item la fonction \emph{CPU affinity}
-  \item la commande \c{taskset} ou \c{lxc}
-  \item aux fonctions \emph{cgroup} et \emph{cpuset}
-  \end{itemize}
-  \note{ca     fonctionne     avec     \texttt{mount     -t     cpuset
-      /mnt/cpuset. cf. Documentation/cgroup/cpuset.txt}}
-\end{frame}
-
-\begin{frame}{Systèmes symétriques}
-  \begin{itemize}
-  \item Beaucoup plus complexe à architecturer
-  \item  La plupart de  nos algorithme  ne sont  plus prouvé  dans une
-    architecture SMP
-  \item La technologie est relativement récente (fin des années 90)
-  \item Pourquoi si tard?
-    \begin{itemize}
-    \item Principalement problèmes matériels
-    \item Problèmes de barrières mémoires (hard ou soft)
-    \item Algorithme  beaucoup plus  ardu (inversion de  priorité par
-      exemple)
-    \end{itemize}
-  \end{itemize}
-\end{frame}
-
-\section{Problématique des OS RT} %(45min)
-
-\begin{frame}{Limites des système classiques}
-  Les systèmes classiques s'appuient  sur un système d'exploitation en
-  général mal adapté pour le temps réel:
-  \begin{itemize}
-  \item Politique d'ordonnancement visant à équilibrer équitablement le
-    temps alloué à chaque tâche
-  \item La gestion de la  mémoire virtuelle, des caches engendrent des
-    fluctuations temporelles
-  \item La  gestion des temporisateurs  qui servent à  la manipulation
-    des temps pas assez fin
-  \item   Mécanismes   d'accès   aux   ressources  partagées   et   de
-    synchronisation comportent des incertitudes temporelles
-  \item Gestion des interruptions non-optimisées
-  \item Systèmes non-certifiés
-  \item API mal adaptées au systèmes temps réels
-  \end{itemize}
-\end{frame}
-
-\section{Bases}
-
-\begin{frame}{Mécanisme basiques}
-  \begin{itemize}
-  \item  Possibilité  d'exécuter  une  tache avec  \c{SCHED_RT}  ou
-    \c{SCHED_FIFO} (priorité toujours inférieure aux \emph{sofirqs} du noyau)
-  \item Possibilité de marquer les pages de mémoire avec \c{mlock}
-  \item L'accès  à des  horloges haute précision  est un  élément clef
-    d'un système temps réel.
-    \begin{itemize}
-    \item Le framework  \emph{hpet} (\emph{High Precision Timers}) est
-      assez récent dans le noyau Linux (2001) (à titre de comparaison,
-      l'équivalent de \emph{hpet} est  apparu sous Windows à partir de
-      Vista).
-    \item Autrefois, l'horloge  était utilisée pour l'ordonnanceur. Le
-      temps retourné  par les différents services  était celui calculé
-      par l'ordonnanceur.   Avec \emph{hpet}, les  horloges sont des
-      périphériques à part entière
-    \end{itemize}
-  \end{itemize}
-\end{frame}
-
-\begin{frame}[fragile=singleslide]{LXC}
-  \cmd{lxc} permet de créer des  container et d'avoir une gestion fine
-  des limitations de ressources.
-  \begin{itemize}
-  \item Activer \emph{Control Group Support} dans le noyau
-  \item Démonstration avec \file{lxc-test.c}
-    \begin{lstlisting}
-$ gcc samples/lxc-test.c -o lxc-test
-$ apt-get install lxc
-    \end{lstlisting}
-  \item Création d'un container et éxecution de la commande
-    \begin{lstlisting}
-$ lxc-create -n test
-$ lxc-execute -n test ./lxc-test
-    \end{lstlisting}
-  \end{itemize}
-\end{frame}
-
-\begin{frame}[fragile=singleslide]{LXC}
-  \begin{itemize} 
-  \item Limiter le container à au CPU 0:
-    \begin{lstlisting}
-$ lxc-cgroup -n test cpuset.cpus 0
-    \end{lstlisting}
-  \item Supprimer la limite:
-    \begin{lstlisting}
-$ lxc-cgroup -n test cpuset.cpus 0,1
-    \end{lstlisting}
-  \item Limiter la consommation cpu à 10\%:
-    \begin{lstlisting}
-$ lxc-cgroup -n test cpu.cfs_quota_us 10000
-    \end{lstlisting}
-  \item Retirer la limite:
-    \begin{lstlisting}
-$ lxc-cgroup -n test cpu.cfs_quota_us -1
-    \end{lstlisting}
-  \item Connaitre la consommation CPU du container:
-    \begin{lstlisting}
-$ lxc-cgroup -n test cpuacct.usage
-    \end{lstlisting}
-  \item cf. \file{/sys/fs/cgroup/}
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Temps réel dans le noyau}
-  Travailler dans le noyau:
-  \begin{itemize}
-  \item Possibilité de travailler sous interruptions
-  \item ... ou de travailler avec les soft IRQ et/ou les tasklets
-  \item Oblige à travailler dans le noyau (problèmes d'APIs, etc...)
-  \item Nécessaite beauoup de connaissance pour faire quelque chose de bien
-  \item Accès  difficiles aux bibliothèques de haut  niveau (un simple
-    accès au réseau peut devenir très complexe)
-  \item  Gardez le  kernel  pour faire  des  drivers, externalisez  le
-    traitement
-  \end{itemize}
-\end{frame}
-
-
 % \begin{frame}{Contexte}
 %   Garantie qu'une action est éxecutée en moins d'un temps donné.
 
@@ -203,6 +53,27 @@ $ lxc-cgroup -n test cpuacct.usage
 % évènements. Le temps de réponse peut-être très aléatoire
 % Si on avait un temps de réponse null (ou au moins constant). Alors, il
 % deviendrait simple de calculer les temps de réponse maximum de nos taches
+
+
+\section{Problématique des OS RT} %(45min)
+
+\begin{frame}{Limites des système classiques}
+  Les systèmes classiques s'appuient  sur un système d'exploitation en
+  général mal adapté pour le temps réel:
+  \begin{itemize}
+  \item Politique d'ordonnancement visant à équilibrer équitablement le
+    temps alloué à chaque tâche
+  \item La gestion de la  mémoire virtuelle, des caches engendrent des
+    fluctuations temporelles
+  \item La  gestion des temporisateurs  qui servent à  la manipulation
+    des temps pas assez fin
+  \item   Mécanismes   d'accès   aux   ressources  partagées   et   de
+    synchronisation comportent des incertitudes temporelles
+  \item Gestion des interruptions non-optimisées
+  \item Systèmes non-certifiés
+  \item API mal adaptées au systèmes temps réels
+  \end{itemize}
+\end{frame}
 
 \section{Latences}
 
@@ -266,6 +137,28 @@ $ lxc-cgroup -n test cpuacct.usage
 %        Interruptions, cache miss, changement de contexte, etc...
 %     -> Présenter les diagramme normal va RT
 
+\section{Bases}
+
+\begin{frame}{Mécanisme basiques}
+  \begin{itemize}
+  \item  Possibilité  d'exécuter  une  tache avec  \c{SCHED_RT}  ou
+    \c{SCHED_FIFO} (priorité toujours inférieure aux \emph{sofirqs} du noyau)
+  \item Possibilité de marquer les pages de mémoire avec \c{mlock}
+  \item L'accès  à des  horloges haute précision  est un  élément clef
+    d'un système temps réel.
+    \begin{itemize}
+    \item Le framework  \emph{hpet} (\emph{High Precision Timers}) est
+      assez récent dans le noyau Linux (2001) (à titre de comparaison,
+      l'équivalent de \emph{hpet} est  apparu sous Windows à partir de
+      Vista).
+    \item Autrefois, l'horloge  était utilisée pour l'ordonnanceur. Le
+      temps retourné  par les différents services  était celui calculé
+      par l'ordonnanceur.   Avec \emph{hpet}, les  horloges sont des
+      périphériques à part entière
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
 \begin{frame}{Contexte}
   Ordonnancement statique:
   \begin{itemize}
@@ -292,6 +185,114 @@ $ lxc-cgroup -n test cpuacct.usage
 %     \item Caches, Swap
 %   \end{itemize}
 % \end{frame}
+
+\section{Systèmes Symétriques et Asymétriques}
+
+\begin{frame}{Architectures multi-coeurs}
+  Il est  possible d'utiliser  des architecture multi-coeurs  pour des
+  systèmes temps réels.
+  \\
+  On distingue alors 2 types d'architectures:
+  \begin{itemize}
+  \item  Les systèmes  symétriques (SMP)  où  les tâches  ne sont  pas
+    affectées à un CPU particulier
+  \item  Les  systèmes asymétriques  où  on  affecte manuellement  les
+    tâches à un CPU
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Systèmes asymétriques}
+  Les systèmes asymétriques sont assez simples à architecturer:
+  \begin{itemize}
+  \item On effectue une étude séparées pour chaque CPU
+  \item   On  considère  les   échanges  entre   les  CPU   comme  des
+    entrées/sorties
+  \end{itemize}
+  Sous Linux, il  est possible d'associer une tâche  avec un CPU grâce
+  à:
+  \begin{itemize}
+  \item la fonction \emph{CPU affinity}
+  \item la commande \c{taskset} ou \c{lxc}
+  \item aux fonctions \emph{cgroup} et \emph{cpuset}
+  \end{itemize}
+  \note{ca     fonctionne     avec     \texttt{mount     -t     cpuset
+      /mnt/cpuset. cf. Documentation/cgroup/cpuset.txt}}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{LXC}
+  \cmd{lxc} permet de créer des  container et d'avoir une gestion fine
+  des limitations de ressources.
+  \begin{itemize}
+  \item Activer \emph{Control Group Support} dans le noyau
+  \item Démonstration avec \file{lxc-test.c}
+    \begin{lstlisting}
+$ gcc samples/lxc-test.c -o lxc-test
+$ apt-get install lxc
+    \end{lstlisting}
+  \item Création d'un container et éxecution de la commande
+    \begin{lstlisting}
+$ lxc-create -n test
+$ lxc-execute -n test ./lxc-test
+    \end{lstlisting}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{LXC}
+  \begin{itemize} 
+  \item Limiter le container à au CPU 0:
+    \begin{lstlisting}
+$ lxc-cgroup -n test cpuset.cpus 0
+    \end{lstlisting}
+  \item Supprimer la limite:
+    \begin{lstlisting}
+$ lxc-cgroup -n test cpuset.cpus 0,1
+    \end{lstlisting}
+  \item Limiter la consommation cpu à 10\%:
+    \begin{lstlisting}
+$ lxc-cgroup -n test cpu.cfs_quota_us 10000
+    \end{lstlisting}
+  \item Retirer la limite:
+    \begin{lstlisting}
+$ lxc-cgroup -n test cpu.cfs_quota_us -1
+    \end{lstlisting}
+  \item Connaitre la consommation CPU du container:
+    \begin{lstlisting}
+$ lxc-cgroup -n test cpuacct.usage
+    \end{lstlisting}
+  \item cf. \file{/sys/fs/cgroup/}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Systèmes symétriques}
+  \begin{itemize}
+  \item Beaucoup plus complexe à architecturer
+  \item  La plupart de  nos algorithme  ne sont  plus prouvé  dans une
+    architecture SMP
+  \item La technologie est relativement récente (fin des années 90)
+  \item Pourquoi si tard?
+    \begin{itemize}
+    \item Principalement problèmes matériels
+    \item Problèmes de barrières mémoires (hard ou soft)
+    \item Algorithme  beaucoup plus  ardu (inversion de  priorité par
+      exemple)
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Temps réel dans le noyau}
+  Travailler dans le noyau:
+  \begin{itemize}
+  \item Possibilité de travailler sous interruptions
+  \item ... ou de travailler avec les soft IRQ et/ou les tasklets
+  \item Oblige à travailler dans le noyau (problèmes d'APIs, etc...)
+  \item Nécessaite beauoup de connaissance pour faire quelque chose de bien
+  \item Accès  difficiles aux bibliothèques de haut  niveau (un simple
+    accès au réseau peut devenir très complexe)
+  \item  Gardez le  kernel  pour faire  des  drivers, externalisez  le
+    traitement
+  \end{itemize}
+\end{frame}
+
 
 \section{Low latency}
 
