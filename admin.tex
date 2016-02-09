@@ -765,7 +765,7 @@ x86-static/hello: ELF 64-bit LSB executable, x86-64, version 1 (GNU/Linux), stat
   \item Utilisé pour les petits projets ou les projets non standard
   \item Ressemble souvent à:
     \begin{lstlisting}
-host$ make CC=arm-linux-gcc LD=arm-linux-ld
+host$ make CC=arm-linux-gcc
     \end{lstlisting} %$
   \item Il peut être nécessaire d'avoir la chaîne de cross-compilation
     dans son \verb+PATH+.
@@ -842,20 +842,20 @@ host% make install
   \item  Compilation out-of-source:
     \begin{lstlisting}
 host$ cd build
-host$ ../configure --prefix=~/rootfs
+host$ ../configure
 host$ make
-host$ make install
+host$ make DESTDIR=~/rootfs install
     \end{lstlisting} %$
   \item  Cross-compilation.
     \begin{lstlisting}
 host$ PATH+=/opt/arm-sysmic-linux-uclibcgnueabi/usr/bin
-host$ mkdir build
-host$ ../configure --host=arm-linux --build=i386 --prefix=~/rootfs
+host$ mkdir build && cd build
+host$ ../configure --host=arm-linux --build=i386
 host$ make
-host$ make install
+host$ make DESTDIR=~/rootfs install
     \end{lstlisting} %$
-  \item  Il   est  aussi  possible   (parfois  préférable)  d'utiliser
-    \c{DESTDIR=} lors de \cmd{make install} au lieu de \cmd{-\-prefix=}
+  \item  Il   est  aussi  possible  d'utiliser \cmd{-\-prefix=} lors du 
+    \cmd{./configure} au lieu (ou en plus) de \c{DESTDIR=}
   \end{itemize}
 \end{frame}
 
@@ -872,7 +872,7 @@ host$ cd lzma-4.32.7
 \begin{lstlisting}
 host$ mkdir build && cd build
 host$ PATH+=/opt/arm-sysmic-linux-uclibcgnueabi/usr/bin
-host$ ../configure --host=arm-linux --build=i386 --prefix=~/rootfs
+host$ ../configure --host=arm-linux --build=i386
 \end{lstlisting} %$
   \item Compilation
 \begin{lstlisting}
@@ -880,7 +880,7 @@ host$ make
 \end{lstlisting} %$
   \item Installation
 \begin{lstlisting}
-host$ make install
+host$ make DESTDIR=~/rootfs install
 \end{lstlisting} %$
   \end{itemize}
 \end{frame}
@@ -926,9 +926,9 @@ host$ head config.log
   \item Dépend principalement de \cmd{gmake}
   \item Exemple avec busybox:
     \begin{lstlisting}
-host$ wget http://busybox.net/downloads/busybox-1.19.4.tar.bz2
-host$ tar xvjf busybox-1.19.4.tar.bz2
-host$ cd busybox-1.19.4
+host$ wget http://busybox.net/downloads/busybox-1.23.2.tar.bz2
+host$ tar xvjf busybox-1.23.2.tar.bz2
+host$ cd busybox-1.23.2
 host$ make help
     \end{lstlisting} %$
   \end{itemize}
@@ -1097,9 +1097,9 @@ $ autoreconf -iv
 $ ./configure --help
 $ mkdir build
 $ cd build
-$ ../configure --host=arm-linux --build=i386 --prefix=~/rootfs
+$ ../configure --host=arm-linux --build=i386
 $ make
-$ make install
+$ make DESTDIR=~/rootfs install
 \end{lstlisting} %$
   \end{itemize}
 \end{frame}
@@ -1143,6 +1143,12 @@ host$ make CC=arm-linux-gcc CFLAGS=-Wall
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Créer un projet sans autotools}
+  Les règles \c{default}, \c{clean}, \c{distclean} et \c{install} sont
+  standards:
+  \lstinputlisting{samples/hello/Makefile.2}
+\end{frame}
+
+\begin{frame}[fragile=singleslide]{Créer un projet sans autotools}
   \cmd{VPATH} vous permet de gérer la compilation \emph{out-of-source}.
   Remarquez que, pour que \verb+VPATH+ fonctionne correctement, il faut avoir
   correctement utilisé le quoting pour les directives d'inclusion (\verb+<+ pour
@@ -1175,7 +1181,7 @@ host$ make -f ../Makefile VPATH=.. CC=arm-linux-gcc
 \begin{frame}[fragile=singleslide]{Créer un projet sans autotools}
   Nous pouvons  ajouter des alias  pour nous aider dans  les commandes
   complexes
-  \lstinputlisting[firstline=10]{samples/hello/Makefile.5}
+  \lstinputlisting[firstline=19]{samples/hello/Makefile.5}
   \note[item]{TODO: Ajouter des \#ifdef CONFIG pour faire dans Kconfig}
   \note[item]{Parler de apt-get source (-b), dpkg -L, dpkg -l, dpkg-buildpackage}
 \end{frame}
