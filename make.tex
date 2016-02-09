@@ -1441,12 +1441,20 @@ host% apt-get install qemu-kvm-extras
 host% qemu-arm ./hello-arm-static
 host% qemu-arm -L ../arm-linux-uclibceabi/ ./hello-arm-debug
       \end{lstlisting}
-    \item Utilisé par Scratchbox
-      \begin{itemize}
-      \item Scratchbox crée un chroot et utilise fakechroot
-      \item Qemu  doit être compilé  en static pour être  utilisé avec
-        fakechroot (sombre histoire de libld) % A vérifier
-      \end{itemize}
+    \item Poccibilité de faire des \emph{chroot}:
+      \begin{lstlisting}
+host$ cp /usr/bin/qemu-arm-static ~/nfs/usr/bin/qemu-arm-static
+host% chroot ~/nfs /usr/bin/qemu-arm-static /bin/sh
+chroot% ./hello-arm
+      \end{lstlisting}
+    \item Peut être utilisé pour éviter de faire de la cross-compilation
+    %\item Peut être utilisé avec fakechroot
+    %\item Utilisé par Scratchbox
+    %  \begin{itemize}
+    %  \item Scratchbox crée un chroot et utilise fakechroot
+    %  \item Qemu  doit être compilé  en static pour être  utilisé avec
+    %    fakechroot (sombre histoire de libld) % A vérifier
+    %  \end{itemize}
     \item Ne permet pas d'avoir un périphérique virtuel
     \end{itemize}
   \item Un système
@@ -1574,70 +1582,70 @@ host$ make all
   \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile=singleslide]{Automatisation}{Strachbox}
-  \begin{itemize}
-  \item but: créer une distribution type Debian
-  \item Utilisé  par Meego (Nokia,  intel, Renault, etc..)  et Android
-    (en cours)
-  \item packagé: \verb+apt-get install scratchbox2+
-  \item Coquille vide
-    \begin{itemize}
-    \item On peut installer l'environnement de Maemo ou de Android
-    \end{itemize}
-  \item Basé sur un fonctionnement hybride avec qemu
-    \begin{itemize}
-    \item On compile avec le  cross-compiler mais le reste est exécuté
-      avec qemu ou en ssh sur la cible
-    \item S'utilise comme un environnement de compilation normal
-    \item Rend la cross-compilation transparente
-    \item Fonctionne pour ARM and  x86 targets (PowerPC, MIPS and CRIS
-      targets are experimental)
-    \item  Permet de  compiler certains  paquets ne  pouvant  pas être
-      cross-compilés (Notablement Python)
-    \item Dépend du bon fonctionnement de qemu
-    \end{itemize}
-  \end{itemize}
-\end{frame}
-
-\begin{frame}[fragile=singleslide]{Qemu et Scratchbox}
-  \begin{itemize} 
-  \item Installation
-    \begin{lstlisting}
-host% apt-get install scratchbox2
-host$ mkdir scratchbox
-host$ cd scratchbox
-    \end{lstlisting}
-  \item Initialisation de l'environnement. Nous utilisons \cmd{qemu-arm} pour
-    lancer nos binaires cibles et \cmd{arm-linux-gcc} comme compilateur
-    \begin{lstlisting} 
-host$ sb2-init -c qemu-arm -n A926 arm-linux-gcc
-    \end{lstlisting}
-  \item Démarrage de l'environnement 
-    \begin{lstlisting} 
-host$ sb2
-    \end{lstlisting}
-  \end{itemize}
-\end{frame}
-
-\begin{frame}[fragile=singleslide]{Qemu et Scratchbox}
-  \begin{itemize} 
-  \item La cross-compilation est transparente
-    \begin{lstlisting} 
-qemu$ gcc hello.c -static -o hello-sb2-static
-qemu$ file hello-sb2-static
-qemu$ ./hello-sb2-static
-qemu$ gcc hello.c -o hello-sb2
-qemu$ file hello-sb2
-    \end{lstlisting}
-  \item Comme  sur la cible,  nous avons besoin que  les bibliothèques
-    soient bien configurées dans notre environnement
-    \begin{lstlisting} 
-qemu$ cp -a /opt/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/lib .
-qemu$ ./hello-sb2
-    \end{lstlisting} 
-  \end{itemize} 
-\end{frame}
-
+% \begin{frame}[fragile=singleslide]{Automatisation}{Strachbox}
+%   \begin{itemize}
+%   \item but: créer une distribution type Debian
+%   \item Utilisé  par Meego (Nokia,  intel, Renault, etc..)  et Android
+%     (en cours)
+%   \item packagé: \verb+apt-get install scratchbox2+
+%   \item Coquille vide
+%     \begin{itemize}
+%     \item On peut installer l'environnement de Maemo ou de Android
+%     \end{itemize}
+%   \item Basé sur un fonctionnement hybride avec qemu
+%     \begin{itemize}
+%     \item On compile avec le  cross-compiler mais le reste est exécuté
+%       avec qemu ou en ssh sur la cible
+%     \item S'utilise comme un environnement de compilation normal
+%     \item Rend la cross-compilation transparente
+%     \item Fonctionne pour ARM and  x86 targets (PowerPC, MIPS and CRIS
+%       targets are experimental)
+%     \item  Permet de  compiler certains  paquets ne  pouvant  pas être
+%       cross-compilés (Notablement Python)
+%     \item Dépend du bon fonctionnement de qemu
+%     \end{itemize}
+%   \end{itemize}
+% \end{frame}
+% 
+% \begin{frame}[fragile=singleslide]{Qemu et Scratchbox}
+%   \begin{itemize} 
+%   \item Installation
+%     \begin{lstlisting}
+% host% apt-get install scratchbox2
+% host$ mkdir scratchbox
+% host$ cd scratchbox
+%     \end{lstlisting}
+%   \item Initialisation de l'environnement. Nous utilisons \cmd{qemu-arm} pour
+%     lancer nos binaires cibles et \cmd{arm-linux-gcc} comme compilateur
+%     \begin{lstlisting} 
+% host$ sb2-init -c qemu-arm -n A926 arm-linux-gcc
+%     \end{lstlisting}
+%   \item Démarrage de l'environnement 
+%     \begin{lstlisting} 
+% host$ sb2
+%     \end{lstlisting}
+%   \end{itemize}
+% \end{frame}
+% 
+% \begin{frame}[fragile=singleslide]{Qemu et Scratchbox}
+%   \begin{itemize} 
+%   \item La cross-compilation est transparente
+%     \begin{lstlisting} 
+% qemu$ gcc hello.c -static -o hello-sb2-static
+% qemu$ file hello-sb2-static
+% qemu$ ./hello-sb2-static
+% qemu$ gcc hello.c -o hello-sb2
+% qemu$ file hello-sb2
+%     \end{lstlisting}
+%   \item Comme  sur la cible,  nous avons besoin que  les bibliothèques
+%     soient bien configurées dans notre environnement
+%     \begin{lstlisting} 
+% qemu$ cp -a /opt/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/lib .
+% qemu$ ./hello-sb2
+%     \end{lstlisting} 
+%   \end{itemize} 
+% \end{frame}
+% 
 
 
 
