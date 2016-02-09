@@ -1,5 +1,17 @@
+default: hello
+
+hello: hello.o
+-include hello.d
+
 %.o: %.c
 	$(COMPILE.c) -MMD -o $@ $<
 
--include hello.d
-hello: hello.o
+clean:
+	rm -f *.o *.d
+
+distclean: clean
+	rm hello
+
+install:
+	install -m 755 -D hello $(DESTDIR)/usr/bin/hello
+

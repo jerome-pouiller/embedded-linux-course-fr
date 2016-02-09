@@ -1,6 +1,18 @@
+default: hello
+
+HELLO_SRC = hello.c
+hello: $(HELLO_SRC:%.c=%.o)
+-include $(HELLO_SRC:%.c=%.d)
+
 %.o: %.c
 	$(COMPILE.c) -MMD -o $@ $<
 
-HELLO_SRC = hello.c
--include $(HELLO_SRC:%.c=%.d)
-hello: $(HELLO_SRC:%.c=%.o)
+clean:
+	rm -f *.o *.d
+
+distclean: clean
+	rm hello
+
+install:
+	install -m 755 -D hello $(DESTDIR)/usr/bin/hello
+

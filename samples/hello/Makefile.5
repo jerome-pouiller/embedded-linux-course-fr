@@ -1,4 +1,4 @@
-all: hello
+default: hello
 
 HELLO_SRC = hello.c
 hello: $(HELLO_SRC:%.c=%.o)
@@ -8,9 +8,15 @@ hello: $(HELLO_SRC:%.c=%.o)
 	$(COMPILE.c) -MMD -o $@ $<
 
 clean:
-	rm -f hello $(HELLO_SRC:%.c=%.o) $(HELLO_SRC:%.c=%.d)
+	rm -f *.o *.d
 
-.PHONY: debug-x86 debug-arm clean
+distclean: clean
+	rm hello
+
+install:
+	install -m 755 -D hello $(DESTDIR)/usr/bin/hello
+
+.PHONY: debug-arm
 
 debug-arm/Makefile:
 	mkdir -p debug-arm

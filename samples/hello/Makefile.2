@@ -1,3 +1,13 @@
-VPATH = .
+default: hello
 
 hello: hello.o
+
+clean:
+	rm -f *.o
+
+distclean: clean
+	rm hello
+
+install:
+	install -m 755 -D hello $(DESTDIR)/usr/bin/hello
+
