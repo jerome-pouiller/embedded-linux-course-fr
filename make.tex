@@ -144,7 +144,7 @@ host$ tftp 127.0.0.1 -c get hello
     \end{itemize}
     \note[item]{Il est possible de parler de inetd et /etc/default/atftpd}
   \item  Il  est  possible  de  modifier le  répertoire  partagé  dans
-    \file{/etc/default/tftpd-hpa}  
+    \file{/etc/default/tftpd-hpa}
   \item En cas de  problème, consultez les logs (\file{/var/log/syslog}
     ou \file{/var/log/daemon.log})
 % A priori, ca n'est plus vrai avec les nouvelles version:
@@ -161,7 +161,7 @@ host$ tftp 127.0.0.1 -c get hello
   %   le mode d'éxecution)
   %   \note[item]{Parler de inetd}
   \end{itemize}
-\end{frame}  
+\end{frame}
 
 \begin{frame}[fragile=singleslide]{TFTP}
   \note[item]{Il faut fournir le noyau pré-compilé ou le noyau Calao}
@@ -269,7 +269,7 @@ host% mount -t nfs 127.0.0.1:/home/user/nfs tmp
 %       \end{lstlisting} % $
      \item En cas de problème, vérifiez les logs: \file{/var/log/daemon.log}
    \end{itemize}
-\end{frame}  
+\end{frame}
 
 %    \note[item] {Ca permet de ne pas leur donner le rootfs. Est-ce qu'on garde?}
 %    \note[item] {C'est une très mauvaise idée de dumper une partition montée}
@@ -368,7 +368,7 @@ host$ make O=build ARCH=arm CROSS_COMPILE=arm-linux- XXImage
   \item Dans  le doute,  il faut consulter  la documentation  de votre
     bootloader
   \end{itemize}
-\end{frame}  
+\end{frame}
 
 \begin{frame}[fragile=singleslide]{Compiler le noyau}
   Dans notre cas, nous utilisons U-Boot (standard)
@@ -381,7 +381,7 @@ host$ make O=build ARCH=arm CROSS_COMPILE=arm-linux- uImage
   \item Partage de l'image par TFTP
     \begin{lstlisting}
 host% cp build/arch/arm/boot/uImage /var/lib/tftpboot/
-    \end{lstlisting} % $ 
+    \end{lstlisting} % $
     \note[item]{C'est mieux de compiler avec -j3}
     \note[item]{Il faut les laisser démarrer en NFS}
   \end{itemize}
@@ -478,7 +478,7 @@ host$ cp /opt/arm-linux-.../lib/ld-uClibc-1.0.9.so lib
 host$ cp /opt/arm-linux-.../lib/libuClibc-1.0.9.so lib
     \end{lstlisting}
   \end{itemize}
-\end{frame}  
+\end{frame}
 
 \begin{frame}[fragile=singleslide]{Installation des bibliothèques de base}
   \begin{itemize}
@@ -565,11 +565,11 @@ host$ make O=build CROSS_COMPILE=arm-linux- CONFIG_PREFIX=~/nfs install
   \begin{itemize}
   \item Lancement automatique d'un shell
     \begin{lstlisting}
-host$ echo "::askfirst:/bin/sh" > etc/inittab 
+host$ echo "::askfirst:/bin/sh" > etc/inittab
     \end{lstlisting}
   \item Appel d'un script de démarrage.
     \begin{lstlisting}
-host$ echo "::sysinit:/etc/init.d/rcS" >> etc/inittab 
+host$ echo "::sysinit:/etc/init.d/rcS" >> etc/inittab
 host$ mkdir etc/init.d
 host$ echo "#!/bin/sh" > etc/init.d/rcS
 host$ chmod +x etc/init.d/rcS
@@ -597,17 +597,17 @@ host$ chmod +x etc/init.d/rcS
 
 \begin{frame}[fragile=singleslide]{Compilons init}{Fichiers de configuration}
   Nous  pouvons  maintenant  démarrer avec  \cmd{init=/bin/init}  mais
-  certaines fonctionnalités sont absentes (\cmd{ps}, \cmd{ifconfig}, 
+  certaines fonctionnalités sont absentes (\cmd{ps}, \cmd{ifconfig},
   \cmd{top}, \cmd{lsusb}, etc... )\\
   Il faut monter les partitions \cmd{/proc} et \cmd{/sys}:
   \begin{lstlisting}
-target% mount -t proc none /proc 
+target% mount -t proc none /proc
 target% mount -t sysfs none /sys
   \end{lstlisting}
   Automatisation du montage avec \file{inittab}:
   \begin{lstlisting}
-host$ echo "::sysinit:/bin/mount -t proc none /proc" >> etc/inittab 
-host$ echo "::sysinit:/bin/mount -t sysfs none /sys" >> etc/inittab 
+host$ echo "::sysinit:/bin/mount -t proc none /proc" >> etc/inittab
+host$ echo "::sysinit:/bin/mount -t sysfs none /sys" >> etc/inittab
   \end{lstlisting}
   Nos commandes semblent maintenant correctement fonctionner.
 \end{frame}
@@ -624,8 +624,8 @@ target% mount -a
   Nous pouvons utiliser le  fichier \file{etc/inittab} pour monter nos
   partitions automatiquement.
   \begin{lstlisting}
-host$ echo "::sysinit:/bin/mount -a" >> etc/inittab 
-host$ echo "::shutdown:/bin/mount -r -a" >> etc/inittab 
+host$ echo "::sysinit:/bin/mount -a" >> etc/inittab
+host$ echo "::shutdown:/bin/mount -r -a" >> etc/inittab
   \end{lstlisting}
 \end{frame}
 
@@ -802,8 +802,8 @@ target% ping www.google.com
     \file{/etc/nsswitch.conf}.   Il  serait   possible  de   choisir  parmi
     différents  backends  pour  gérer  les  authentifications  et  le
     réseau.
-  \item Pour utiliser le dhcp, ne pas oublier de recopier le fichier 
-    \file{examples/udhcp/simple.script} fourni avec busybox vers 
+  \item Pour utiliser le dhcp, ne pas oublier de recopier le fichier
+    \file{examples/udhcp/simple.script} fourni avec busybox vers
     \file{/usr/share/udhcpc/default.script}
   \end{itemize}
 \end{frame}
@@ -815,7 +815,7 @@ target% ping www.google.com
     \begin{lstlisting}
 host$ echo "root:x:0:0:root:/root:/bin/sh" > etc/passwd
 host$ echo "root:x:0:" > etc/group
-host$ echo "::sysinit:/bin/login" >> etc/inittab 
+host$ echo "::sysinit:/bin/login" >> etc/inittab
     \end{lstlisting}
   \item  \verb'root::0:0:root:/root:/bin/sh'  créerait un  utilisateur
     sans mot de passe
@@ -906,7 +906,7 @@ host$ touch var/log/wtmp
     \end{itemize}
   \item  Pour \cmd{gcc},  on abbrège  souvent le  triplet  en omettant
     \verb+<VENDOR>+
-  \item Exemples: 
+  \item Exemples:
     \begin{itemize}
     \item ppc85-e8541-linux-gnu % A verfieir
     \item arm9-atmel-linux-ulibceabi % A verifier
@@ -920,7 +920,7 @@ host$ touch var/log/wtmp
 
 \begin{frame}[fragile=singleslide]{Compiler le cross-compiler et la libc}
   \begin{itemize}
-  \item 3 étapes: 
+  \item 3 étapes:
     \begin{itemize}
     \item On compile les \cmd{binutils} (assembleur et linker)
     \item On compile \cmd{gcc} (compilateur) avec les \cmd{binutils}
@@ -938,7 +938,7 @@ host$ touch var/log/wtmp
     \item Souvent des problèmes de compatibilité entre les versions
     \end{itemize}
   \end{itemize}
-\end{frame} 
+\end{frame}
 
 \begin{frame}[fragile=singleslide]{Compiler le cross-compiler et la libc}
   Différentes \cmd{libc}:
@@ -947,7 +947,7 @@ host$ touch var/log/wtmp
   \item  eglibc  (``Embedded GNU  C  Library'',  meilleur support  des
     diverses  architectures.  Utilisée  depuis peu  sur  diverses
     distributions ``desktop'')
-  \item newlib (utilisée par Cygwin) 
+  \item newlib (utilisée par Cygwin)
   \item µclibc (très utilisée dans l'embarqué)
   \item  dietlibc  (encore  plus   petite  que  µlibc  destinée  à  la
     compilation statique)
@@ -973,7 +973,7 @@ host% make install
     \end{lstlisting}
   \end{itemize}
 \end{frame}
-   
+
 \begin{frame}[fragile=singleslide]{Compiler la toolchain}{Crosstool-NG}
   \begin{itemize}
   \item Préparation du répertoire de build
@@ -998,20 +998,20 @@ $ ct-ng build
   \begin{itemize}
   \item Configurons notre chaîne de compilation finale
     \begin{lstlisting}
-$ ct-ng clean 
+$ ct-ng clean
 $ ct-ng menuconfig
        \end{lstlisting}
 %     \item Dans la configuration
 %       \begin{lstlisting}
 %... Prefix directory: /opt/${CT_TARGET}
-%... Remove documentation 
+%... Remove documentation
 %... Build Static Toolchain
 %# Documentation du CPU + man gcc + wikipedia (http://en.wikipedia.org/wiki/ARM_architecture)
 %... Architecture level: armv5te
 %# Page de man de gcc + documentation du CPU :
 %... Emit assembly for CPU: arm926ej-s
 %... Tuple's vendor string : sysmic
-%... Threading implementation to use: (nptl) 
+%... Threading implementation to use: (nptl)
 %... Add support for locales
 %       \end{lstlisting}
   \end{itemize}
@@ -1048,8 +1048,8 @@ target$ ./hello-mygcc
       \item Ajoutons quelques liens symboliques bien pensés
        \begin{lstlisting}[basicstyle=\ttfamily\scriptsize\color{colBasic}]
 host$ cd /opt/arm-unknown-linux-uclibcgnueabi/bin
-host$ for i in arm-unknown-linux-uclibcgnueabi-*; do 
-> ln -s $i arm-linux-${i#arm-unknown-linux-uclibcgnueabi-}; 
+host$ for i in arm-unknown-linux-uclibcgnueabi-*; do
+> ln -s $i arm-linux-${i#arm-unknown-linux-uclibcgnueabi-};
 > done
        \end{lstlisting}
       \item N'espérez  pas compiler  du premier coup.  Mais autrefois,
@@ -1121,7 +1121,7 @@ uboot> bootm 21000000 21300000
   Pour créer une image \cmd{jffs2}, vous devez au minimum spécifier le
   répertoire  de source,  l'image de  destination, l'endianness  et le
   padding:
-  \begin{lstlisting} 
+  \begin{lstlisting}
 target% cat /proc/mtd
 host% apt-get install mtd-utils
 host$ mkfs.jffs2 -l -p -r nfs -o rootfs.jffs2
@@ -1129,19 +1129,19 @@ host$ mkfs.jffs2 -l -p -r nfs -o rootfs.jffs2
   Afin de rendre notre image  plus performante, ajustons la taille des
   pages,  supprimons  les  cleanmarkers  (on pourrait  aussi  utiliser
   \verb+-c 0+) et changeons le propriétaires des fichier en root:
-  \begin{lstlisting} 
+  \begin{lstlisting}
 host$ mkfs.jffs2 -l -p -q -n -s 2048 -e 128 -r nfs -o rootfs.jffs2
   \end{lstlisting}
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Recopier le système sur la flash}
   Le  plus  générique pour  recopier  la flash  sur  la  cible est  de
-  démarrer Linux par un autre moyen  (NFS ou partition de rescue) et 
+  démarrer Linux par un autre moyen  (NFS ou partition de rescue) et
   d'utiliser les outils Linux.
-  \begin{itemize} 
+  \begin{itemize}
   \item    Il   existe   des    fichiers   devices    \verb+mtd*+   et
     \verb+mtdblock*+:
-    \begin{itemize} 
+    \begin{itemize}
     \item Les fichiers block ne sont là que pour la compatibilité avec
       certains outils.  Ils ne gèrent  pas les \emph{badblock}  et les
       \emph{clean markers}.
@@ -1150,7 +1150,7 @@ host$ mkfs.jffs2 -l -p -q -n -s 2048 -e 128 -r nfs -o rootfs.jffs2
     \item  Les  flashs  doivent   être  écrites  en  prenant  certaines
       précautions (padding  sur les pages, etc...).  Il est préférable
       de systématiquement écrire en utilisant les outils spécialisés
-    \end{itemize} 
+    \end{itemize}
   \item Toujours commencer par effacer le contenu précédent (on risque
     sinon des corruptions sur le filesystem)
     \begin{lstlisting}
@@ -1161,49 +1161,49 @@ target% cd /tmp
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Recopier le système sur la flash}
-  \begin{itemize} 
+  \begin{itemize}
   \item Téléchargeons  le rootfs sur  notre cible. Nous  pouvons avoir
     des problèmes  de place pour stoker  cette image.  Il  est dans ce
     cas préférable de  travailler sur NFS (mais ca  n'est pas toujours
     possible).
-    \begin{lstlisting} 
+    \begin{lstlisting}
 target% tftp -g -r rootfs.jffs2 host
 target% nandwrite -p /dev/mtd1 rootfs.jffs2
     \end{lstlisting}
     ou bien
-    \begin{lstlisting} 
+    \begin{lstlisting}
 host$ serve_image 0.0.0.0 1234 rootfs.jffs2 128
 target% recv_image host 1234 /dev/mtd1
-    \end{lstlisting} 
+    \end{lstlisting}
   \item  Test
     \begin{lstlisting}
 target% mkdir /tmp/mtd1
 target% mount -t jffs2 /dev/mtdblock1 /tmp/mtd1
-    \end{lstlisting} 
+    \end{lstlisting}
   \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Recopier le système sur la flash}
   Il est possible d'effectuer cette opération à partir de U-Boot.
-  \begin{itemize} 
+  \begin{itemize}
   \item Nous allons utiliser TFTP sans démarrer dessous. Désactivons l'autostart
-    \begin{lstlisting} 
+    \begin{lstlisting}
 uboot> set autostart no
-    \end{lstlisting} 
+    \end{lstlisting}
   \item Toujours effacer la flash avant de flasher
-    \begin{lstlisting} 
+    \begin{lstlisting}
 uboot> nand erase clean 1000000 7800000
-    \end{lstlisting} 
+    \end{lstlisting}
   \item On place l'image en mémoire afin de la flasher
-    \begin{lstlisting} 
+    \begin{lstlisting}
 uboot> tftp 21000000 rootfs.jffs2
 uboot> nand write 21000000 1000000 ${filesize}
-    \end{lstlisting} 
+    \end{lstlisting}
   \item On demande au noyau de booter sur la flash
-    \begin{lstlisting} 
+    \begin{lstlisting}
 uboot> set flashconf root=/dev/mtdblock1 rootfstype=jffs2
 uboot> set bootargs $bootargs $flashconf
-    \end{lstlisting} 
+    \end{lstlisting}
   \end{itemize}
 \end{frame}
 
@@ -1211,12 +1211,12 @@ uboot> set bootargs $bootargs $flashconf
   L'opération est similaire au filesystem. Dans la plupart des cas, on
   place le  noyau à  part sur  une autre partition  de la  flash. Nous
   n'avons alors pas besoin de filesystem:
-  \begin{itemize} 
+  \begin{itemize}
   \item Sous Linux
     \begin{lstlisting}
 target% flash_erase /dev/mtd0 0x400000 0
 target% tftp -g -r uImage
-target% nandwrite -s 0x400000 -p /dev/mtd0 uImage 
+target% nandwrite -s 0x400000 -p /dev/mtd0 uImage
     \end{lstlisting}
   \item Sous U-boot
     \begin{lstlisting}
@@ -1297,7 +1297,7 @@ host% nandwrite -p /dev/mtd1 rootfs.jffs2
      \end{lstlisting}
   \end{itemize}
 \end{frame}
-  
+
 \begin{frame}[fragile=singleslide]{Monter le rootfs sur l'hôte}
   \begin{itemize}
 \item La suite est classique
@@ -1346,9 +1346,9 @@ make CROSS_COMPILE=arm-linux-
   \item \cmd{mkconfig} prend en  paramètre le nom du fichier d'entête,
     le type  de CPU,  d'architecture et de carte,  ainsi que le  nom du
     vendeur et le modèle de chipset.
-    \begin{lstlisting} 
+    \begin{lstlisting}
 ./mkconfig usb-a9260 arm arm926ejs usb-a9260 Calao at91sam926x
-    \end{lstlisting} 
+    \end{lstlisting}
   \end{itemize}
 \end{frame}
 
@@ -1356,13 +1356,13 @@ make CROSS_COMPILE=arm-linux-
   \begin{itemize}
   \item \cmd{mkconfig} créera  un fichier \file{config.h} pointant sur
     votre fichier entête et un fichier \file{config.mk} contenant:
-    \begin{lstlisting} 
+    \begin{lstlisting}
 ARCH   = arm
 CPU    = arm926ejs
 BOARD  = usb-a9260
 VENDOR = Calao
 SOC    = at91sam926x
-    \end{lstlisting} 
+    \end{lstlisting}
   \item   Placer   les  drivers   nécéssaire   à   votre  carte   dans
     \file{board/usb-a9260}. L'implémentation des drivers est proche de
     ce que l'on  trouve dans le noyau Linux.  Il suffit d'associer les
@@ -1381,7 +1381,7 @@ SOC    = at91sam926x
 %   \begin{lstlisting}
 % host$ wget ftp://ftp.denx.de/pub/u-boot/u-boot-2010.09.tar.bz2
 % host$ tar xvf u-boot-2010.09.tar.bz2
-% host$ make TNY_A9260_config 
+% host$ make TNY_A9260_config
 % host$ make CROSS_COMPILE=arm-linux-
 %   \end{lstlisting}
 %   Flasher avec SAMBA pour placer en mémoire avec OpenOCD
@@ -1440,7 +1440,7 @@ host% apt-get install qemu-kvm-extras
 \begin{frame}[fragile=singleslide]{Qu'est-ce que Qemu?}
   Emule:
   \begin{itemize}
-  \item Simplement un jeux d'instruction 
+  \item Simplement un jeux d'instruction
     \begin{itemize}
     \item Toutes les grandes architectures sont supportées
     \item  Les  appels  système  sont  alors bindez  vers  les  appels
@@ -1493,7 +1493,7 @@ host$ qemu-system-arm -M integratorcp -cpu arm926 -m 16 -kernel zImage.integrato
 \end{frame}
 
 %Installation de Debian:
-% wget http://ftp.de.debian.org/debian/dists/etch/main/installer-arm/current/images/rpc/netboot/initrd.gz 
+% wget http://ftp.de.debian.org/debian/dists/etch/main/installer-arm/current/images/rpc/netboot/initrd.gz
 % qemu-system-arm -kernel zImage.integrator -initrd ../initrd.gz -append "root=/dev/ram console=ttyAMA0" -nographic
 
 
@@ -1570,7 +1570,7 @@ host$ make all
     \end{itemize}
   \item Yocto remplace peu à peu OpenEmbedded dans les nouveau projet
   \item Il est poussé pour la Linux Foundation
-%  \item remplacé par Buildroot et Scratchbox 
+%  \item remplacé par Buildroot et Scratchbox
 %   \note[item]{Tout ici: \url{http://www.at91.com/linux4sam/bin/view/Linux4SAM/OpenEmbeddedAngstromBuild}}
 %   \note[item]{Résultat ici: \url{ftp://www.at91.com/pub/demo/linux4sam_2.0/linux4sam-angstrom-at91sam9260ek.zip}}
 %   \item  Récupératon d'une version d'OpenEmbedded ppackagə pour notre architecture
@@ -1613,9 +1613,9 @@ host$ make all
 %     \end{itemize}
 %   \end{itemize}
 % \end{frame}
-% 
+%
 % \begin{frame}[fragile=singleslide]{Qemu et Scratchbox}
-%   \begin{itemize} 
+%   \begin{itemize}
 %   \item Installation
 %     \begin{lstlisting}
 % host% apt-get install scratchbox2
@@ -1624,20 +1624,20 @@ host$ make all
 %     \end{lstlisting}
 %   \item Initialisation de l'environnement. Nous utilisons \cmd{qemu-arm} pour
 %     lancer nos binaires cibles et \cmd{arm-linux-gcc} comme compilateur
-%     \begin{lstlisting} 
+%     \begin{lstlisting}
 % host$ sb2-init -c qemu-arm -n A926 arm-linux-gcc
 %     \end{lstlisting}
-%   \item Démarrage de l'environnement 
-%     \begin{lstlisting} 
+%   \item Démarrage de l'environnement
+%     \begin{lstlisting}
 % host$ sb2
 %     \end{lstlisting}
 %   \end{itemize}
 % \end{frame}
-% 
+%
 % \begin{frame}[fragile=singleslide]{Qemu et Scratchbox}
-%   \begin{itemize} 
+%   \begin{itemize}
 %   \item La cross-compilation est transparente
-%     \begin{lstlisting} 
+%     \begin{lstlisting}
 % qemu$ gcc hello.c -static -o hello-sb2-static
 % qemu$ file hello-sb2-static
 % qemu$ ./hello-sb2-static
@@ -1646,13 +1646,13 @@ host$ make all
 %     \end{lstlisting}
 %   \item Comme  sur la cible,  nous avons besoin que  les bibliothèques
 %     soient bien configurées dans notre environnement
-%     \begin{lstlisting} 
+%     \begin{lstlisting}
 % qemu$ cp -a /opt/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/lib .
 % qemu$ ./hello-sb2
-%     \end{lstlisting} 
-%   \end{itemize} 
+%     \end{lstlisting}
+%   \end{itemize}
 % \end{frame}
-% 
+%
 
 
 

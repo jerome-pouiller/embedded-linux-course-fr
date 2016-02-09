@@ -283,7 +283,7 @@ $ mkdir ../../tmp/titi
 $ rm *.o
     \end{lstlisting}
   \note[item]{Parler  de  grep,   des  expression  régulière  et  la
-    différence avec le  globbing} 
+    différence avec le  globbing}
   \item Alias
     \begin{lstlisting}
 $ alias ll="ls -l --color=auto"
@@ -430,9 +430,9 @@ $ ./script.sh
 \begin{lstlisting}[language=sh]
 host% adduser user dialout
 \end{lstlisting} %$
-  \item Il est nécessaire de se relogguer pour que les modifications sur les 
+  \item Il est nécessaire de se relogguer pour que les modifications sur les
     groupes soient prises en compte
-  \item Les outils de haut niveau: 
+  \item Les outils de haut niveau:
   \begin{itemize}
   \item minicom: La référence
   \item picocom:   Fonctionne   sans  \emph{ncurses}   (mieux   pour
@@ -682,13 +682,13 @@ un répertoire par cible.
 
 \begin{frame}[fragile=singleslide]{Compilation}
   Décompression de la toolchain:
-  \begin{lstlisting} 
+  \begin{lstlisting}
 host% cd /
 host% tar xvzf .../arm-sysmic-linux-uclibcgnueabi_i386.tgz
   \end{lstlisting}
-  \begin{itemize} 
+  \begin{itemize}
   \item   On  installe  très souvent  les  chaines  de cross-compilation  dans
-    \path{/opt}. 
+    \path{/opt}.
   \item      Beaucoup      de      toolchain     ne      sont      pas
     \emph{relocable}.  C'est-à-dire  qu'elle  doivent  être  placée  à
     l'endroit où  elles ont été compilée (car  il contiennent certains
@@ -701,14 +701,14 @@ host% tar xvzf .../arm-sysmic-linux-uclibcgnueabi_i386.tgz
   \begin{lstlisting}
 host$ mkdir build-arm
 host$ /opt/arm-sysmic-linux-uclibc/bin/arm-linux-gcc hello.c -o build-arm/hello
-  \end{lstlisting} 
+  \end{lstlisting}
   ou bien
-  \begin{lstlisting} 
+  \begin{lstlisting}
 host$ PATH+=:/opt/arm-sysmic-linux-uclibc/bin
 host$ arm-linux-gcc hello.c -o build-arm/hello
   \end{lstlisting}
   Test:
-  \begin{lstlisting} 
+  \begin{lstlisting}
 target% ./hello 1
 Hello World
   \end{lstlisting} %$
@@ -829,11 +829,11 @@ host$ make
 host% make install
     \end{lstlisting} %$
   \item L'installation peut nécessiter les droits \emph{root}
-    \begin{itemize} 
+    \begin{itemize}
     \item Utiliser \cmd{sudo -E} (attention à l'option \c{secure_path}
       dans \file{/etc/sudoers})
     \item Utiliser \cmd{fakeroot}
-    \end{itemize} 
+    \end{itemize}
   \end{itemize}
 \end{frame}
 
@@ -854,7 +854,7 @@ host$ ../configure --host=arm-linux --build=i386
 host$ make
 host$ make DESTDIR=~/rootfs install
     \end{lstlisting} %$
-  \item  Il   est  aussi  possible  d'utiliser \cmd{-\-prefix=} lors du 
+  \item  Il   est  aussi  possible  d'utiliser \cmd{-\-prefix=} lors du
     \cmd{./configure} au lieu (ou en plus) de \c{DESTDIR=}
   \end{itemize}
 \end{frame}
@@ -1158,8 +1158,8 @@ host$ make CC=arm-linux-gcc CFLAGS=-Wall
   les entêtes systèmes et \verb+"+ pour les entêtes du projet).
   % Pas besoin d'ajouter VPATH = . Du coup, c'est la meme chose que Makefile.1
   %\lstinputlisting{samples/hello/Makefile.2}
-  
-  Testons: 
+
+  Testons:
 \begin{lstlisting}
 host$ cd build
 host$ make -f ../Makefile VPATH=.. CC=arm-linux-gcc
@@ -1206,7 +1206,7 @@ HELLO_$(CONFIG1) += hello.o
 \begin{frame}[fragile=singleslide]{Bibliothèques courantes}
   Il existe  des milliers de  bibliothèques et d'API  disponibles pour
   Linux. Parmi elles:
-  \begin{itemize} 
+  \begin{itemize}
   \item Les  appels systèmes. Inclus  avec le noyau  Linux. Documentés
     par les pages de man. Liste sur \man{syscalls(2)}
   \item L'interface  Posix.  Fournis par la libc.   Documentés par les
@@ -1220,8 +1220,8 @@ HELLO_$(CONFIG1) += hello.o
   \item  Regarder  les packets  inclus  dans  Buildroot  ou sur  votre
     distribution permet  d'avoir une  idée des bibliothèques  les plus
     courantes
-  \end{itemize} 
-\end{frame} 
+  \end{itemize}
+\end{frame}
 
 
 %%% Local Variables:

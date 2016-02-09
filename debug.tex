@@ -25,7 +25,7 @@
 host$ gcc -Wall -g3 -c hello.c -o hello.o
 host$ gcc -Wall -g3 hello.o -o hello-x86-dbg
 host$ gdb hello-x86-dbg
-  \end{lstlisting}  
+  \end{lstlisting}
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Debuguer une application utilisateur}{Commandes utiles}
@@ -54,7 +54,7 @@ gdb> r arg
     \end{lstlisting}
   \end{itemize}
 \end{frame}
-  
+
 \begin{frame}[fragile=singleslide]{Debuguer une application utilisateur}{Commandes utiles}
   Obtenir des informations
   \begin{itemize}
@@ -166,19 +166,19 @@ host$ arm-uclibceabi-gdb hello
   \begin{itemize}
   \item Execution
     \begin{lstlisting}
-target$ ./hello > /dev/null & 
-    \end{lstlisting}  
+target$ ./hello > /dev/null &
+    \end{lstlisting}
   \item On attache \cmd{gdb} au processus
     \begin{lstlisting}
 target$ gdbserver *:1234 --attach $!
-    \end{lstlisting}  
+    \end{lstlisting}
   \item configuration classque de \cmd{gdb}
     \begin{lstlisting}
 host$ arm-linux-gdb
 > exec-file hello
 > set solib-absolute-prefix /home/user/nfs
 > target remote target:1234
-    \end{lstlisting}  
+    \end{lstlisting}
   \item   Remarque:   Si   vous   dugger   une   programme   utilisant
     \file{libpthread},     vous     devez     avoir     le     fichier
     \file{libthread\_db}  pour   que  \cmd{gdb}  puisse   décoder  les
@@ -186,11 +186,11 @@ host$ arm-linux-gdb
 %   \item Il est peut-être intéressant de faire un \emph{core dump}
 %     \begin{lstlisting}
 % > gcore
-%     \end{lstlisting}  
+%     \end{lstlisting}
   \item Libérons le processus
     \begin{lstlisting}
 > detach
-    \end{lstlisting}  
+    \end{lstlisting}
   \end{itemize}
 \end{frame}
 
@@ -206,20 +206,20 @@ host$ arm-linux-gdb
   \begin{lstlisting}
 host$ arm-linux-objcopy --only-keep-debug hello hello.sym
 host$ chmod -x hello.sym
-host$ arm-linux-strip --strip-unneeded hello 
+host$ arm-linux-strip --strip-unneeded hello
 target$ gdbserver *:1234 hello
 host$ arm-linux-gdb
 > target remote target:1234
 > symbol-file hello.sym
-    \end{lstlisting} 
+    \end{lstlisting}
 \end{frame}
-  
+
 \begin{frame}[fragile=singleslide]{Debuguer une application utilisateur}
   Sous certaines conditions, il est possible de rendre le chargement
   des symboles automatique:
   \begin{lstlisting}
 host$ arm-linux-objcopy --add-gnu-debuglink=hello.sym hello
-  \end{lstlisting}  
+  \end{lstlisting}
   Remarque: l'option -g n'influence pas le code compilé:
     \begin{lstlisting}
 $ gcc hello.c -O3 -o hello
@@ -263,14 +263,14 @@ ok
 %   gdb> l *0x8530
 %   # Ou bien directement
 %   gdb> info line *0x8530
-%     \end{lstlisting} 
+%     \end{lstlisting}
 % }
 \end{frame}
 
 % \begin{frame}[fragile=singleslide]{Utilisation de eclipse}
 %     \begin{lstlisting}
 % wget 'http://rm.mirror.garr.it/mirrors/eclipse/technology/epp/downloads/release/helios/SR1/eclipse-linuxtools-helios-SR1-incubation-linux-gtk-x86_64.tar.gz'
-% ./eclipse 
+% ./eclipse
 % \end{lstlisting}
 % \end{frame}
 
@@ -285,12 +285,12 @@ host$ make O=build-dbg ARCH=arm CROSS_COMPILE=arm-linux- menuconfig
 ... Compile the kernel with debug info ...
 ... KGDB: kernel debugging with remote gdb ...
 host$ make -j3 O=build-dbg ARCH=arm CROSS_COMPILE=arm-linux- uImage
-    \end{lstlisting} 
+    \end{lstlisting}
   \item L'image ELF est beaucoup plus grosse
     \begin{lstlisting}
 host$ ls -l build-dbg/vmlinux build/vmlinux
 host$ cp build-dbg/uImage /srv/tftp/uImage-2.6.33.7-dbg
-    \end{lstlisting} 
+    \end{lstlisting}
   \end{itemize}
 \end{frame}
 
@@ -303,14 +303,14 @@ host$ cp build-dbg/uImage /srv/tftp/uImage-2.6.33.7-dbg
 uboot> set bootargs ${bootargs} kgdboc=ttyS0 kgdbwait
 uboot> tftp
 <Ctrl-a q>
-host$ arm-linux-gdb vmlinux 
+host$ arm-linux-gdb vmlinux
 gdb> target remote /dev/ttyUSB0
-    \end{lstlisting} 
+    \end{lstlisting}
   \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Kgdb et les modules}
-  \begin{itemize} 
+  \begin{itemize}
   \item Les modules sont chargé dynamiquement. Ils ne sont pas contenu
     dans le fichier \file{vmlinux}
   \item Il  est nécessaire d'indiquer à  gdb de charger  le module que
@@ -320,19 +320,19 @@ gdb> target remote /dev/ttyUSB0
   \item    Ces    informations    peuvent   être    récupérées    dans
     \file{/sys/modules/*/sections}
   \item On peut alors les donner à gdb avec \c{add-symbol-file}:
-    \begin{lstlisting} 
+    \begin{lstlisting}
 target% cat /sys/module/mod2_chr/sections
 host$ gdb vmlinux
 > target remote 192.168.1.55:2345
 > add-symbol-file my_modules.ko 0xd0832000 \
      -s .bss 0xd0837100 -s .data 0xd0836be0
-    \end{lstlisting} 
+    \end{lstlisting}
   \item    Il   existe   des    scripts   effectuant    la   procédure
     automatiquement. A adapter suivant vos besoins.
   \item  Remarque:  Les modules  sont  des  fichiers  ELF normaux.  Il
     peuvent être analysés avec \cmd{objdump}
   \end{itemize}
-\end{frame} 
+\end{frame}
 
 % \begin{frame}[fragile=singleslide]{Debuguer le noyau}
 %   Nécessite  une modification  du driver  \file{atmel\_serial}  afin de
@@ -340,8 +340,8 @@ host$ gdb vmlinux
 %   Modification  apportée par  Albin Tonerre  backportée de  la version
 %   2.6.34 du noyau (nous y reviendrons):
 %   \begin{lstlisting}
-% host$ patch -p1 < 0001-serial-atmel_serial-add-poll_get_char-and-poll_put_c.patch 
-%   \end{lstlisting} 
+% host$ patch -p1 < 0001-serial-atmel_serial-add-poll_get_char-and-poll_put_c.patch
+%   \end{lstlisting}
 
 % \note[item]{testé avec la version 2.6.37, mais devait fonctionner comme ca}
 % \end{frame}
@@ -352,7 +352,7 @@ host$ gdb vmlinux
 % host$ qemu -S -s -M integrator -cpu arm926 -m 16 -kernel zImage.integrator -initrd arm_root.img &
 % host$ arm-linux-gdb vmlinux
 % gdb> interrupt
-%     \end{lstlisting} 
+%     \end{lstlisting}
 % \note[item]{TODO P3}
 % \end{frame}
 
@@ -362,14 +362,14 @@ host$ gdb vmlinux
   possible de  changer le comportement de \cmd{ld.so}  par des fichier
   de  configuration  (\file{/etc/ld.so.conf})  ou  par  des  variables
   d'environnement.
-  \begin{itemize} 
+  \begin{itemize}
   \item  \cmd{LD\_LIBRARY\_PATH} permet d'ajouter  un répertoire  ou les
     bibliothèques seront recherchées.
   \item  \cmd{LD\_PRELOAD}  permet  de  précharger  une  bibliothèque.
     Ainsi les  symboles définis dans cette  bibliothèque surcharge les
     symboles standards
   \end{itemize}
-\end{frame}  
+\end{frame}
 
 \begin{frame}[fragile=singleslide]{\cmd{ld.so}}
     \begin{lstlisting}[language=c]
@@ -383,24 +383,24 @@ unsigned int sleep(unsigned int s) {
     printf("Try to reveal race-conditions\n");
     return real_sleep(5 * s);
 }
-    \end{lstlisting} 
-\end{frame}  
+    \end{lstlisting}
+\end{frame}
 
 \begin{frame}[fragile=singleslide]{\cmd{ld.so}}
-  \begin{itemize} 
-    \begin{lstlisting} 
+  \begin{itemize}
+    \begin{lstlisting}
 host$ gcc -shared -ldl -fPIC mysleep.c -o libmysleep.so
-target$ LD_PRELOAD=libmysleep.so ./hello 
+target$ LD_PRELOAD=libmysleep.so ./hello
 target$ export LD_PRELOAD=libmysleep.so
-taregt$ ./hello 
-    \end{lstlisting} 
+taregt$ ./hello
+    \end{lstlisting}
   \item Cette  technique est utilisé pour tracer  et profiler certains
     évènement
   \item Les expert en sécurité l'utilisent pour détourner un programme
     de son but original
   \item Enfin, il permet de  simuler des problèmes afin de vérifier la
     robustesse d'un programme
-  \end{itemize} 
+  \end{itemize}
   \note[item]{TODO P4: Tester ERESI}
 \end{frame}
 
@@ -409,21 +409,21 @@ taregt$ ./hello
   \item \cmd{strace} permet de d'afficher les appels systèmes effectué
     par   un   processus.   Il   a  l'avantage   d'afficher   beaucoup
     d'informations sous des formes lisible.
-    \begin{lstlisting} 
+    \begin{lstlisting}
 target$ strace ./hello
-    \end{lstlisting}  
+    \end{lstlisting}
   \item Il est possible de filtrer les appels systèmes à suivre.
   \item  \cmd{ltrace}  est  une  génératlisation de  \cmd{strace}.  Il
     permet de suivre les appels à une bibliothèque extérieure
-    \begin{lstlisting} 
+    \begin{lstlisting}
 host$ arm-linux-ldd --root . ./hello
 target$ ltrace -l /lib/libc.so.0 -e sleep ./hello
 target$ ltrace -l /lib/libc.so.0 -e malloc -e free /bin/ls
-    \end{lstlisting}  
+    \end{lstlisting}
   \item  Ces outils  sont une  aide préciseuse  lorsque  l'on souhaite
     identifier le  comportement d'une  binaire dont nous  ne disposons
     pas des sources.
-  \end{itemize} 
+  \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{ptrace}
@@ -453,7 +453,7 @@ target$ ltrace -l /lib/libc.so.0 -e malloc -e free /bin/ls
     le lien entre les lignes du fichier source et les données générées
     (fichiers \file{.gcno})
   \end{itemize}
-  Fonctionne sur une binaire utilisateur. 
+  Fonctionne sur une binaire utilisateur.
   Permet de valider une campagne de test unitaire.
 \end{frame}
 
@@ -464,43 +464,43 @@ target$ ltrace -l /lib/libc.so.0 -e malloc -e free /bin/ls
     \begin{lstlisting}
 host$ mkdir x86-cov
 host$ gcc --coverage hello.c -o x86-cov/hello
-    \end{lstlisting} 
+    \end{lstlisting}
   \item Execution d'un scénario d'utilisation
     \begin{lstlisting}
 host$ x86-cov/hello
-    \end{lstlisting} 
+    \end{lstlisting}
   \item Conversion des fichiers  \file{gcda} dans un format lisible
     \begin{lstlisting}
 host$ for i in **/*.gcda; do
 > gcov -o $(dirname $i) $i
 > done
-    \end{lstlisting} 
+    \end{lstlisting}
   \item  Convertion  des  fichier  \file{gcda} en  HTML  en  utilisant
     \cmd{lcov}/\cmd{genhtml}
     \begin{lstlisting}
 host$ lcov -i -o coverage-x86.info -b . -d x86-cov
 host$ genhtml -o html coverage-x86.info
-    \end{lstlisting} 
+    \end{lstlisting}
   \end{itemize}
 \end{frame}
-  
+
 \begin{frame}[fragile=singleslide]{Couverture de code}
   Utilisation de gcov sur la cible:
-  \begin{itemize} 
+  \begin{itemize}
   \item On précise le répertoire ou les fichier doivent être stockés
     \begin{lstlisting}
 host$ cd arm-cov
 host$ arm-linux-gcc --fprofile-generate=/tmp/data --coverage ../hello.c -o hello-arm-cov
-    \end{lstlisting} 
+    \end{lstlisting}
   \item On execute sur la cible
     \begin{lstlisting}
 host$ scp hello-arm-cov root@target:
 target$ ./hello-arm-cov
-    \end{lstlisting} 
+    \end{lstlisting}
   \item On récupère les résultats pour les traiter sur le host
     \begin{lstlisting}
-host$ scp -r root@target:/tmp/data . 
-    \end{lstlisting} 
+host$ scp -r root@target:/tmp/data .
+    \end{lstlisting}
   \end{itemize}
 \end{frame}
 
@@ -514,12 +514,12 @@ host$ for i in **/*.gcda; do
 host$ lcov -i -o coverage-arm.info -b .. -d data --gcov-tool arm-linux-gcov
 host$ genhtml -o html coverage-arm.info
 host$ firefox html/index.html
-    \end{lstlisting} 
+    \end{lstlisting}
   \end{itemize}
-  \note{Tester avec -pg et gprof} 
+  \note{Tester avec -pg et gprof}
   \note{Tester lcov et genhtml}
   Fonctionne aussi avec le noyau: \texttt{CONFIG\_LCOV}
- 
+
   \note{Parler  de l'alternative  (mais demande  gcc superieur  à 4.0)
     trucov http://code.google.com/p/trucov/}
   \note[item]{TODO: Parler de LTT aussi}
@@ -530,14 +530,14 @@ host$ firefox html/index.html
 \begin{frame}[fragile=singleslide]{Valgrind}
   On execute notre programme dans une machine virtuelle. Cette machine
   virtuelle
-  \begin{itemize} 
-  \item instrumente les accès en lecture et en écriture à la mémoire. 
+  \begin{itemize}
+  \item instrumente les accès en lecture et en écriture à la mémoire.
   \item suit les appels aux fonctions \cmd{malloc} et \cmd{free}
   \item suit les copie de pointeurs
   \end{itemize}
   Ainsi, en plus  de détecter les zone non désallouées  à la sortie du
   programme, \cmd{valgrind} est capable de détecter:
-  \begin{itemize} 
+  \begin{itemize}
   \item l'écriture  et la lecture  d'une zone non allouée  (voir aussi
     \emph{DUMA})
   \item la lecture d'une zone jamais écrite
@@ -577,7 +577,7 @@ host$ valgrind --leak-check=full ./hello
     profiling)
   \item Ptrcheck suit les blocks  pointé et détecte ainsi les overruns
     (voir aussi \emph{DUMA})
-  \end{itemize} 
+  \end{itemize}
   \note[item]{Ne marche pas sous ARM9}
   \note[item]{Montrer une race condition et un overflow sur la pile}
 \end{frame}
@@ -587,7 +587,7 @@ host$ valgrind --leak-check=full ./hello
 \begin{frame}[fragile=singleslide]{Bases}
   Avant  de  se  lancer  dans  des procédure  de  profiling  complexe,
   quelques commandes simples:
-  \begin{itemize} 
+  \begin{itemize}
   \item \cmd{free}  indique les ressources mémoire  disponibles sur le
     système
     \begin{itemize}
@@ -607,12 +607,12 @@ host$ valgrind --leak-check=full ./hello
     \item Nombre de message socket (~réseau) envoyés/reçus
     \item Mémoire utilisée en moyenne
     \item Nombre d'accès aux disques en entrée et en sortie
-    \end{itemize} 
+    \end{itemize}
   \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Bases}
-  \begin{itemize} 
+  \begin{itemize}
   \item \cmd{top}  indique à peu  près les même informations  que time
     mais de manière intéractive
   \item \cmd{ps}  affiche aussi ces  informations sur un  ou plusieurs
@@ -631,31 +631,31 @@ host$ valgrind --leak-check=full ./hello
 \begin{frame}[fragile=singleslide]{\cmd{perf}}
   \cmd{perf} utilise les registre de debug du cpu. Faible overhead. depend du CPU. Le cpu le plus fourni est x86.
   \note[item]{TODO: Compiler la toolchain avec le support de locale puis compiler libdw et perf}
-  \begin{itemize} 
+  \begin{itemize}
   \item Obtenir une vue synthétique d'un processus
-    \begin{lstlisting} 
+    \begin{lstlisting}
 target% apt-get install linux-tools-common
 target$ perf stat ./hello-dbg
-    \end{lstlisting}  
+    \end{lstlisting}
   \item Effectuer une mesure plus précise
-    \begin{lstlisting} 
+    \begin{lstlisting}
 target$ perf record ./hello-dbg
 target$ perf report
-    \end{lstlisting} 
+    \end{lstlisting}
   \item Annoter le code avec les information de profiling
-    \begin{lstlisting} 
+    \begin{lstlisting}
 target$ perf annotate timeattack
-    \end{lstlisting} 
+    \end{lstlisting}
   \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{\cmd{perf}}
-  \begin{itemize}  
+  \begin{itemize}
   \item Même manipulation mais avec les contextes d'appel
     \begin{lstlisting}
 target$ perf record -g ./hello-dbg
 target$ perf report
-    \end{lstlisting} 
+    \end{lstlisting}
   \item  Il est  possible d'utiliser  d'autre point  de mesure  que la
     consommation CPU
     \begin{lstlisting}
@@ -666,50 +666,50 @@ target$ perf report
 target$ perf annotate timeattack
 target$ perf record -e cache-misses -g ./hello-dbg
 target$ perf report
-    \end{lstlisting} 
+    \end{lstlisting}
   \end{itemize}
   \note[item]{TODO  P4:  Utiliser   des  fichiers  intermédiaire  pour
     différencier la target du host}
 \end{frame}
 
 % \begin{frame}[fragile=singleslide]{\cmd{oprofile}}
-%   \begin{itemize} 
+%   \begin{itemize}
 %   \item Idem \cmd{perf}, mais moins générique
 %   \item Initialement sur les architectures ST (pas ARM, ni x86)
 %   \item  Si  vous avez  un  noyau  suffisament récent,  \cmd{oprofile}
 %     utilise \cmd{perf} comme backend
 %   \item Démarrage du daemon
-%     \begin{lstlisting} 
+%     \begin{lstlisting}
 % target% opcontrol --init
-%     \end{lstlisting} 
+%     \end{lstlisting}
 %   \item Liste des évènements pouvant être enregistrés
-%     \begin{lstlisting} 
+%     \begin{lstlisting}
 % target% opcontrol -l
-%     \end{lstlisting} 
-%   \item Profiling d'un évènement 
-%     \begin{lstlisting} 
+%     \end{lstlisting}
+%   \item Profiling d'un évènement
+%     \begin{lstlisting}
 % target% opcontrol --start --no-vmlinux -e CPU_CLK_UNHALTED:100000:0:1:1
 % target% ./hello
 % target% opcontrol --shutdown
-%     \end{lstlisting} 
+%     \end{lstlisting}
 %   \end{itemize}
 % \end{frame}
-% 
+%
 % \begin{frame}[fragile=singleslide]{\cmd{oprofile}}
-%   \begin{itemize} 
+%   \begin{itemize}
 %   \item Génération du rapport
-%     \begin{lstlisting} 
+%     \begin{lstlisting}
 % target% opreport hello
-%     \end{lstlisting} 
+%     \end{lstlisting}
 %   \item Génération du source annoté
-%     \begin{lstlisting} 
+%     \begin{lstlisting}
 % target% opannotate --source hello-prof
-%     \end{lstlisting} 
-%   \end{itemize} 
+%     \end{lstlisting}
+%   \end{itemize}
 % \end{frame}
-% 
+%
 % \begin{frame}[fragile=singleslide]{\emph{Tracepoints}}
-% \begin{itemize} 
+% \begin{itemize}
 % \item dynamic printk
 % \item ftrace
 % \item LTT-ng
@@ -779,7 +779,7 @@ host% apt-get install openocd
 % host$ wget http://archive.ubuntu.com/ubuntu/pool/universe/o/openocd/openocd_0.4.0-1+nmu1_amd64.deb
 % host$ wget http://archive.ubuntu.com/ubuntu/pool/main/libf/libftdi/libftdi1_0.18-1_amd64.deb
 % host% dpkg -i libftdi1_0.18-1_amd64.deb openocd_0.4.0-1+nmu1_amd64.deb
-%   \end{lstlisting} 
+%   \end{lstlisting}
 \end{frame}
 
 % \begin{frame}[fragile=singleslide]{OpenOCD}
@@ -789,18 +789,18 @@ host% apt-get install openocd
 % host$ tar xvf openocd-0.4.0.tar.bz2
 % host% apt-get install libftdi-dev
 % host$ mkdir build && cd build
-% host$ ../configure --enable-usbprog --enable-ft2232_libftdi 
+% host$ ../configure --enable-usbprog --enable-ft2232_libftdi
 % host$ make
 % host% make install
-%   \end{lstlisting} 
+%   \end{lstlisting}
 % \end{frame}
 
 \begin{frame}[fragile=singleslide]{OpenOCD}
   Il  est   nécessaire  de  corriger   un  bug  dans  le   fichier  de
   configuration de notre cible:
   \begin{lstlisting}
-host% ln -s at91sam9260.cfg /usr/share/openocd/scripts/target/at91sam9260minimal.cfg 
-  \end{lstlisting} 
+host% ln -s at91sam9260.cfg /usr/share/openocd/scripts/target/at91sam9260minimal.cfg
+  \end{lstlisting}
   \note[item]{test avec le fichier mem-ext}
   Nous pouvons maintenant utiliser notre sonde Jtag
   \begin{lstlisting}
@@ -816,34 +816,34 @@ host$ telnet 127.0.0.1 4444
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{OpenOCD avec gdb}
-  \begin{itemize} 
+  \begin{itemize}
   \item Lancement de \cmd{gdb}
     \begin{lstlisting}
 host$ arm-linux-gdb
-    \end{lstlisting}  
+    \end{lstlisting}
   \item Connexion avec OpenOCD
-    \begin{lstlisting} 
+    \begin{lstlisting}
 gdb> target remote localhost:3333
-    \end{lstlisting} 
+    \end{lstlisting}
   \item \cmd{monitor} permet d'envoyer des commande brutes à OpenOCD
-    \begin{lstlisting} 
+    \begin{lstlisting}
 gdb> monitor reset init
 gdb> monitor help
-    \end{lstlisting} 
+    \end{lstlisting}
   \item Vu  que nous ne  sommes pas lié  à une binaire,  nos commandes
     sont limitées. Nous pouvons  néanmoins dumper la mémoire et placer
     des breakpoints
-    \begin{lstlisting} 
+    \begin{lstlisting}
 gdb> x/10i 0
 gdb> hbreak *0x58
 gdb> b *0x0
-    \end{lstlisting} 
+    \end{lstlisting}
   \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{OpenOCD}
   Deux mots sur la configuration:
-  \begin{itemize} 
+  \begin{itemize}
   \item   Les   fichiers   de   \file{interfaces/}   contiennent   les
     informations sur le driver à utiliser et comment s'y connecter. Le
     repertoire    \file{target/}   contient   la    configuration   du
@@ -861,44 +861,44 @@ gdb> b *0x0
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Debuguer U-Boot}
-  \begin{itemize} 
+  \begin{itemize}
   \item  Notre fichier  de configuration  de OpenOCD  ne lance  pas la
     cible à la  vitesse maximum.  Laissons cette tâche  à u-boot, puis
     arrêtons la cible.
-    \begin{lstlisting} 
-Hit any key to stop autoboot:  0 
-u-boot> 
-    \end{lstlisting} 
+    \begin{lstlisting}
+Hit any key to stop autoboot:  0
+u-boot>
+    \end{lstlisting}
   \item Arrêtons la cible afin de pouvoir travailler dessus
-    \begin{lstlisting} 
+    \begin{lstlisting}
 telnet> halt
-    \end{lstlisting} 
+    \end{lstlisting}
   \item Configurons une vitesse de transmission raisonnable
-    \begin{lstlisting} 
+    \begin{lstlisting}
 telnet> jtag_hkz 10000
 telnet> arm7_9 dcc_downloads enable
-    \end{lstlisting} 
+    \end{lstlisting}
   \item Chargeons l'image ELF de u-boot
-    \begin{lstlisting} 
+    \begin{lstlisting}
 telnet> load_image .../u-boot (elf,13secondes)
-    \end{lstlisting} 
+    \end{lstlisting}
   \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile=singleslide]{Debuguer U-Boot}
-  \begin{itemize} 
+  \begin{itemize}
   \item Vérifions que nous retrouvons bien le code assembleur de U-boot à l'endroit indiqué
-    \begin{lstlisting} 
+    \begin{lstlisting}
 telnet> disassemble XXXX
-    \end{lstlisting} 
+    \end{lstlisting}
   \item Sautons jusqu'à cette addresse
-    \begin{lstlisting} 
+    \begin{lstlisting}
 telnet> resume XXX
-    \end{lstlisting} 
+    \end{lstlisting}
   \item Arrêtons le démarrage
-    \begin{lstlisting} 
+    \begin{lstlisting}
 telnet> halt
-    \end{lstlisting} 
+    \end{lstlisting}
   \end{itemize}
 \end{frame}
 
@@ -912,16 +912,16 @@ gdb> c
 gdb> hbreak run_command
 gdb> c
 u-boot> help
-\end{lstlisting} 
+\end{lstlisting}
 \end{frame}
 
 % \begin{frame}[fragile=singleslide]{OpenOCD}
 %   Beaucoup plus complexe avec le noyau.
-%   \begin{itemize} 
+%   \begin{itemize}
 % \item \file{vmlinux} souhaite se lancé à partir de l'addresse 0xC0000000. Ceci n'est pas une adresse physique valide. \file{vmlinux} devrait donc être chargé après que le MMU soit démarré
 % \item Il est possible de forcer le chargement de \file{vmlinux} autre part en mémoire, mais cela ne permettera pas de booter intégralement
 % \item Notre fichier de configuration ne support pas l'usage de DCC avec MMU démarré. En effet, DCC à besoin d'un espace mémoire afin de travailler. Il faut donc une configuration particulière pour le MMU.
-% \item 
+% \item
 
 %   \begin{lstlisting}
 % host$ arm-linux-gdb vmlinux
@@ -929,15 +929,15 @@ u-boot> help
 % gdb> monitor halt
 % gdb> monitor jtag_hkz 10000
 % gdb> monitor arm7_9 dcc_downloads enable
-%   \end{lstlisting} 
+%   \end{lstlisting}
 % \item Si nous ne précision rien, gdb effectura le chargement à l'adresse 0xC0000000 qui n'est pas une addresse physique valide. Nous devons le forcer à charger le noyau à l'addresse 0x21000000
 % gdb> load vmlinux -0x9F000000
 % \item Le noyau attend que \cmd{r1} lui donne le modèle de la carte
 % gdb> set $r1 = 0x44b
-% \item 
+% \item
 % ^C
 % gdb> hbreak run_command
 % gdb> c
 % u-boot> help
-% \end{lstlisting} 
+% \end{lstlisting}
 % \end{frame}
